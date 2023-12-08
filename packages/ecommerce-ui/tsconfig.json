@@ -1,0 +1,46 @@
+// {
+//   "extends": "tsconfig/react-library.json",
+//   "include": [
+//     ".",
+//     "../../apps/site/src/components/data/FooterData.tsx",
+//     "../../apps/site/src/components/login",
+//     "../../apps/site/src/components/navbar",
+//     "../../apps/site/src/components/loginAndRegistrationForm",
+//     "../../apps/site/src/components/productDescription/CustomerReview.tsx",
+//     "../../apps/site/src/components/products/ProductHeader.tsx"
+//   ],
+//   "exclude": ["dist", "build", "node_modules"]
+// }
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "esnext",
+    "outDir": "dist",
+    "baseUrl": "src",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "declaration": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "incremental": true,
+    "jsx": "react"
+  },
+  "include": [
+    "index",
+    "src",
+    "types"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "templates"
+  ]
+}

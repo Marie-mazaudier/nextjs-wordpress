@@ -1,0 +1,61 @@
+{
+  "name": "site",
+  "version": "1.0.0",
+  "description": "Headless shop theme with next.js",
+  "private": true,
+  "author": "JS Template",
+  "license": "EULA",
+  "support": {
+    "email": "support@jstemplate.net"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@cocart/cocart-rest-api": "^1.1.0",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@jstemplate/ecommerce-ui": "workspace:*",
+    "@jstemplate/checkout-flow": "workspace:*",
+    "@types/react-slick": "^0.23.10",
+    "@woocommerce/woocommerce-rest-api": "^1.0.1",
+    "axios": "^1.2.0",
+    "cookies-next": "^2.1.1",
+    "country-state-city": "^3.1.2",
+    "html-react-parser": "^3.0.6",
+    "moment": "^2.29.4",
+    "next": "13.0.4",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-preset-env": "^7.8.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.41.3",
+    "react-icons": "^4.7.1",
+    "react-loader-spinner": "^5.3.4",
+    "react-loading-skeleton": "^3.1.0",
+    "react-range": "^1.8.14",
+    "react-rating": "^2.0.5",
+    "react-slick": "^0.29.0",
+    "react-toast-notifications": "^2.5.1",
+    "slick-carousel": "^1.8.1",
+    "swr": "^2.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@tailwindcss/line-clamp": "^0.4.2",
+    "@types/node": "^17.0.12",
+    "@types/react": "^18.0.22",
+    "@types/react-dom": "^18.0.7",
+    "@types/woocommerce__woocommerce-rest-api": "^1.0.2",
+    "autoprefixer": "^10.4.13",
+    "eslint": "7.32.0",
+    "eslint-config-custom": "workspace:*",
+    "postcss": "^8.4.18",
+    "tailwindcss": "^3.2.2",
+    "tsconfig": "workspace:*",
+    "typescript": "^4.5.3"
+  }
+}

@@ -1,0 +1,36 @@
+// slider-arrows.scss
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  cursor: pointer;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  border-radius: 50%;
+  z-index: 1;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+.prevArrow {
+  left: 1rem;
+  width: 35px;
+}
+
+.nextArrow {
+  right: 1rem;
+  width: 35px;
+}
+.nextArrow,
+.prevArrow {
+  z-index: 9999;
+}
+.prevArrow:before,
+.nextArrow:before {
+  display: none;
+}

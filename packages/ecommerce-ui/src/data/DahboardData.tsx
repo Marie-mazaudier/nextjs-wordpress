@@ -1,0 +1,102 @@
+export const OrderHeader = [
+  { title: "Order ID" },
+  { title: "Date" },
+  { title: "Item" },
+  { title: "Total" },
+  { title: "Status" },
+  { title: "Action" },
+];
+
+export const orderData = [
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "3 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "2 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "4 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "4 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+];
+
+export const orderDataTwo = [
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "3 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "2 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "4 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "4 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "2 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "4 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+  {
+    id: "#12345678",
+    date: "12-08-2022",
+    items: "4 Items",
+    total: "$00.00",
+    status: "PENDING",
+    action: "View",
+  },
+];
