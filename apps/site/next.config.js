@@ -3,6 +3,7 @@ module.exports = {
     domains: [
       "woocommerce-822043-3145339.cloudwaysapps.com",
       "wordpress-452031-1714910.cloudwaysapps.com",
+      "wordpress-486988-4136715.cloudwaysapps.com",
       "metashop-wp.jstemplate.net",
       "secure.gravatar.com",
       "next-shop.local",
