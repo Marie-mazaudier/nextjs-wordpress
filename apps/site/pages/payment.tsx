@@ -22,8 +22,8 @@ const PaymentPage = () => {
 
         const hfields = window.dalenys?.hostedFields({
             key: {
-                id: process.env.NEXT_PUBLIC_API_KEY_ID
-                //  value: "La valeur n'est pas nécessaire ici"
+                id: process.env.NEXT_PUBLIC_API_KEY_ID,
+                value: "" // Ou une chaîne de caractères arbitraire si nécessaire
             },
             fields: {
                 'card': {
