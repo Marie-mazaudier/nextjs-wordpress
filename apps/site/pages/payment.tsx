@@ -23,7 +23,7 @@ const PaymentPage = () => {
         const hfields = window.dalenys?.hostedFields({
             key: {
                 id: process.env.NEXT_PUBLIC_IDENTIFER_PAYPAL, // Assurez-vous que cette valeur est correcte
-                value: process.env.NEXT_PUBLIC_PAYPLUG_API_KEY // Utilisez la clé API publique ici
+                value: process.env.NEXT_PUBLIC_API_KEY_ID // Utilisez la clé API publique ici
             },
             fields: {
                 'card': {
