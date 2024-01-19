@@ -42,6 +42,8 @@ export interface ButtonProps {
   color?: "primary" | "light" | "dark" | "white";
   className?: string;
   children?: React.ReactNode;
+  onClick?: () => void; // Ajoutez cette ligne
+
 }
 
 export const Button: FC<ButtonProps> = ({
@@ -50,6 +52,8 @@ export const Button: FC<ButtonProps> = ({
   color = "primary",
   className = "",
   children = "Button",
+  onClick, // Ajoutez cette ligne
+
 }) => {
-  return <button className={`${buttonStyle({ type, size, color })} ${className} ease-in-out`}>{children}</button>;
+  return <button className={`${buttonStyle({ type, size, color })} ${className} ease-in-out`} onClick={onClick}> {children} </button>;
 };

@@ -1,9 +1,31 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Country, State } from "country-state-city";
+import { Country } from "country-state-city";
 import { FormLoader, LoaderGrowing } from "../loader";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import DeliveryOptions from "../DeliveryOptions";
 
+// Ajoutez les interfaces nécessaires au début du fichier CheckOut
+interface ShippingMethodInfo {
+  id: number;
+  name: string;
+  price: number;
+  // Ajoutez d'autres propriétés si nécessaire
+}
+interface ShippingMethod {
+  id: number;
+  name: string;
+  min_weight?: string;
+  max_weight?: string;
+  price: number; // Assurez-vous que cette propriété est présente et obligatoire
+  countries?: {
+    id: number;
+    name: string;
+    price: number;
+    iso_2: string;
+    iso_3: string;
+  }[];
+};
 // user data interface
 interface userDataInterface {
   first_name?: string;
@@ -12,7 +34,8 @@ interface userDataInterface {
   phone?: string;
   address_1?: string;
   city?: string;
-  state?: string;
+  //state?: string;
+  address_2?: string; // Ajout du nouveau champ
   postcode?: string;
   country?: string;
   company?: string;
@@ -78,6 +101,18 @@ interface CheckOutProps {
   signUpData?: signUpDataInterface;
   companyPolicyData?: companyPolicyDataInterface;
   userLogin?: boolean;
+  shippingMethodsInfo: ShippingMethodInfo[];
+  selectedShippingMethod: ShippingMethod | null;
+  setSelectedShippingMethod: React.Dispatch<React.SetStateAction<ShippingMethod | null>>;
+  selectedShippingMethodValue: string;
+  setSelectedShippingMethodValue: React.Dispatch<React.SetStateAction<string>>;
+  ServicePointPicker: React.ComponentType<any>; // Ajustez le type si nécessaire
+  totalWithShipping: number; // Ajout de la prop pour le total
+  publicKey: string;
+  pays: string;
+  postalCode: string;
+  city: string;
+  handleServicePointSelected: (servicePointId: string) => void;
 }
 
 export const CheckOut = ({
@@ -95,9 +130,22 @@ export const CheckOut = ({
   signUpData,
   companyPolicyData,
   userLogin,
+  shippingMethodsInfo,
+  selectedShippingMethod,
+  setSelectedShippingMethod,
+  selectedShippingMethodValue,
+  setSelectedShippingMethodValue,
+  ServicePointPicker,
+  totalWithShipping, // Utilisation de la prop
+  publicKey,
+  pays,
+  postalCode,
+  city,
+  handleServicePointSelected
 }: CheckOutProps) => {
   const country = Country.getAllCountries();
-  const [state, setState] = useState(State.getAllStates());
+  //const [state, setState] = useState(State.getAllStates());
+
 
   // billing form register hook
   const {
@@ -181,11 +229,11 @@ export const CheckOut = ({
   /* -------------------------------------------------------------------------- */
   useEffect(() => {
     if (watch("country")) {
-      setState(State.getStatesOfCountry(watch("country")));
+      //  setState(State.getStatesOfCountry(watch("country")));
       // if autoFill is true then auto set the state value
-      if (autoFill && userData) {
-        setValue("state", userData.state, { shouldValidate: true });
-      }
+      /* if (autoFill && userData) {
+         setValue("state", userData.state, { shouldValidate: true });
+       }*/
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,9 +247,9 @@ export const CheckOut = ({
       // react hook form setValue
       Object.keys(userData).forEach((key) => {
         // if country is true then set the state
-        if (key === "country") setState(State.getStatesOfCountry(userData.country));
+        //  if (key === "country") setState(State.getStatesOfCountry(userData.country));
         // @ts-ignore
-        setValue(key, userData[key], { shouldValidate: true });
+        // setValue(key, userData[key], { shouldValidate: true });
       });
     }
     // if userLogin is true then auto fill the form using useEffect hook
@@ -230,14 +278,14 @@ export const CheckOut = ({
   // /* -------------------------------------------------------------------------- */
   // /*                         Coupon Code submit handler                         */
   // /* -------------------------------------------------------------------------- */
-  // const couponSubmitHandler = async (data: any) => {
-  //   // form data console
-  //   if (couponSubmit) {
-  //     couponSubmit(data);
-  //   } else {
-  //     console.log("couponSubmit", data);
-  //   }
-  // };
+  const couponSubmitHandler = async (data: any) => {
+    // form data console
+    if (couponSubmit) {
+      couponSubmit(data);
+    } else {
+      console.log("couponSubmit", data);
+    }
+  };
 
   /* -------------------------------------------------------------------------- */
   /*                         Remove Coupon Code handler                         */
@@ -413,6 +461,21 @@ export const CheckOut = ({
                       <div className="sm:w-1/2 w-full">
                         <div className="relative">
                           <label
+                            className={`absolute -top-2 ${errors.address_2 ? "text-red-400" : "text-[#85929E]"
+                              } left-3 bg-white text-xs`}
+                            htmlFor="address_2"
+                          >
+                            Information de livraison
+                          </label>
+                          <input
+                            className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.address_2 ? "border-red-400" : "border-[#DDE6F5]"
+                              }`}
+                            type="text"
+                            placeholder="Complément d'adresse"
+                            id="address_2"
+                            {...register("address_2")}
+                          />
+                          {/*  <label
                             className={`absolute -top-2 ${errors.state ? "text-red-400" : "text-[#85929E]"
                               } left-3 bg-white text-xs`}
                             htmlFor="state"
@@ -434,7 +497,7 @@ export const CheckOut = ({
                                 {item.name}
                               </option>
                             ))}
-                          </select>
+                            </select>*/}
                         </div>
                       </div>
                     </div>
@@ -636,7 +699,7 @@ export const CheckOut = ({
         </div>
         {/* Checkout Order Summery */}
         <div id="summary" className="2xl:max-w-md lg:w-1/3 w-11/12 mx-auto h-fit">
-          <div className="bg-white sticky top-2 p-6 shadow-md rounded-xl overflow-hidden">
+          <div className="bg-white sticky_menu top-2 p-6 shadow-md rounded-xl overflow-hidden">
             {/* Form Loader */}
             {(!cartData || loading) && <LoaderGrowing />}
             {/* Title */}
@@ -679,7 +742,7 @@ export const CheckOut = ({
               )}
             </div>
             {/* Discount Coupon input */}
-            {/* <form onSubmit={couponHandleSubmit(couponSubmitHandler)}>
+            <form onSubmit={couponHandleSubmit(couponSubmitHandler)}>
               <div className="flex">
                 <div className="w-full">
                   <div className="relative">
@@ -711,7 +774,7 @@ export const CheckOut = ({
                   {couponLoader ? <FormLoader color="text-white" /> : "Apply"}
                 </button>
               </div>
-            </form> */}
+            </form>
             {/* information */}
             <div className="mt-5">
               <ul>
@@ -723,6 +786,18 @@ export const CheckOut = ({
                     {/* <span className="text-[#85929E] text-sm">/year</span> */}
                   </span>
                 </li>
+                {/*Livraison*/}
+                <div>
+                  <DeliveryOptions
+                    shippingMethodsInfo={shippingMethodsInfo}
+                    selectedShippingMethod={selectedShippingMethod}
+                    setSelectedShippingMethod={setSelectedShippingMethod}
+                    selectedShippingMethodValue={selectedShippingMethodValue}
+                    setSelectedShippingMethodValue={setSelectedShippingMethodValue}
+                    ServicePointPicker={ServicePointPicker}
+                  // Ajoutez ici d'autres props nécessaires pour ServicePointPicker
+                  />
+                </div>
                 {/* Discount */}
                 <li className="flex font-medium justify-between py-2 text-base text-[#5D6D7E]">
                   <span>Discount</span>
@@ -753,7 +828,11 @@ export const CheckOut = ({
                 <li className="flex font-medium justify-between py-2 text-base text-[#5D6D7E] border-t-2">
                   <span className="text-bold">Total</span>
                   <span className="text-[#1B2631]">
-                    ${summeryData?.total?.toFixed(2) || 0}
+                    {typeof totalWithShipping === 'number' && (
+                      <p>
+                        Total: ${totalWithShipping.toFixed(2)}
+                      </p>
+                    )}
                     {/* <span className="text-[#85929E] text-sm">/year</span> */}
                   </span>
                 </li>

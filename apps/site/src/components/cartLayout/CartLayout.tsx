@@ -32,7 +32,7 @@ const CartLayout = ({ cartData, billingData }: CartLayoutProps) => {
         <CartItems cartData={cartData} onRemoveCartItem={onRemoveCartItem} onUpdateCartItem={onUpdateCartItem} />
       </div>
       <div className="lg:col-span-4">
-        <Order billingData={billingData} />
+        <Order billingData={billingData} cartData={cartData} /> {/* Ajout de cartData comme prop */}
       </div>
     </div>
   );

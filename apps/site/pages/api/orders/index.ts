@@ -4,15 +4,16 @@ import { WooCommerce } from "../../../lib/utils/woocommerce";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
 
-  const { billing, shipping, line_items } = req.body;
+  const { billing, shipping, line_items, shipping_lines } = req.body;
 
   WooCommerce.post('orders', {
     payment_method: 'cod',
     payment_method_title: 'Cash On Delivery',
-    set_paid: false,
+    set_paid: true,
     billing: billing,
     shipping: shipping,
-    line_items: line_items
+    line_items: line_items,
+    shipping_lines: shipping_lines
   })
     .then((response) => {
       if (response?.data) {

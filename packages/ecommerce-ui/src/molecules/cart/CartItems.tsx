@@ -18,6 +18,8 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
     const finalPrice = (parseInt(price) / 100).toFixed(2);
     return finalPrice;
   };
+  // Ajout d'un console log pour voir les données disponibles
+  //console.log("Données du panier:", AllCartItems);
   return (
     <>
       {/* large screen view */}
@@ -29,6 +31,8 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
           </BodyText>
         </div>
         <div className="flex justify-between col-span-6">
+          <BodyText size="md" intent="medium" className="uppercase text-themeSecondary600">WEIGHT</BodyText>
+
           <BodyText size="md" intent="medium" className="uppercase text-themeSecondary600">
             PRICE
           </BodyText>
@@ -65,6 +69,8 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
             </Link>
           </div>
           <div className="flex items-center justify-between col-span-6 pr-5">
+            <BodyText size="md" intent="medium" className="text-themeSecondary500 ">{singleData.meta.weight} kg</BodyText>
+
             <BodyText size="md" intent="medium" className="text-themeSecondary500 ">
               ${convertPrice(singleData?.price)}
             </BodyText>
@@ -98,6 +104,7 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
             </div>
             <div className="flex items-center justify-between mt-7">
               <div className="space-y-5">
+
                 <BodyText size="md" intent="medium" className="uppercase text-themeSecondary600 text-start">
                   PRICE
                 </BodyText>

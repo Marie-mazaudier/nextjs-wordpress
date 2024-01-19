@@ -1,38 +1,33 @@
-import React, { useEffect } from 'react';
-import { createParcel } from 'lib/sendcloud/sendcloud';
-
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+// rendre cette page accessible uniquement aux utilisateurs admin connectés
 const TestPage = () => {
+    const router = useRouter();
+    const [labelId, setLabelId] = useState<string>('');
+
     useEffect(() => {
-        const parcelData = {
-            name: "John Doe",
-            company_name: "Sendcloud",
-            address: "Insulindelaan",
-            house_number: "115",
-            city: "Eindhoven",
-            postal_code: "5642CV",
-            telephone: "+31612345678",
-            request_label: true,
-            email: "john@doe.com",
-            data: {},
-            country: "NL",
-            shipment: {
-                id: 8
-            },
-            weight: "10.000",
-            order_number: "1234567890",
-            insured_value: 0,
-            total_order_value_currency: "GBP",
-            total_order_value: "11.11",
-            quantity: 1,
-            shipping_method_checkout_name: "DHL Express Domestic"
-        };
+        // Vérifiez si l'ID du label est présent dans l'URL
+        if (router.isReady && router.query.labelId) {
+            const labelIdFromUrl = router.query.labelId as string;
+            setLabelId(labelIdFromUrl);
+            downloadLabel(labelIdFromUrl);
+        }
+    }, [router.isReady, router.query.labelId]);
 
-        createParcel(parcelData)
-            .then(data => console.log('Parcel created:', data))
-            .catch(error => console.error('Error creating parcel:', error));
-    }, []);
+    const downloadLabel = (labelId: string) => {
+        window.open(`/api/sendcloud/sendcloud?type=download_label&labelId=${labelId}`, '_blank');
+    };
 
-    return <div>Test Page</div>;
+    return (
+        <div>
+            <h2>Télécharger le Label</h2>
+            {labelId ? (
+                <button onClick={() => downloadLabel(labelId)}>Télécharger le Label</button>
+            ) : (
+                <p>Label ID non trouvé</p>
+            )}
+        </div>
+    );
 };
 
 export default TestPage;
