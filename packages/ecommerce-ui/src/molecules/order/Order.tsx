@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 interface OrderProps {
   billingData?: any;
   cartData?: any; // Ajouter cartData comme une nouvelle propriété optionnelle
-  totalWithShipping: number; // Ajout de totalWithShipping comme une nouvelle propriété
+  totalWithShipping?: number; // Rendu optionnel
 
 }
 
@@ -46,6 +46,7 @@ export const Order = ({ billingData, cartData }: OrderProps) => {
   };
 
   console.log('billing Data', billingData)
+  console.log('panier', totalWithShipping)
   // Mise à jour du total avec les frais de livraison
   /* useEffect(() => {
      let shippingCost = 0;
@@ -100,7 +101,8 @@ export const Order = ({ billingData, cartData }: OrderProps) => {
         </BodyText>
         <BodyText size="md" intent="bold" className="capitalize text-themeSecondary800">
 
-          {billingData?.subtotal ? convertPrice(billingData?.subtotal) : " $00.00 "}
+          {/*billingData?.subtotal ? convertPrice(billingData?.subtotal) : " $00.00 "*/}
+          {totalWithShipping ? `$${convertPrice(totalWithShipping.toString())}` : " $00.00 "}
 
         </BodyText>
       </div>

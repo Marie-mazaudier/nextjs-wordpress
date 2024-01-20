@@ -1,12 +1,15 @@
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from 'next/router';
 import CartLayout from "../src/components/cartLayout/CartLayout";
 import { useGetCartData } from "../lib/coCart/getCart";
 import { useGetCartTotals } from "../lib/coCart/getTotals";
 import { BlockLayout, Breadcrumb, Spaces } from "@jstemplate/ecommerce-ui";
 
 const Checkout = () => {
+  const router = useRouter();
+
   // ==================Get all cart items data=================
   const { data: cartData } = useGetCartData();
   // ==================Get all cart items billing  data=================
