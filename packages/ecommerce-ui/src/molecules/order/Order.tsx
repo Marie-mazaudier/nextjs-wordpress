@@ -102,7 +102,7 @@ export const Order = ({ billingData, cartData }: OrderProps) => {
         <BodyText size="md" intent="bold" className="capitalize text-themeSecondary800">
 
           {/*billingData?.subtotal ? convertPrice(billingData?.subtotal) : " $00.00 "*/}
-          {totalWithShipping ? `$${convertPrice(totalWithShipping.toString())}` : " $00.00 "}
+          {totalWithShipping ? `$${convertPrice(totalWithShipping.toString())}` : billingData?.subtotal ? convertPrice(billingData?.subtotal) : " $00.00 "}
 
         </BodyText>
       </div>
