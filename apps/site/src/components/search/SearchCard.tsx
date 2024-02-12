@@ -29,11 +29,9 @@ export const SearchCard = ({ search }: SearchCardProps) => {
   };
   return (
     <div
-      className={`bg-white z-50 w-full px-7 pt-7 mb-2 rounded-xl overflow-y-auto scrollBar ${
-        search === "" ? "hidden" : "block"
-      } ${
-        largeSize ? "absolute  shadow-dropShadow2xl h-[600px] " : "mt-44 fixed left-0 right-0 top-0 bottom-0 h-auto"
-      }`}
+      className={`bg-white z-50 w-full px-7 pt-7 mb-2 rounded-xl overflow-y-auto scrollBar ${search === "" ? "hidden" : "block"
+        } ${largeSize ? "absolute  shadow-dropShadow2xl h-[600px] " : "mt-44 fixed left-0 right-0 top-0 bottom-0 h-auto"
+        }`}
     >
       {!isLoading && products?.length > 0 && (
         <div className="flex items-center justify-between pb-5">
@@ -105,14 +103,14 @@ export const SearchCard = ({ search }: SearchCardProps) => {
                 </div>
               </div>
             </div>
-            <div
+            {/*<div
               className="flex items-center justify-center w-10 h-10 rounded-md bg-themeSecondary100"
               onClick={() => {
                 addToCartHandler(item, itemValue, setLoading, count, productToast);
               }}
             >
               <RiShoppingCartLine className="w-5 h-5 text-themeSecondary600 hover:text-themePrimary600 transition duration-300 ease-in-out cursor-pointer" />
-            </div>
+            </div>*/ }
           </div>
         ))
       ) : (
