@@ -1,0 +1,28 @@
+/*popup*/
+/* Animation d'ouverture (slide vers la gauche) */
+.slide-in {
+  animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Animation de fermeture (slide vers la droite) */
+.slide-out {
+  animation: slideOut 0.3s forwards;
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}

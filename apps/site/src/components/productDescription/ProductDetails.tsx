@@ -6,9 +6,11 @@ import ProductShortDescription from "./ProductShortDescription";
 interface ProductDetailsProps {
   data?: any;
   isLoading?: boolean;
+
 }
 
 export const ProductDetails = ({ data, isLoading }: ProductDetailsProps) => {
+  //console.log('data?.[0]', data?.[0])
   return (
     <section className="px-5 md:px-0">
       <div className="container mx-auto flex flex-col lg:flex-row gap-12">

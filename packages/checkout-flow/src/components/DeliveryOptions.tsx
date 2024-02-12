@@ -1,72 +1,84 @@
-import React from 'react';
-
-interface ShippingMethodInfo {
-    id: number;
-    name: string;
-    price: number;
-    // autres propriétés si nécessaire
-}
+import React, { useState, useEffect } from 'react';
 
 interface ShippingMethod {
     id: number;
-    name: string;
+    title: string;
     price: number;
+    method_id: string;
     // autres propriétés si nécessaire
 }
 
-// Note: ServicePointPicker est maintenant facultatif
 interface DeliveryOptionsProps {
-    shippingMethodsInfo: ShippingMethodInfo[];
-    selectedShippingMethod: ShippingMethod | null;
-    setSelectedShippingMethod: React.Dispatch<React.SetStateAction<ShippingMethod | null>>;
-    selectedShippingMethodValue: string;
-    setSelectedShippingMethodValue: React.Dispatch<React.SetStateAction<string>>;
-    ServicePointPicker?: React.ComponentType<any>; // Type modifié pour être facultatif
+    ShippingMethod: ShippingMethod[];
+    shippingTotal?: number;
+    cartData: any;
+    onShippingChange?: (methodId: string) => void;
+    selectedShippingMethod: string; // Prop ajoutée pour la méthode de livraison sélectionnée dans l'état global
+    updateCart: any;
 }
 
 const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
-    shippingMethodsInfo,
-    selectedShippingMethod,
-    setSelectedShippingMethod,
-    selectedShippingMethodValue,
-    setSelectedShippingMethodValue,
-    ServicePointPicker
+    ShippingMethod,
+    shippingTotal,
+    cartData,
+    onShippingChange,
+    selectedShippingMethod: globalSelectedShippingMethod
 }) => {
+    const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>('');
+
+    useEffect(() => {
+        // Utiliser la méthode de livraison globalement sélectionnée comme valeur initiale
+        if (globalSelectedShippingMethod) {
+            setSelectedShippingMethod(globalSelectedShippingMethod);
+        } else if (cartData && cartData.shipping && cartData.shipping.packages) {
+            // Définir une méthode de livraison par défaut basée sur cartData
+            console.log('test 1')
+            const defaultPackage = cartData.shipping.packages['default'];
+            if (defaultPackage && defaultPackage.chosen_method) {
+                setSelectedShippingMethod(defaultPackage.chosen_method.split(':')[0]);
+                console.log('test 2')
+
+            } else {
+                console.log('test 3')
+
+                // Choix d'une méthode de livraison par défaut
+                const defaultMethod = ShippingMethod.find(method => method.method_id !== 'free_shipping' && method.method_id !== 'local_pickup');
+                if (defaultMethod) {
+                    setSelectedShippingMethod(defaultMethod.method_id);
+                }
+            }
+        }
+        if (!globalSelectedShippingMethod && ShippingMethod.length > 0) {
+            // Supposons que vous définissiez ici votre méthode par défaut
+            const defaultMethod = ShippingMethod[0].method_id;
+            console.log('Applying default shipping method:', defaultMethod);
+            setSelectedShippingMethod(defaultMethod); // Appliquez la méthode par défaut
+        }
+    }, [ShippingMethod, cartData, globalSelectedShippingMethod]);
+
+
+    const handleMethodChange = (methodId: string) => {
+        setSelectedShippingMethod(methodId);
+        if (onShippingChange) {
+            onShippingChange(methodId);
+        }
+    };
+
     return (
         <div>
             <h2>Options de livraison :</h2>
-            {shippingMethodsInfo.map((method, index) => (
+            {ShippingMethod.map((method) => (
                 <div key={method.id}>
                     <input
                         type="radio"
                         name="shippingMethod"
-                        value={method.id}
-                        checked={selectedShippingMethod?.id === method.id}
-                        onChange={() => {
-                            setSelectedShippingMethod(method);
-                            setSelectedShippingMethodValue(method.id.toString());
-                        }}
+                        value={method.method_id}
+                        checked={method.method_id === selectedShippingMethod}
+                        onChange={() => handleMethodChange(method.method_id)}
                     />
-                    {method.name} - {method.price} €
+                    {method.title} {(method.method_id !== 'free_shipping' && method.method_id !== 'local_pickup') && ` - ${shippingTotal} €`}
                 </div>
             ))}
-            {/* Option "Retrait en point de vente" */}
-            <div>
-                <input
-                    type="radio"
-                    name="shippingMethod"
-                    value="-1"
-                    checked={selectedShippingMethodValue === "-1"}
-                    onChange={() => {
-                        setSelectedShippingMethodValue("-1");
-                    }}
-                />
-                Retrait en point de vente - Gratuit
-            </div>
-            {/* Utilisation de ServicePointPicker si nécessaire */}
-            {selectedShippingMethodValue === "1448" && ServicePointPicker && (
-                <ServicePointPicker /* props nécessaires */ />
-            )}
         </div>
     );
 };

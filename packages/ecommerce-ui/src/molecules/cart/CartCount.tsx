@@ -1,25 +1,45 @@
-import React from "react";
+import React, { useState, useCallback } from "react"; // Import useCallback from react
 import { BiMinus } from "react-icons/bi";
 import { BiPlus } from "react-icons/bi";
+const _ = require('lodash');
+const { toast } = require('react-toastify');
+
 
 interface CartCountProps {
   data?: any;
   onUpdateCartItem?: any;
+  cart?: any;
+  onChange?: any;
 }
 
-export const CartCount = ({ data, onUpdateCartItem }: CartCountProps) => {
-  const [value, setValue] = React.useState(data?.quantity?.value);
-  const handleCartIncrease = () => {
-    setValue(value + 1);
-    onUpdateCartItem(data?.item_key, value+1);
-  };
-  const handleCartDecrease = () => {
-    setValue(value - 1);
-    onUpdateCartItem(data?.item_key, value-1);
-  };
+export const CartCount = ({ data, onUpdateCartItem, cart, onChange }: CartCountProps) => {
+  const [value, setValue] = useState(data?.quantity?.value);
+
+  // Calculer la quantité maximale disponible basée sur les données du panier
+  const maxAvailableQuantity = data.quantity.max_purchase
+
+  const handleCartIncrease = useCallback(() => {
+    if (value < maxAvailableQuantity) {
+      handleChange(value + 1);
+    }
+  }, [value, maxAvailableQuantity]);
+
+  const handleCartDecrease = useCallback(() => {
+    if (value > 1) {
+      handleChange(value - 1);
+    }
+  }, [value]);
+
+  const handleChange = useCallback((newQuantity: number) => {
+    setValue(newQuantity);
+    if (onChange) {
+      onChange(data?.item_key, newQuantity); // Signal au parent qu'une modification a eu lieu
+    }
+  }, [onChange, data?.item_key]);
+  // console.log(maxAvailableQuantity)
   return (
-    <div className="flex items-center justify-center h-10 border w-28 border-themeSecondary300 rounded-3xl">
-      <button disabled={value==1} onClick={handleCartDecrease} className="pr-2 text-lg text-themeSecondary400">
+    <div className="flex items-center justify-between border w-28 border-themeSecondary300 rounded-3xl">
+      <button disabled={value <= 1} onClick={handleCartDecrease} className="px-2 text-lg text-themeSecondary400">
         <BiMinus />
       </button>
       <input
@@ -28,7 +48,7 @@ export const CartCount = ({ data, onUpdateCartItem }: CartCountProps) => {
         readOnly
         type="text"
       />
-      <button onClick={handleCartIncrease} className="pl-2 text-lg text-themeSecondary400">
+      <button disabled={value >= maxAvailableQuantity} onClick={handleCartIncrease} className="px-2 text-lg text-themeSecondary400">
         <BiPlus />
       </button>
     </div>

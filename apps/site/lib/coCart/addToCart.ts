@@ -30,10 +30,10 @@ export const addCartItem = async (cartBody: any) => {
       data: data.data,
     };
   } catch (error: any) {
-    // return {
-    //   message: "Something went wrong",
-    //   error: error.message,
-    // };
+    return {
+      message: "Something went wrong",
+      error: error.message,
+    };
     throw error;
   }
 };

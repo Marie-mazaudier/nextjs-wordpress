@@ -1,7 +1,8 @@
 import { updateCartItem } from "./../../lib/coCart/itemInCart";
 import { addCartItem } from "../../lib/coCart/addToCart";
 import { removeCartItem } from "../../lib/coCart/itemInCart";
-
+const { toast } = require('react-toastify');
+import { useCart } from "src/CartContext";
 /**
  *add to cart function
  * @param data
@@ -10,12 +11,18 @@ import { removeCartItem } from "../../lib/coCart/itemInCart";
  * @param count
  * @param productToast
  */
+
+// ...
+
 export const addToCartHandler = async (
   data: any,
   colorValue: any,
   setLoading: any,
   count: number,
-  productToast?: any
+  updateCart: () => void,  // Mettez le paramètre obligatoire en premier
+  updateStock: (productId: string, newStock: number) => void, // Annotation du type pour `updateStock`
+  productToast?: any, // Puis le paramètre facultatif
+
 ) => {
   setLoading(true);
   const cartBody = {
@@ -27,14 +34,20 @@ export const addToCartHandler = async (
     },
   };
   try {
-    await addCartItem(cartBody).then((res: any) => {
-      productToast("Product added to cart", "success");
-      setLoading(false);
-    });
+    await addCartItem(cartBody);
+    productToast("Product added to cart", "success");
+    setLoading(false);
+    updateCart(); // Appel pour mettre à jour l'état global du panier
+    // Mise à jour du stock
+    const newStock = data.stock - count;
+    updateStock(data.id, newStock);
+    return true; // Indiquer le succès de l'opération
   } catch (error) {
     productToast("Something went wrong", "error");
     setLoading(false);
+    return false; // Indiquer l'échec de l'opération
   }
+
 };
 
 /**
@@ -59,13 +72,12 @@ export const addBuyNowHandler = async (
   };
 
   try {
-    await addCartItem(cartBody).then((res: any) => {
-      productToast("Product added to cart", "success");
-      router.push("/checkout");
-      setbuyLoading(false);
-    });
+    await addCartItem(cartBody);
+    toast("Product added to cart", { type: "success" });
+    router.push("/checkout");
+    setbuyLoading(false);
   } catch (error) {
-    productToast("Something went wrong", "error");
+    toast("Something went wrong", { type: "error" });
     setbuyLoading(false);
   }
 };
@@ -76,18 +88,21 @@ export const addBuyNowHandler = async (
  * @param productToast
  * @param setLoading
  */
-export const removeCartItemHandler = async (itemKey: any, productToast: any, setLoading: any) => {
+export const removeCartItemHandler = async (itemKey: any, setLoading: any) => {
   setLoading(true);
   try {
-    await removeCartItem(itemKey).then((res: any) => {
-      productToast("Product Successfully Removed from the cart", "success");
-      setLoading(false);
-    });
+    await removeCartItem(itemKey);
+
   } catch (error) {
-    productToast("Sorry ! Something went wrong", "error");
+    toast("Sorry ! Something went wrong", { type: "error" });
+    setLoading(false);
+
+  } finally {
+    toast("Product Successfully Removed from the cart", { type: "success" });
     setLoading(false);
   }
 };
+
 
 /**
  *  update  cart function
@@ -96,18 +111,18 @@ export const removeCartItemHandler = async (itemKey: any, productToast: any, set
  * @param productToast
  * @param setLoading
  */
-export const updateCartItemHandler = async (itemKey: any, count: number, productToast: any, setLoading: any) => {
+
+
+export const updateCartItemHandler = async (itemKey: any, count: number, setLoading: any) => {
   setLoading(true);
-  const cartBody = {
-    quantity: `${count}`,
-  };
   try {
-    await updateCartItem(itemKey, cartBody).then((res: any) => {
-      productToast("Product Successfully updated", "success");
-      setLoading(false);
-    });
+    const response = await updateCartItem(itemKey, { quantity: `${count}` });
+    toast("Product Successfully updated", { type: "success" });
+    return Promise.resolve(response); // Assurez-vous de retourner une promesse résolue
   } catch (error) {
-    productToast("Sorry ! Something went wrong", "error");
+    toast("Sorry ! Something went wrong", { type: "error" });
+    return Promise.reject(error); // Retourner une promesse rejetée en cas d'erreur
+  } finally {
     setLoading(false);
   }
 };

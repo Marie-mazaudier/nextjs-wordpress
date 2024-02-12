@@ -11,7 +11,7 @@ interface OrderSummaryProps {
   createOrder: any;
   orderLoading?: boolean
   isPoliciesAgreed: boolean
-  handleAgreementChange: (e:React.ChangeEvent<HTMLInputElement>) => void
+  handleAgreementChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 export const OrderSummary = ({ cartData, billingData, createOrder, orderLoading, isPoliciesAgreed, handleAgreementChange }: OrderSummaryProps) => {
   return (

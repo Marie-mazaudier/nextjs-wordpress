@@ -5,27 +5,6 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import DeliveryOptions from "../DeliveryOptions";
 
-// Ajoutez les interfaces nécessaires au début du fichier CheckOut
-interface ShippingMethodInfo {
-  id: number;
-  name: string;
-  price: number;
-  // Ajoutez d'autres propriétés si nécessaire
-}
-interface ShippingMethod {
-  id: number;
-  name: string;
-  min_weight?: string;
-  max_weight?: string;
-  price: number; // Assurez-vous que cette propriété est présente et obligatoire
-  countries?: {
-    id: number;
-    name: string;
-    price: number;
-    iso_2: string;
-    iso_3: string;
-  }[];
-};
 // user data interface
 interface userDataInterface {
   first_name?: string;
@@ -34,8 +13,7 @@ interface userDataInterface {
   phone?: string;
   address_1?: string;
   city?: string;
-  //state?: string;
-  address_2?: string; // Ajout du nouveau champ
+  state?: string;
   postcode?: string;
   country?: string;
   company?: string;
@@ -49,6 +27,12 @@ interface cartDataInterface {
     total: number;
   };
   featured_image: string;
+  quantity: {
+    value: number;
+    min_purchase: number;
+    max_purchase: number;
+  };
+  item_key: string;
 }
 
 // summery data interface
@@ -56,6 +40,7 @@ interface summeryDataInterface {
   total: number;
   subtotal: number;
   discount: number;
+  shipping_total?: number;
 }
 
 // policy data interface
@@ -87,6 +72,10 @@ interface companyPolicyDataInterface {
 
 // check out component props
 interface CheckOutProps {
+  updateCartItemHandler: (itemKey: any, count: number, setLoading: (loading: boolean) => void) => Promise<{ message: string; data: any; }>;
+  removeCartItemHandler: (itemKey: any, setLoading: (loading: boolean) => void) => Promise<void>;
+  shippingMethods?: any;
+  billingData?: any;
   loading?: boolean;
   userData?: userDataInterface;
   formSubmit?: (data: any) => void;
@@ -101,18 +90,10 @@ interface CheckOutProps {
   signUpData?: signUpDataInterface;
   companyPolicyData?: companyPolicyDataInterface;
   userLogin?: boolean;
-  shippingMethodsInfo: ShippingMethodInfo[];
-  selectedShippingMethod: ShippingMethod | null;
-  setSelectedShippingMethod: React.Dispatch<React.SetStateAction<ShippingMethod | null>>;
-  selectedShippingMethodValue: string;
-  setSelectedShippingMethodValue: React.Dispatch<React.SetStateAction<string>>;
-  ServicePointPicker: React.ComponentType<any>; // Ajustez le type si nécessaire
-  totalWithShipping: number; // Ajout de la prop pour le total
-  publicKey: string;
-  pays: string;
-  postalCode: string;
-  city: string;
-  handleServicePointSelected: (servicePointId: string) => void;
+  onShippingMethodSelected: (methodId: string) => void;
+  setSelectedShippingMethod?: any;
+  selectedShippingMethod?: any;
+  updateCart: () => void;
 }
 
 export const CheckOut = ({
@@ -130,22 +111,84 @@ export const CheckOut = ({
   signUpData,
   companyPolicyData,
   userLogin,
-  shippingMethodsInfo,
-  selectedShippingMethod,
+  shippingMethods,
+  billingData,
+  onShippingMethodSelected,
   setSelectedShippingMethod,
-  selectedShippingMethodValue,
-  setSelectedShippingMethodValue,
-  ServicePointPicker,
-  totalWithShipping, // Utilisation de la prop
-  publicKey,
-  pays,
-  postalCode,
-  city,
-  handleServicePointSelected
+  selectedShippingMethod,
+  updateCartItemHandler,
+  updateCart,
+  removeCartItemHandler
+
 }: CheckOutProps) => {
   const country = Country.getAllCountries();
   //const [state, setState] = useState(State.getAllStates());
+  //const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>('');
+  const [shippingLinesData, setShippingLinesData] = useState(null);
+  const [isItemOutOfStock, setIsItemOutOfStock] = useState(false);
+  const [removingItemId, setRemovingItemId] = useState<string | null>(null);
 
+
+  const handleRemoveCartItem = async (itemKey: string) => {
+    setRemovingItemId(itemKey); // Indiquez quel article est en cours de suppression
+    await removeCartItemHandler(itemKey, () => setRemovingItemId(null));
+    // Réinitialisez après suppression
+  };
+  useEffect(() => {
+    if (cartData) {
+      const outOfStockItemExists = cartData.some(item => item.quantity.max_purchase <= 0);
+      setIsItemOutOfStock(outOfStockItemExists);
+    } else {
+      setIsItemOutOfStock(false); // Assurez-vous que l'état est réinitialisé ou défini correctement si cartData n'existe pas
+    }
+  }, [cartData]);
+
+
+  useEffect(() => {
+    const adjustCartQuantities = async () => {
+      let adjustmentsMade = false;
+
+      // Assurez-vous que cartData est défini avant de continuer.
+      if (!cartData) return;
+
+      for (const item of cartData) {
+        // Ajustez seulement si la quantité en panier dépasse le stock disponible et que max_purchase > 0.
+        if (item.quantity.value > item.quantity.max_purchase && item.quantity.max_purchase > 0) {
+          try {
+            await updateCartItemHandler(item.item_key, item.quantity.max_purchase, () => { });
+            adjustmentsMade = true;
+            // Ici, au lieu d'utiliser console.log, vous pourriez vouloir mettre à jour l'UI pour refléter l'ajustement.
+          } catch (error) {
+            console.log("Erreur lors de la mise à jour du panier.", error);
+          }
+        }
+      }
+
+      if (adjustmentsMade && updateCart) {
+        // Si des ajustements ont été faits, actualisez les données du panier.
+        updateCart();
+      }
+    };
+
+    adjustCartQuantities();
+  }, [cartData]); // Ajoutez updateCartItemHandler comme dépendance si sa référence peut changer.
+
+
+  const handleShippingChange = (methodId: string) => {
+    setSelectedShippingMethod(methodId);
+    onShippingMethodSelected(methodId); // Appeler la callback
+    console.log('methodId', methodId)
+  };
+  const convertPrice = (price: string) => {
+    const finalPrice = parseFloat(price).toFixed(2);
+    return finalPrice;
+  };
+  const calculateTotal = () => {
+    if (selectedShippingMethod === 'free_shipping' || selectedShippingMethod === 'local_pickup') {
+      return billingData?.subtotal ? convertPrice(billingData?.subtotal) : " $00.00 ";
+    }
+    return billingData?.total ? convertPrice(billingData?.total) : " $00.00 ";
+  };
 
   // billing form register hook
   const {
@@ -182,6 +225,8 @@ export const CheckOut = ({
       total: 0,
       subtotal: 0,
       discount: 0,
+      shipping_total: 0, // Add this line
+
     };
   }
 
@@ -618,13 +663,11 @@ export const CheckOut = ({
                     <button
                       id="buy-button"
                       type="submit"
-                      className={`${isValid
-                        ? formLoader
-                          ? "bg-gray-800 shadow-md text-white cursor-not-allowed"
-                          : "bg-orangeTwo shadow-4xl text-white hover:opacity-70 cursor-pointer"
-                        : "bg-orangeTwo text-white cursor-not-allowed opacity-50"
+                      className={`${isValid && !isItemOutOfStock && !formLoader
+                        ? "bg-orangeTwo shadow-4xl text-white hover:opacity-70 cursor-pointer"
+                        : "bg-gray-800 shadow-md text-white cursor-not-allowed opacity-50"
                         } transition-all duration-300 ease-in-out flex justify-center items-center gap-4 rounded-md text-base font-semibold font-Roboto capitalize py-4 px-7 mt-6`}
-                      disabled={!isValid || formLoader}
+                      disabled={!isValid || formLoader || isItemOutOfStock}
                     >
                       {formLoader ? "Processing..." : "Place Order"}
                       {formLoader && <FormLoader color="text-white" />}
@@ -730,9 +773,32 @@ export const CheckOut = ({
                     <div className="flex-initial w-auto mr-1">
                       <h3 className="line-clamp-2 text-lg text-[#283747] mb-3 leading-5">{item.title}</h3>
                       <span className="text-[#283747] leading-7">
-                        {"$" + Math.round(Number(item.price) / 100 / item.quantity.value).toFixed(2)}
+                        {`${Math.round(Number(item.price) / 100).toFixed(2)}€ x ${item.quantity.value}`}
                       </span>
                     </div>
+                    {item.quantity.value > item.quantity.max_purchase && item.quantity.max_purchase > 0 && (
+                      <div className="text-sm text-orange-500">
+                        Quantité ajustée à {item.quantity.max_purchase} en raison du stock.
+                      </div>
+                    )}
+                    {item.quantity.max_purchase <= 0 && (
+                      <>
+                        <p className="text-sm text-red-500 mb-2">
+                          Cet article n'est plus en stock, veuillez le retirer de votre panier.
+                        </p>
+                        <button
+                          className="text-sm text-red-500 hover:underline"
+                          onClick={() => removeCartItemHandler(item.item_key, () => { })}
+                        >
+                          {loading ? 'Suppression...' : 'Supprimer'}
+                          {removingItemId === item.item_key ? (
+                            'Suppression...'
+                          ) : (
+                            'Supprimer'
+                          )}
+                        </button>
+                      </>
+                    )}
                   </div>
                 ))
               ) : (
@@ -789,13 +855,13 @@ export const CheckOut = ({
                 {/*Livraison*/}
                 <div>
                   <DeliveryOptions
-                    shippingMethodsInfo={shippingMethodsInfo}
+                    ShippingMethod={shippingMethods}
+                    shippingTotal={billingData.shipping_total}
+                    onShippingChange={handleShippingChange} // Ajout de la callback
+                    cartData={cartData}
+                    updateCart
                     selectedShippingMethod={selectedShippingMethod}
-                    setSelectedShippingMethod={setSelectedShippingMethod}
-                    selectedShippingMethodValue={selectedShippingMethodValue}
-                    setSelectedShippingMethodValue={setSelectedShippingMethodValue}
-                    ServicePointPicker={ServicePointPicker}
-                  // Ajoutez ici d'autres props nécessaires pour ServicePointPicker
+
                   />
                 </div>
                 {/* Discount */}
@@ -828,11 +894,8 @@ export const CheckOut = ({
                 <li className="flex font-medium justify-between py-2 text-base text-[#5D6D7E] border-t-2">
                   <span className="text-bold">Total</span>
                   <span className="text-[#1B2631]">
-                    {typeof totalWithShipping === 'number' && (
-                      <p>
-                        Total: ${totalWithShipping.toFixed(2)}
-                      </p>
-                    )}
+                    {/*${summeryData?.total?.toFixed(2) || 0}*/}
+                    {calculateTotal()}
                     {/* <span className="text-[#85929E] text-sm">/year</span> */}
                   </span>
                 </li>
@@ -912,3 +975,7 @@ export const CheckOut = ({
     </div>
   );
 };
+function convertPrice(subtotal: any) {
+  throw new Error("Function not implemented.");
+}
+

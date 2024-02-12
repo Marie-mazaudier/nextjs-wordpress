@@ -31,6 +31,7 @@ export const useProduct = (slug: any) => {
       createdDate: Product?.date_created,
       modifiedDate: Product?.date_modified,
       stock: Product?.stock_status,
+      stock_quantity: Product?.stock_quantity,
       on_sale: Product?.on_sale,
       sale_price: Product?.sale_price,
       regular_price: Product?.regular_price,

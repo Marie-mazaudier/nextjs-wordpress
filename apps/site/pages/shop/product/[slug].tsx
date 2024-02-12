@@ -17,7 +17,7 @@ const Product = () => {
 
   // ==================Get all recently viewed products data=================
   const { recentViewData } = useRecentViewedProducts(4);
-
+  // console.log(product)
   if (product[0]?.id) {
     getRecentlyViewed(product[0]?.id);
   }

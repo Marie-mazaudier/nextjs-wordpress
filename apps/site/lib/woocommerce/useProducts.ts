@@ -30,12 +30,15 @@ export const useGetAllProducts = (query?: any) => {
       createdDate: Product?.date_created,
       modifiedDate: Product?.date_modified,
       stock: Product?.stock_status,
+      stock_quantity: Product?.stock_quantity,
       on_sale: Product?.on_sale,
       sale_price: Product?.sale_price,
       regular_price: Product?.regular_price,
       discount: (100 * (Product?.regular_price - Product?.price)) / Product?.regular_price,
     }));
+    //console.log('products', products)
     return {
+
       products,
       isError: productsError,
       isLoading,

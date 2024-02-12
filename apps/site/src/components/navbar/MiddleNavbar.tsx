@@ -18,6 +18,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { AiOutlineRight } from "react-icons/ai";
 import { RiArrowDownSLine } from "react-icons/ri";
+import CartPopup from "../cartLayout/cartPopup";
+import { useCart } from "src/CartContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,7 +32,6 @@ interface MiddleNavbarProps {
   LoginmodalOn?: boolean;
   setLoginModalOn?: any;
   category?: any;
-
 }
 
 const MiddleNavbar = ({ cartData, LoginmodalOn, setLoginModalOn }: MiddleNavbarProps) => {
@@ -39,6 +40,14 @@ const MiddleNavbar = ({ cartData, LoginmodalOn, setLoginModalOn }: MiddleNavbarP
   const [open, SetOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [item, setItem] = useState("All Categories");
+  const [isCartPopupOpen, setCartPopupOpen] = useState(false); // État de la fenêtre contextuelle
+  const { cart } = useCart();
+
+  // Fonction pour ouvrir/fermer la fenêtre contextuelle
+  const handleCartPopupToggle = () => {
+    setCartPopupOpen(!isCartPopupOpen);
+  };
+
   useEffect(() => {
     // Function to handle scroll event
     const handleScroll = () => {
@@ -55,6 +64,7 @@ const MiddleNavbar = ({ cartData, LoginmodalOn, setLoginModalOn }: MiddleNavbarP
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
 
   let get_form_info: any = getCookie("__user__login__info");
   if (get_form_info) {
@@ -295,17 +305,14 @@ const MiddleNavbar = ({ cartData, LoginmodalOn, setLoginModalOn }: MiddleNavbarP
                   className={`text-2xl  hover:text-themePrimary600 transition hover:duration-700 cursor-pointer ${isSticky ? 'black-menu-icon' : 'white-menu-icon'}`}
                 />
               )}
-
-              <div className=" py-2 bg-transparent rounded-md group cursor-pointer relative">
-                <Link href="/cart" className="flex gap-3 items-center">
-                  <RiShoppingCartFill className={`text-2xl text-themeSecondary700 group-hover:text-themePrimary600 transition group-hover:duration-700 ${isSticky ? 'black-menu-icon' : 'white-menu-icon'}`} />
-                  <div>
-                    <div className="text-white text-[10px] bg-themePrimary600 rounded-full px-[5px] left-[25px] w-fit absolute top-[-23%]">
-                      {cartData?.items?.length > 0 ? cartData?.items?.length : 0}
-                    </div>
-
+              {/* Icône du panier */}
+              <div className="py-2 bg-transparent rounded-md group cursor-pointer relative" onClick={handleCartPopupToggle}>
+                <RiShoppingCartFill className={`text-2xl text-themeSecondary700 group-hover:text-themePrimary600 transition group-hover:duration-700 ${isSticky ? 'black-menu-icon' : 'white-menu-icon'}`} />
+                <div>
+                  <div className="text-white text-[10px] bg-themePrimary600 rounded-full px-[5px] left-[25px] w-fit absolute top-[-23%]">
+                    {cart.totalQuantity > 0 ? cart.totalQuantity : 0}
                   </div>
-                </Link>
+                </div>
               </div>
               <VscMenu
                 className={`text-2xl cursor-pointer ${open ? "" : ""} ${isSticky ? 'black-menu-icon' : 'white-menu-icon'}`} // Ajout de la classe conditionnelle
@@ -323,8 +330,8 @@ const MiddleNavbar = ({ cartData, LoginmodalOn, setLoginModalOn }: MiddleNavbarP
           />
         </div>
       </nav>
-
-
+      {/* Fenêtre contextuelle du panier */}
+      {isCartPopupOpen && <CartPopup onClose={handleCartPopupToggle} />}
       {/* medium device navbar section  */}
       <nav>
         <div className="block  relative">

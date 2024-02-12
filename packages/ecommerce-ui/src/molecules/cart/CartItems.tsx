@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import Link from "next/link";
 import { Placeholder } from "../../atoms/placeholder/Placeholder";
 import { BodyText } from "../../atoms/typography/bodyText/BodyText";
+import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Icone de chargement
 import { ProductProps } from "../../types";
 import { CuponCode } from "./CuponCode";
 import { CartCount } from "./CartCount";
@@ -11,15 +12,43 @@ interface CartItemsProps {
   onRemoveCartItem?: any;
   onUpdateCartItem?: any;
   productToast?: any;
+  cart?: any;
 }
-export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, productToast }: CartItemsProps) => {
+export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, productToast, cart }: CartItemsProps) => {
+  const [updatedItems, setUpdatedItems] = useState({});
+  const [isUpdating, setIsUpdating] = useState(false); // État pour gérer l'indication de chargement
+  const [removingItemId, setRemovingItemId] = useState<string | null>(null);
+
   const AllCartItems = cartData?.items ? cartData?.items : [];
   const convertPrice = (price: string) => {
     const finalPrice = (parseInt(price) / 100).toFixed(2);
     return finalPrice;
   };
-  // Ajout d'un console log pour voir les données disponibles
-  //console.log("Données du panier:", AllCartItems);
+  // Fonction pour gérer le changement de quantité
+  const handleChange = (itemKey: string, newQuantity: number) => {
+    setUpdatedItems(prev => ({ ...prev, [itemKey]: newQuantity }));
+  };
+
+  const handleUpdateCart = async () => {
+    setIsUpdating(true); // Commence le chargement
+    try {
+      for (const [itemKey, quantity] of Object.entries(updatedItems)) {
+        await onUpdateCartItem(itemKey, quantity);
+      }
+      setUpdatedItems({}); // Réinitialise après la mise à jour
+    } catch (error) {
+      productToast.error("Failed to update cart");
+    } finally {
+      setIsUpdating(false); // Termine le chargement
+    }
+  };
+  const hasUpdates = Object.keys(updatedItems).length > 0;
+  // Fonction modifiée pour gérer la suppression avec un état par article
+  const handleRemoveCartItem = async (itemKey: string) => {
+    setRemovingItemId(itemKey); // Indiquez quel article est en cours de suppression
+    await onRemoveCartItem(itemKey);
+    setRemovingItemId(null); // Réinitialisez après suppression
+  };
   return (
     <>
       {/* large screen view */}
@@ -52,12 +81,13 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
         >
           <div className="flex items-center w-full gap-7 col-span-6 pl-5">
             <div className="shrink-0">
-              <RxCross2
-                className="w-5 h-5 cursor-pointer text-themeSecondary400 hover:text-themePrimary700 transition duration-300 ease-in-out"
-                onClick={() => {
-                  onRemoveCartItem(singleData?.item_key);
-                }}
-              />
+              <div onClick={() => handleRemoveCartItem(singleData.item_key)}>
+                {removingItemId === singleData.item_key ? (
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                ) : (
+                  <RxCross2 className="w-5 h-5 cursor-pointer" />
+                )}
+              </div>
             </div>
             <div className="bg-themeSecondary100 flex items-center justify-center p-1 rounded-xl shrink-0">
               <Placeholder src={singleData?.featured_image} imageWidth={50} imageHeight={50} />
@@ -69,19 +99,28 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
             </Link>
           </div>
           <div className="flex items-center justify-between col-span-6 pr-5">
-            <BodyText size="md" intent="medium" className="text-themeSecondary500 ">{singleData.meta.weight} kg</BodyText>
+            <BodyText size="md" intent="medium" className="text-themeSecondary500 ">{(parseFloat(singleData.meta.weight.toString()).toFixed(2))} kg</BodyText>
 
             <BodyText size="md" intent="medium" className="text-themeSecondary500 ">
               ${convertPrice(singleData?.price)}
             </BodyText>
-            <CartCount data={singleData} onUpdateCartItem={onUpdateCartItem} />
+            <CartCount cart={cart} data={singleData} onUpdateCartItem={onUpdateCartItem} onChange={handleChange} />
             <BodyText size="md" intent="medium" className="text-themeSecondary500 text-end">
               ${(singleData?.totals?.total).toFixed(2)}
             </BodyText>
           </div>
         </div>
-      ))}
 
+      ))}
+      <div className={`mt-4 transition-opacity duration-500`}>
+        <button
+          onClick={handleUpdateCart}
+          disabled={!hasUpdates || isUpdating}
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!hasUpdates || isUpdating ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`}
+        >
+          {isUpdating ? 'Mise à jour...' : 'Mettre à jour le panier'}
+        </button>
+      </div>
       {/* small screen view */}
       <div className="w-full mt-10 md:hidden">
         {AllCartItems?.map((singleData: any, index: number) => (
@@ -119,7 +158,7 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
                 <BodyText size="md" intent="medium" className="text-themeSecondary500 text-end">
                   ${singleData?.price}
                 </BodyText>
-                <CartCount data={singleData} onUpdateCartItem={onUpdateCartItem} />
+                <CartCount cart={cart} data={singleData} onUpdateCartItem={onUpdateCartItem} onChange={handleChange} />
                 <BodyText size="md" intent="medium" className="text-themeSecondary500 text-end">
                   ${singleData?.totals?.total}
                 </BodyText>
@@ -127,6 +166,15 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
             </div>
           </div>
         ))}
+        <div className={`mt-4 transition-opacity duration-500`}>
+          <button
+            onClick={handleUpdateCart}
+            disabled={!hasUpdates || isUpdating}
+            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!hasUpdates || isUpdating ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`}
+          >
+            {isUpdating ? 'Mise à jour...' : 'Mettre à jour le panier'}
+          </button>
+        </div>
       </div>
     </>
   );
