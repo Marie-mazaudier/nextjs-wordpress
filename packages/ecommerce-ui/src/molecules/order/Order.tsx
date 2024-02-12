@@ -9,7 +9,7 @@ import { clearPreviewData } from "next/dist/server/api-utils";
 interface OrderProps {
   shippingMethods?: any;
   billingData?: any;
-  cartData: any; // Ajouter cartData comme une nouvelle propriété optionnelle
+  cartData?: any; // Ajouter cartData comme une nouvelle propriété optionnelle
   setSelectedShippingMethod?: any;
   selectedShippingMethod?: any;
 }
