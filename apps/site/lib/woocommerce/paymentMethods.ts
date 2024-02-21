@@ -12,4 +12,4 @@ export const usePaymentMethods = () => {
         paymentMethods: paymentMethods || [],
         Error: !!error
     };
-};
+}; 

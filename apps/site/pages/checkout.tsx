@@ -80,7 +80,7 @@ const Checkout = () => {
     }));
 
 
-    // Fonction pour mettre à jour la méthode de paiement sélectionnée
+    // Fonction pour mettre à jour la méthode de paiement sélectionnées
     const handlePaymentMethodChange = (method: PaymentMethodDetails) => {
         console.log('Updating selected payment method in Checkout:', method);
         setSelectedPaymentMethod(method);
