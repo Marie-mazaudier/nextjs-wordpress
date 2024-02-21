@@ -29,7 +29,7 @@ interface OrderData {
 }
 
 const createAlmaPayment = async (orderInfo: OrderData) => {
-    const apiKey = process.env.NEXT_PUBLIC_ALMA_API_KEY; // Stockez votre clé API Alma dans les variables d'environnement
+    const apiKey = process.env.NEXT_SECRET_ALMA_API_KEY; // Stockez votre clé API Alma dans les variables d'environnement
     const payload = {
         payment: {
             purchase_amount: parseInt(orderInfo.total) * 100, // Convertit en centimes
