@@ -460,7 +460,8 @@ const CheckoutBillings = ({ user }: CheckoutBillingsProps) => {
             </div>
           )}
         </div>
-        <PaymentMethods billing={billing} shippingDetails={shippingDetails} shipingCheck={shipingCheck} />
+        {   /*     <PaymentMethods billing={billing} shippingDetails={shippingDetails} shipingCheck={shipingCheck} />*/}
+
       </div>
     </>
   );

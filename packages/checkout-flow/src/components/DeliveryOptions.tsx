@@ -5,6 +5,7 @@ interface ShippingMethod {
     title: string;
     price: number;
     method_id: string;
+    enabled: boolean; // Ajouter le champ enabled à l'interface
     // autres propriétés si nécessaire
 }
 
@@ -27,35 +28,17 @@ const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
     const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>('');
 
     useEffect(() => {
-        // Utiliser la méthode de livraison globalement sélectionnée comme valeur initiale
         if (globalSelectedShippingMethod) {
             setSelectedShippingMethod(globalSelectedShippingMethod);
-        } else if (cartData && cartData.shipping && cartData.shipping.packages) {
-            // Définir une méthode de livraison par défaut basée sur cartData
-            console.log('test 1')
-            const defaultPackage = cartData.shipping.packages['default'];
-            if (defaultPackage && defaultPackage.chosen_method) {
-                setSelectedShippingMethod(defaultPackage.chosen_method.split(':')[0]);
-                console.log('test 2')
-
-            } else {
-                console.log('test 3')
-
-                // Choix d'une méthode de livraison par défaut
-                const defaultMethod = ShippingMethod.find(method => method.method_id !== 'free_shipping' && method.method_id !== 'local_pickup');
-                if (defaultMethod) {
-                    setSelectedShippingMethod(defaultMethod.method_id);
-                }
+        } else if (ShippingMethod.length > 0) {
+            // Trouver la première méthode de livraison enabled par défaut si aucune méthode globalement sélectionnée
+            const defaultMethod = ShippingMethod.find(method => method.enabled);
+            if (defaultMethod) {
+                setSelectedShippingMethod(defaultMethod.method_id);
+                console.log('Applying default enabled shipping method:', defaultMethod.method_id);
             }
         }
-        if (!globalSelectedShippingMethod && ShippingMethod.length > 0) {
-            // Supposons que vous définissiez ici votre méthode par défaut
-            const defaultMethod = ShippingMethod[0].method_id;
-            console.log('Applying default shipping method:', defaultMethod);
-            setSelectedShippingMethod(defaultMethod); // Appliquez la méthode par défaut
-        }
-    }, [ShippingMethod, cartData, globalSelectedShippingMethod]);
-
+    }, [ShippingMethod, globalSelectedShippingMethod]);
 
     const handleMethodChange = (methodId: string) => {
         setSelectedShippingMethod(methodId);
@@ -67,7 +50,7 @@ const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
     return (
         <div>
             <h2>Options de livraison :</h2>
-            {ShippingMethod.map((method) => (
+            {ShippingMethod.filter(method => method.enabled).map((method) => (
                 <div key={method.id}>
                     <input
                         type="radio"
@@ -76,7 +59,7 @@ const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
                         checked={method.method_id === selectedShippingMethod}
                         onChange={() => handleMethodChange(method.method_id)}
                     />
-                    {method.title} {(method.method_id !== 'free_shipping' && method.method_id !== 'local_pickup') && ` - ${shippingTotal} €`}
+                    {method.title} {(method.method_id !== 'free_shipping' && method.method_id !== 'local_pickup' && method.title !== 'Retrait en magasin') && ` - ${shippingTotal} €`}
                 </div>
             ))}
         </div>

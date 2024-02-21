@@ -16,6 +16,8 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
             rel="stylesheet"
           />
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@alma/widgets@3.x.x/dist/widgets.min.css" />
+
         </Head>
         <body>
           <Main />

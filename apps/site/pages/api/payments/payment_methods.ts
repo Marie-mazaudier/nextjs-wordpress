@@ -3,8 +3,8 @@ import { WooCommerce } from "../../../lib/utils/woocommerce";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     // Utilisation du nouvel endpoint
-    const { zoneId } = req.query;
+    // const { zoneId } = req.query;
 
-    const { data } = await WooCommerce.get("shipping/zones/14/methods");
+    const { data } = await WooCommerce.get("payment_gateways");
     res.status(200).json(data);
 }

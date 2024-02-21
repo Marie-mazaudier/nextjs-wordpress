@@ -12,11 +12,11 @@ interface OrderProps {
   cartData?: any; // Ajouter cartData comme une nouvelle propriété optionnelle
   setSelectedShippingMethod?: any;
   selectedShippingMethod?: any;
+  almaWidget?: React.ReactNode; // Utilisez React.ReactElement ou une fonction si vous préférez
 }
 
-export const Order = ({ billingData, cartData, shippingMethods, setSelectedShippingMethod, selectedShippingMethod }: OrderProps) => {
+export const Order = ({ billingData, cartData, shippingMethods, setSelectedShippingMethod, selectedShippingMethod, almaWidget }: OrderProps) => {
   const router = useRouter();
-
   const handleShippingChange = (methodId: string) => {
     setSelectedShippingMethod(methodId);
   };
@@ -80,6 +80,9 @@ export const Order = ({ billingData, cartData, shippingMethods, setSelectedShipp
           {/*totalWithShipping ? `$${convertPrice(totalWithShipping.toString())}` : billingData?.subtotal ? convertPrice(billingData?.subtotal) : " $00.00 "*/}
 
         </BodyText>
+      </div>
+      <div className="flex items-center gap-10 sm:gap-14 md:gap-44   lg:gap-14 px-3 sm:px-1 py-1 mt-2 bg-white rounded-xl">
+        {almaWidget}
       </div>
       <Link href="/checkout">
         <Button className="w-full mt-6 text-lg font-semibold" color="primary" type="lg">

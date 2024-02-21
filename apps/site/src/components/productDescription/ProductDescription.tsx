@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { AdditionalInfo } from "./AdditionalInfo";
 import { CustomerReview } from "./CustomerReview";
 import Skeleton from "react-loading-skeleton";
+import * as DOMPurify from 'dompurify';
 
 export interface ProductDescriptionProps {
   data?: any;
@@ -12,7 +13,9 @@ export interface ProductDescriptionProps {
 
 export const ProductDescription = ({ data, productInfo, isLoading }: ProductDescriptionProps) => {
   const [active, setActive] = useState(0);
-  const repliceContent = data[0]?.description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
+  // const repliceContent = data[0]?.description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
+  // Nettoyage du HTML de la description courte du produit
+  const cleanDescription = typeof window === 'undefined' ? data?.short_description : DOMPurify.sanitize(data[0]?.description);
   return (
     <section className=" container mx-auto rounded-2xl bg-themeSecondary100 px-5 md:px-14 py-12">
       <div className="flex gap-4 md:gap-10 flex-col items-center md:items-start md:flex-row relative">
@@ -24,9 +27,8 @@ export const ProductDescription = ({ data, productInfo, isLoading }: ProductDesc
           >
             <Heading3
               intent="medium"
-              className={` ${
-                active === 0 ? "text-themePrimary600 border-b-2 border-themePrimary600 " : "text-themeSecondary500"
-              } py-0 md:py-4 cursor-pointer`}
+              className={` ${active === 0 ? "text-themePrimary600 border-b-2 border-themePrimary600 " : "text-themeSecondary500"
+                } py-0 md:py-4 cursor-pointer`}
             >
               Description
             </Heading3>
@@ -39,9 +41,8 @@ export const ProductDescription = ({ data, productInfo, isLoading }: ProductDesc
         >
           <Heading3
             intent="medium"
-            className={` ${
-              active === 2 ? "text-themePrimary600 border-b-2 border-themePrimary600" : "text-themeSecondary500"
-            } py-0 md:py-4 cursor-pointer`}
+            className={` ${active === 2 ? "text-themePrimary600 border-b-2 border-themePrimary600" : "text-themeSecondary500"
+              } py-0 md:py-4 cursor-pointer`}
           >
             Additional Information
           </Heading3>
@@ -53,9 +54,8 @@ export const ProductDescription = ({ data, productInfo, isLoading }: ProductDesc
         >
           <Heading3
             intent="medium"
-            className={` ${
-              active === 3 ? "text-themePrimary600 border-b-2 border-themePrimary600" : "text-themeSecondary500"
-            } py-0 md:py-4 cursor-pointer`}
+            className={` ${active === 3 ? "text-themePrimary600 border-b-2 border-themePrimary600" : "text-themeSecondary500"
+              } py-0 md:py-4 cursor-pointer`}
           >
             Review
           </Heading3>
@@ -64,9 +64,8 @@ export const ProductDescription = ({ data, productInfo, isLoading }: ProductDesc
       <div className="mt-6">
         {(active === 0 &&
           (!isLoading ? (
-            <BodyText size="lg" className=" text-themeSecondary600">
-              {repliceContent}
-            </BodyText>
+            <div className="text-themeSecondary500 mt-5 " dangerouslySetInnerHTML={{ __html: cleanDescription }} />
+
           ) : (
             <Skeleton height={80} />
           ))) ||

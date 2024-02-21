@@ -2,12 +2,17 @@ import { Badge, BodyText, Heading2 } from "@jstemplate/ecommerce-ui";
 import React from "react";
 import { FaStar } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
+import * as DOMPurify from 'dompurify';
 
 interface ProductShortDescriptionProps {
   data?: any;
 }
 const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
-  const repliceContent = data?.short_description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
+  // const repliceContent = data?.short_description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
+  // Nettoyage du HTML de la description courte du produit
+
+  const cleanDescription = typeof window === 'undefined' ? data?.short_description : DOMPurify.sanitize(data?.short_description);
+
   return (
     <div>
       {data?.name ? (
@@ -24,25 +29,32 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
         {data ? (
           <div className="flex items-center gap-2">
             {data?.sale_price ? (
-              <BodyText size="xl" intent="bold" className=" text-themePrimary600">
-                ${data?.sale_price}
+              <>
+                {/* Afficher le prix soldé s'il existe */}
+                <BodyText size="xl" intent="bold" className=" text-themePrimary600">
+                  {data?.sale_price} €
+                </BodyText>
+                {/* Barrer le prix régulier uniquement si le prix soldé existe */}
+                <BodyText size="md" className="text-themeSecondary400 line-through">
+                  {data?.regular_price} €
+                </BodyText>
+              </>
+            ) : data?.regular_price ? (
+              // Afficher le prix régulier sans le barrer s'il n'y a pas de prix soldé
+              <BodyText size="xl" intent="bold" className="text-themePrimary600">
+                {data?.regular_price} €
               </BodyText>
             ) : (
-              <Skeleton width={35} height={28} />
-            )}
-
-            {data?.regular_price ? (
-              <BodyText size="md" className="text-themeSecondary400 line-through">
-                ${data?.regular_price}
-              </BodyText>
-            ) : (
+              // Afficher un skeleton pour le prix régulier si aucun prix n'est disponible
               <Skeleton width={50} height={28} />
             )}
           </div>
         ) : (
           <Skeleton height={28} width={85} />
         )}
-        <div className="bg-themeSecondary200 h-8  w-0.5 hidden md:block"> </div>
+        <div className="bg-themeSecondary200 h-8  w-0.5 hidden md:block">
+
+        </div>
         <div className=" flex items-center gap-3">
           {data ? (
             <div>
@@ -73,12 +85,12 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
             <Skeleton height={24} width={80} borderRadius={50} />
           )}
         </div>
+
       </div>
-      <div className="border border-themeSecondary200 w-full mt-5"></div>
+
       {data ? (
-        <BodyText size="md" className="text-themeSecondary500 mt-5 line-clamp-3">
-          {repliceContent}
-        </BodyText>
+        <div className="text-themeSecondary500 mt-5 line-clamp-3" dangerouslySetInnerHTML={{ __html: cleanDescription }} />
+
       ) : (
         <>
           <Skeleton height={24} />

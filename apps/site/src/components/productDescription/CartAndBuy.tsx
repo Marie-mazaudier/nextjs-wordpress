@@ -72,12 +72,15 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
 
   return (
     <div>
-      <BodyText size="md" intent="semibold" className="text-themeSecondary800">
-        {data ? "COLORS" : <Skeleton height={23} width={100} />}
-      </BodyText>
-      {data ? (
+      {/* Conditionally render COLOR section only if colorAttribute exists and has options */}
+      {colorAttribute && colorAttribute.options.length > 0 && (
+        <BodyText size="md" intent="semibold" className="text-themeSecondary800">
+          COLORS
+        </BodyText>
+      )}
+      {colorAttribute && colorAttribute.options.length > 0 ? (
         <div className=" flex flex-wrap items-center gap-2.5 mt-3">
-          {colorAttribute?.options.map((item: any, index: number) => (
+          {colorAttribute.options.map((item: any, index: number) => (
             <label key={index} htmlFor={item?.name} className="cursor-pointer h-fit p-1">
               <div
                 className={`p-4 rounded-full border ${itemValue == item ? "border-themePrimary600" : " border-themeSecondary200"
@@ -90,20 +93,14 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
                   type="radio"
                   value={item}
                   style={{ backgroundColor: item }}
-                  className={`cursor-pointer appearance-none	inline-block  w-6 h-6 rounded-full absolute right-1 top-1`}
+                  className={`cursor-pointer appearance-none inline-block  w-6 h-6 rounded-full absolute right-1 top-1`}
                   onChange={handleOnchange}
                 />
               </div>
             </label>
           ))}
         </div>
-      ) : (
-        <div className=" flex flex-wrap items-center gap-2.5 mt-3">
-          {[1, 2, 3].map((item: any) => (
-            <Skeleton key={item} height={24} width={24} circle={true} />
-          ))}
-        </div>
-      )}
+      ) : null}
       <div className="border border-themeSecondary200 w-full mt-5"></div>
       <div className="flex flex-col md:flex-row md:items-center gap-7 mt-5">
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4">

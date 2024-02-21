@@ -2,6 +2,7 @@ import { ImageGallery } from "@jstemplate/ecommerce-ui";
 import React from "react";
 import CartAndBuy from "./CartAndBuy";
 import ProductShortDescription from "./ProductShortDescription";
+import AlmaWidget from "../payment/AlmaWidget";
 
 interface ProductDetailsProps {
   data?: any;
@@ -19,6 +20,10 @@ export const ProductDetails = ({ data, isLoading }: ProductDetailsProps) => {
         </div>
         <div className="w-full lg:w-1/2">
           <ProductShortDescription data={data?.[0]} />
+          <div className="mt-5">
+            <AlmaWidget amount={data?.[0]?.regular_price} />
+
+          </div>
           <div className="mt-5">
             <CartAndBuy data={data?.[0]} />
           </div>

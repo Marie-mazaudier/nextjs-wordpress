@@ -4,6 +4,8 @@ import { FormLoader, LoaderGrowing } from "../loader";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import DeliveryOptions from "../DeliveryOptions";
+import { PaymentMethods } from "../PaymentMethods";
+
 
 // user data interface
 interface userDataInterface {
@@ -69,6 +71,18 @@ interface companyPolicyDataInterface {
     target: string;
   };
 }
+interface FormValues {
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  email?: string;
+  address_1?: string;
+  address_2?: string;
+  city?: string;
+  country?: string;
+  postcode?: string;
+  state?: string;
+}
 
 // check out component props
 interface CheckOutProps {
@@ -78,7 +92,7 @@ interface CheckOutProps {
   billingData?: any;
   loading?: boolean;
   userData?: userDataInterface;
-  formSubmit?: (data: any) => void;
+  formSubmit?: (data: any, shippingData: any) => void;
   formLoader?: boolean;
   couponSubmit?: (data: any) => void;
   couponLoader?: boolean;
@@ -94,6 +108,9 @@ interface CheckOutProps {
   setSelectedShippingMethod?: any;
   selectedShippingMethod?: any;
   updateCart: () => void;
+  paymentMethods?: any;
+  onPaymentMethodChange?: (method: { id: string; title: string; description: string }) => void; // Ajout de cette prop pour gérer le changement de la méthode de paiement
+
 }
 
 export const CheckOut = ({
@@ -118,7 +135,9 @@ export const CheckOut = ({
   selectedShippingMethod,
   updateCartItemHandler,
   updateCart,
-  removeCartItemHandler
+  removeCartItemHandler,
+  paymentMethods,
+  onPaymentMethodChange
 
 }: CheckOutProps) => {
   const country = Country.getAllCountries();
@@ -127,6 +146,29 @@ export const CheckOut = ({
   const [shippingLinesData, setShippingLinesData] = useState(null);
   const [isItemOutOfStock, setIsItemOutOfStock] = useState(false);
   const [removingItemId, setRemovingItemId] = useState<string | null>(null);
+  const [shipingCheck, setShipingCheck] = React.useState(false);
+  const [shippingDetails, setShippingDetails] = React.useState<FormValues>({
+    first_name: "",
+    last_name: "",
+    phone: "",
+    address_1: "",
+    address_2: "",
+    city: "",
+    country: "",
+    postcode: "",
+    state: "",
+  });
+
+  const handleOnChangeShipingCheck = () => {
+    setShipingCheck(!shipingCheck);
+  };
+  const handleOnChangeShipingDetails = (e: any) => {
+    if (shipingCheck) {
+      const { name, value } = e.target;
+
+      setShippingDetails({ ...shippingDetails, [name]: value });
+    }
+  };
 
 
   const handleRemoveCartItem = async (itemKey: string) => {
@@ -177,7 +219,7 @@ export const CheckOut = ({
   const handleShippingChange = (methodId: string) => {
     setSelectedShippingMethod(methodId);
     onShippingMethodSelected(methodId); // Appeler la callback
-    console.log('methodId', methodId)
+    // console.log('methodId', methodId)
   };
   const convertPrice = (price: string) => {
     const finalPrice = parseFloat(price).toFixed(2);
@@ -200,7 +242,9 @@ export const CheckOut = ({
   } = useForm({
     mode: "onBlur",
   });
-
+  // Surveiller tous les champs de formulaire
+  const watchedFields = watch(); // watch() sans argument renvoie toutes les valeurs du formulaire
+  //  console.log('watchedFields', watchedFields)
   // coupon form register hook
   const {
     register: couponRegister,
@@ -309,16 +353,19 @@ export const CheckOut = ({
   }, [autoFill, userData, userLogin]);
 
   /* -------------------------------------------------------------------------- */
-  /*                             form submit handler                            */
+  /*                        Soumission du formulaire                   */
   /* -------------------------------------------------------------------------- */
   const onSubmit = async (data: any) => {
     // form data console
+    let shippingData = shipingCheck ? shippingDetails : data; // Utilisez les données de livraison si l'option est cochée, sinon utilisez les données de facturation
+    console.log("shippingData", shippingData)
     if (formSubmit) {
-      formSubmit(data);
+      formSubmit(data, shippingData);
     } else {
       console.log("formSubmit", data);
     }
   };
+
 
   // /* -------------------------------------------------------------------------- */
   // /*                         Coupon Code submit handler                         */
@@ -657,7 +704,294 @@ export const CheckOut = ({
                         </div>
                       </div>
                     )} */}
+                    {/* checkbox for shipping address */}
+                    <div className="flex gap-3">
+                      <input
+                        onChange={handleOnChangeShipingCheck}
+                        defaultChecked={shipingCheck}
+                        id="ship-checkbox"
+                        type="checkbox"
+                        className="w-5 h-5 cursor-pointer accent-themePrimary700"
+                      />
+                      <label htmlFor="ship-checkbox" className="text-base text-themeSecondary600">
+                        Ship to a different address instead of the billing address
+                      </label>
+                    </div>
+
                   </div>
+                  {/* shipping address form */}
+                  {shipingCheck && (
+                    <div className="grid lg:gap-3 gap-8">
+                      {/* Form Title */}
+                      <p className="text-xl font-medium p-2.5 bg-themeSecondary100 rounded-xl text-themeSecondary800">
+                        Shipping Details
+                      </p>
+                      <div className="w-full grid gap-8">
+                        {/* First Name & Last Name */}
+                        <div className="sm:flex grid sm:gap-5 gap-8">
+                          {/* First Name */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.first_name ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="first_name"
+                              >
+                                First Name
+                              </label>
+                              <input
+
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 ${errors.first_name ? "border-red-400" : "border-[#DDE6F5]"
+                                  } text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline`}
+                                type="text"
+                                placeholder="First Name"
+                                id="first_name"
+                                onChange={handleOnChangeShipingDetails}
+                                name="first_name"
+
+                              />
+                            </div>
+                          </div>
+                          {/* Last Name */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.last_name ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="last_name"
+                              >
+                                Last Name
+                              </label>
+                              <input
+
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.last_name ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                type="text"
+                                placeholder="Last Name"
+                                id="last_name"
+                                name="last_name"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {/* company name & country */}
+                        <div className="sm:flex grid sm:gap-5 gap-8">
+                          {/* Company name */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label className="absolute -top-2 text-[#85929E] left-3 bg-white text-xs" htmlFor="company">
+                                Company Name (Optional)
+                              </label>
+                              <input
+
+                                className="appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 border-[#DDE6F5] leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline"
+                                type="text"
+                                placeholder="Company Name"
+                                id="company"
+                                name="company"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                            </div>
+                          </div>
+                          {/* Country / Region */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.country ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="country"
+                              >
+                                Country / Region
+                              </label>
+                              <select
+                                title="Country"
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.country ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                id="country"
+
+                                name="country"
+                                onChange={handleOnChangeShipingDetails}
+                              >
+                                <option value="">Select Country</option>
+                                {country.map((item, index) => (
+                                  <option key={index} value={item.isoCode}>
+                                    {item.flag} {item.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Street address */}
+                        <div className="sm:flex grid sm:gap-5 gap-8">
+                          <div className="w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.address_1 ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="address_1"
+                              >
+                                Street Address
+                              </label>
+                              <input
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.address_1 ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                type="text"
+                                placeholder="Address"
+                                id="address_1"
+
+                                name="address_1"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {/* Town / City & District */}
+                        <div className="sm:flex grid sm:gap-5 gap-8">
+                          {/* Town / City */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.city ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="city"
+                              >
+                                Your Town / City
+                              </label>
+                              <input
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.city ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                type="text"
+                                placeholder="City"
+                                id="city"
+
+                                name="city"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                            </div>
+                          </div>
+                          {/* State */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.address_2 ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="address_2"
+                              >
+                                Information de livraison
+                              </label>
+                              <input
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.address_2 ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                type="text"
+                                placeholder="Complément d'adresse"
+                                id="address_2"
+
+                                name="address_2"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                              {/*  <label
+                            className={`absolute -top-2 ${errors.state ? "text-red-400" : "text-[#85929E]"
+                              } left-3 bg-white text-xs`}
+                            htmlFor="state"
+                          >
+                            Your State
+                          </label>
+                          <select
+                            title="state"
+                            className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 border-[#DDE6F5] leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.state ? "border-red-400" : "border-[#DDE6F5]"
+                              }`}
+                            id="state"
+                            {...register("state", {
+                              required: "State is required",
+                            })}
+                          >
+                            <option value="">Select State</option>
+                            {state.map((item: any, index: any) => (
+                              <option key={index} value={item.value}>
+                                {item.name}
+                              </option>
+                            ))}
+                            </select>*/}
+                            </div>
+                          </div>
+                        </div>
+                        {/* Postcode / ZIP & Phone */}
+                        <div className="sm:flex grid sm:gap-5 gap-8">
+                          {/* Postcode / ZIP */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.postcode ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="postcode"
+                              >
+                                Postcode / ZIP
+                              </label>
+                              <input
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.postcode ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                type="text"
+                                placeholder="Your Postcode / ZIP"
+                                id="postcode"
+
+                                name="postcode"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                            </div>
+                          </div>
+                          {/* Phone */}
+                          <div className="sm:w-1/2 w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.phone ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="phone"
+                              >
+                                Phone
+                              </label>
+                              <input
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 border-[#DDE6F5] leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.phone ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                type="tel"
+                                placeholder="Your Phone"
+                                id="phone"
+
+                                name="phone"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {/* Email address */}
+                        <div className="sm:flex grid sm:gap-5 gap-8">
+                          <div className="w-full">
+                            <div className="relative">
+                              <label
+                                className={`absolute -top-2 ${errors.email ? "text-red-400" : "text-[#85929E]"
+                                  } left-3 bg-white text-xs`}
+                                htmlFor="email"
+                              >
+                                Email Address
+                              </label>
+                              <input
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.email ? "border-red-400" : "border-[#DDE6F5]"
+                                  }`}
+                                type="email"
+                                placeholder="Your Email Address"
+                                id="email"
+
+                                name="email"
+                                onChange={handleOnChangeShipingDetails}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     {/* Order Button */}
                     <button
@@ -672,18 +1006,7 @@ export const CheckOut = ({
                       {formLoader ? "Processing..." : "Place Order"}
                       {formLoader && <FormLoader color="text-white" />}
                     </button>
-                    {/* Add a image  */}
-                    <div className="flex justify-center mt-6 w-1/3">
-                      <Image
-                        src="/2checkout_logo.png"
-                        alt="payment icon"
-                        width="300"
-                        height="100"
-                        priority
-                        placeholder="blur"
-                        blurDataURL="/2checkout_logo.png"
-                      />
-                    </div>
+
                     {/* Return to cart */}
                     <div className="flex justify-between mt-6">
                       <a
@@ -903,7 +1226,7 @@ export const CheckOut = ({
             </div>
             {/* checkboxs */}
             <div className="mt-8">
-              {/* tracking-coupone checkbox */}
+              {/* tracking-coupone checkbox }
               {policyData && (
                 <Fragment>
                   <div className="mb-5">
@@ -968,6 +1291,20 @@ export const CheckOut = ({
                   </div>
                 </div>
               )}
+              {/* Add a image  
+              <div className="flex justify-center mt-6 w-1/3">
+                <Image
+                  src="/2checkout_logo.png"
+                  alt="payment icon"
+                  width="300"
+                  height="100"
+                  priority
+                  placeholder="blur"
+                  blurDataURL="/2checkout_logo.png"
+                />
+              </div>
+              {/*Paiement*/}
+              <PaymentMethods onPaymentMethodChange={onPaymentMethodChange} paymentMethods={paymentMethods} billing={watchedFields} shippingDetails={shippingDetails} shipingCheck={shipingCheck} />
             </div>
           </div>
         </div>
@@ -978,4 +1315,3 @@ export const CheckOut = ({
 function convertPrice(subtotal: any) {
   throw new Error("Function not implemented.");
 }
-

@@ -10,9 +10,11 @@ import { Breadcrumb } from "@jstemplate/ecommerce-ui";
 import { Loader } from "../src/components/formLoader/FormLoader";
 import { CheckOut } from "@jstemplate/checkout-flow";
 import { useShippingMethods } from 'lib/woocommerce/shippingMethods';
+import { usePaymentMethods } from 'lib/woocommerce/paymentMethods';
 import { useGetCartTotals } from "../lib/coCart/getTotals";
 import { useCart } from "src/CartContext";
 import { updateCartItemHandler, removeCartItemHandler } from "src/utils/cart.utils";
+import createAlmaPayment from "lib/alma/createAlmaPayment";
 
 interface ShippingMethodInfoCheckout {
     id: number;
@@ -30,22 +32,31 @@ interface ShippingLine {
 }
 
 interface OrderData {
+    payment_method_title: string,
+    payment_method_description: string,
     billing: any;
     shipping: any;
     line_items: any[];
     shipping_lines?: ShippingLine[]; // Utilisation de ShippingLine au lieu de ShippingMethodInfoCheckout
 }
-
+interface PaymentMethodDetails {
+    id: string;
+    title: string;
+    description: string;
+}
 const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const [selectedShippingMethodId, setSelectedShippingMethodId] = useState<string>('');
     const { setSelectedShippingMethod, selectedShippingMethod, updateCart } = useCart();
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({ id: '', title: '', description: '' });
 
     const { addToast } = useToasts();
 
     // ==================Get all delivery methods  // Utiliser le hook useShippingMethods=================
     const { shippingMethods, isError } = useShippingMethods();
+    // ==================Get all payment methods  // Utiliser le hook useShippingMethods=================
+    const { paymentMethods, Error } = usePaymentMethods();
     // ==================Get all cart items data =================
     const { data: cartData } = useGetCartData();
 
@@ -54,8 +65,9 @@ const Checkout = () => {
     // ==================Get all cart items billing  data=================
     const { data: billingData } = useGetCartTotals();
     // console.log('billingData', billingData)
-    console.log('cartData', cartData)
-
+    // console.log('cartData', cartData)
+    // console.log('methode de paiement', paymentMethods)
+    //console.log("shippingMethods", shippingMethods)
     const cartSummaryData = {
         total: Number(cartData?.totals?.total) / 100,
         subtotal: Number(cartData?.totals?.subtotal) / 100,
@@ -67,22 +79,22 @@ const Checkout = () => {
         quantity: item.quantity.value,
     }));
 
-    // Ajout d'un effet pour définir la méthode de livraison par défaut
-    /* useEffect(() => {
-         const defaultMethod = shippingMethods.find((method: ShippingMethodInfoCheckout) =>
-             method.method_id !== 'free_shipping' && method.method_id !== 'local_pickup'
-         );
-         if (defaultMethod) {
-             setSelectedShippingMethodId(defaultMethod.method_id);
-         }
-     }, [shippingMethods]);*/
-    // Mettre à jour l'état local en fonction du contexte
+
+    // Fonction pour mettre à jour la méthode de paiement sélectionnée
+    const handlePaymentMethodChange = (method: PaymentMethodDetails) => {
+        console.log('Updating selected payment method in Checkout:', method);
+        setSelectedPaymentMethod(method);
+    };
+    useEffect(() => {
+        setSelectedPaymentMethod(selectedPaymentMethod);
+        console.log("Méthode choisie checkout", selectedPaymentMethod)
+    }, [selectedPaymentMethod]);
     useEffect(() => {
         setSelectedShippingMethodId(selectedShippingMethod);
     }, [selectedShippingMethod]);
     // clic bouton commande
     // console.log('selectedShippingMethodId', selectedShippingMethodId)
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: any, shippingData: any) => {
         setLoading(true);
 
         let shippingLines: ShippingLine[] | undefined; // Déclaration de shippingLines
@@ -93,7 +105,7 @@ const Checkout = () => {
                 shippingLines = [{
                     method_title: selectedMethod.method_title,
                     method_id: selectedMethod.method_id,
-                    total: (selectedMethod.method_id !== 'free_shipping' && selectedMethod.method_id !== 'local_pickup')
+                    total: (selectedMethod.method_id !== 'free_shipping' && selectedMethod.method_id !== 'local_pickup' && selectedMethod.title !== 'Retrait en magasin')
                         ? billingData.shipping_total : '0',
                 }];
             }
@@ -101,21 +113,40 @@ const Checkout = () => {
 
         const orderData: OrderData = {
             billing: data,
-            shipping: data,
+            shipping: shippingData, // Ici, shippingData sera soit identique à billingData, soit différent si l'utilisateur a spécifié une adresse de livraison différente
             line_items: lineItemsData,
-            shipping_lines: shippingLines // Attribution correcte
+            shipping_lines: shippingLines,
+            payment_method_title: selectedPaymentMethod.title,
+            payment_method_description: selectedPaymentMethod.description
         };
-        // console.log('orderData', orderData)
+        console.log('orderData', orderData)
         try {
+            // Faire la requête API pour créer la commande dans votre backend
             const response = await axios.post("/api/orders", orderData);
-            setLoading(false)
-            if (response?.data) {
+            setLoading(false);
+
+            // Vérifiez si Alma est le moyen de paiement sélectionné et si la commande a été créée avec succès
+            if (selectedPaymentMethod.id === "alma" && response?.data) {
+                // Directement appeler createAlmaPayment avec les données de réponse
+                const almaResponse = await createAlmaPayment(response.data); // Supposons que response.data est déjà formaté correctement
+                if (almaResponse) {
+                    addToast("Your Alma payment is initiated!", {
+                        appearance: "success",
+                        autoDismiss: true,
+                        autoDismissTimeout: 2000
+                    });
+                    // Rediriger l'utilisateur selon la réponse d'Alma
+                    router.push(almaResponse.url) //|| `/order-summary/${almaResponse.id}`);
+                    return; // S'assurer de ne pas exécuter la suite si le paiement Alma est initié
+                }
+            } else if (response?.data) {
+                // Gestion des autres moyens de paiement ou si Alma n'est pas sélectionné
                 addToast("Your order is complete!", {
                     appearance: "success",
                     autoDismiss: true,
                     autoDismissTimeout: 2000
-                })
-                router.push("/");
+                });
+                router.push(`/order-summary/${response.data.id}`);
             }
         } catch (error: any) {
             setLoading(false);
@@ -163,6 +194,9 @@ const Checkout = () => {
                         updateCartItemHandler={updateCartItemHandler}
                         removeCartItemHandler={removeCartItemHandler}
                         updateCart={updateCart}
+                        paymentMethods={paymentMethods}
+                        onPaymentMethodChange={handlePaymentMethodChange}
+
                     />
 
 

@@ -19,11 +19,8 @@ const Checkout = () => {
   // ==================Get all cart items billing  data=================
   const { data: billingData } = useGetCartTotals();
   const { updateCart, cart, setSelectedShippingMethod, selectedShippingMethod } = useCart(); // Utiliser updateCart pour déclencher la mise à jour
-  /* useEffect(() => {
-     // Mettez ici la logique à exécuter lorsque les données du panier sont mises à jour
-     console.log('Mise à jour des données du panier:', cartData);
-     console.log('Mise à jour des données du cart:', cart);
-   }, [cartData, cart]); // Ajoutez cart à la liste de dépendances pour surveiller les changements de cart*/
+
+
   return (
     <>
       <Head>

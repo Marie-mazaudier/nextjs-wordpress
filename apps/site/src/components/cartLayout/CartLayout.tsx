@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Order, CartItems } from "@jstemplate/ecommerce-ui";
 import { removeCartItemHandler, updateCartItemHandler } from "../../utils/cart.utils";
 import { useToasts } from "react-toast-notifications";
+import AlmaWidget from "src/components/payment/AlmaWidget";
+
 interface CartLayoutProps {
   cartData?: any;
   billingData?: any;
@@ -15,13 +17,20 @@ const CartLayout = ({ cartData, billingData, shippingMethods, updateCart, cart, 
   // const { addToast } = useToasts();
   const [itemRemoveLoading, setItemRemoveLoading] = React.useState(false);
   const [itemUpdateLoading, setItemUpdateLoading] = React.useState(false);
-
+  const [amount, setAmount] = React.useState(0); // Initialisé à 0 et typé comme nombre
   /* const productToast = (message: string, type: any) => {
      addToast(`${message}`, {
        appearance: type,
        autoDismiss: true,
      });
    };*/
+  useEffect(() => {
+    // Assurez-vous que cart.sub_total est un nombre et mis à jour correctement
+    if (cart && cart.subtotal) {
+      setAmount(Number(cart.subtotal)); // Convertit en nombre si nécessaire
+      // console.log('Mise à jour des données du cart:', cart.subtotal);
+    }
+  }, [cart]); // Utilisez cart comme dépendance pour réagir aux changements de cart
 
   const onRemoveCartItem = async (itemKey: string) => {
     await removeCartItemHandler(itemKey, setItemRemoveLoading);
@@ -38,8 +47,10 @@ const CartLayout = ({ cartData, billingData, shippingMethods, updateCart, cart, 
         <CartItems cart={cart} cartData={cartData} onRemoveCartItem={onRemoveCartItem} onUpdateCartItem={onUpdateCartItem} />
       </div>
       <div className="lg:col-span-4">
-        <Order setSelectedShippingMethod={setSelectedShippingMethod} // Fonction du contexte
-          selectedShippingMethod={selectedShippingMethod} shippingMethods={shippingMethods} billingData={billingData} cartData={cartData} /> {/* Ajout de cartData comme prop */}
+        <Order setSelectedShippingMethod={setSelectedShippingMethod}
+          selectedShippingMethod={selectedShippingMethod} shippingMethods={shippingMethods} billingData={billingData} cartData={cartData} almaWidget={<AlmaWidget amount={amount} />}
+        />
+
       </div>
     </div>
   );
