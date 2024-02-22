@@ -162,8 +162,8 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             ],
             email: orderInfo.billing.email,
             phone: orderInfo.billing.phone,
-            birth_date: "",
-            birth_place: "",
+            birth_date: "1980-01-01",
+            birth_place: "Paris, France",
             banking_data_collected: false, // ?
             is_business: false,
             business_id_number: "",
