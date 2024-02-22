@@ -119,28 +119,28 @@ const Checkout = () => {
             payment_method_title: selectedPaymentMethod.title,
             payment_method_description: selectedPaymentMethod.description
         };
-        console.log('orderData', orderData)
+        // console.log('orderData', orderData)
         try {
-            // Faire la requête API pour créer la commande dans votre backend
             const response = await axios.post("/api/orders", orderData);
             setLoading(false);
+            console.log("Selected Payment Method ID:", selectedPaymentMethod.id);
 
-            // Vérifiez si Alma est le moyen de paiement sélectionné et si la commande a été créée avec succès
             if (selectedPaymentMethod.id === "alma" && response?.data) {
-                // Directement appeler createAlmaPayment avec les données de réponse
-                const almaResponse = await createAlmaPayment(response.data); // Supposons que response.data est déjà formaté correctement
+                // Assurez-vous que response.data contient les informations nécessaires pour Alma
+                console.log("response.data:", response.data);
+                console.log("Preparing to create Alma payment");
+
+                const almaResponse = await createAlmaPayment(response.data);
                 if (almaResponse) {
                     addToast("Your Alma payment is initiated!", {
                         appearance: "success",
                         autoDismiss: true,
                         autoDismissTimeout: 2000
                     });
-                    // Rediriger l'utilisateur selon la réponse d'Alma
-                    router.push(almaResponse.url) //|| `/order-summary/${almaResponse.id}`);
-                    return; // S'assurer de ne pas exécuter la suite si le paiement Alma est initié
+                    router.push(almaResponse.url || `/order-summary/${almaResponse.id}`);
+                    return;
                 }
             } else if (response?.data) {
-                // Gestion des autres moyens de paiement ou si Alma n'est pas sélectionné
                 addToast("Your order is complete!", {
                     appearance: "success",
                     autoDismiss: true,
@@ -148,7 +148,7 @@ const Checkout = () => {
                 });
                 router.push(`/order-summary/${response.data.id}`);
             }
-        } catch (error: any) {
+        } catch (error) {
             setLoading(false);
             addToast("An error occurred while processing your order", {
                 appearance: "error",
