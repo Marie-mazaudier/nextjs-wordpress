@@ -68,7 +68,6 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             failure_return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/failure`,
         },
         customer: {
-            /////////////////// le prolbème se déclare ici 
             id: orderInfo.customer_id, // 
             created: orderInfo.date_created,
             first_name: orderInfo.billing.first_name,
