@@ -26,7 +26,6 @@ interface OrderData {
 }
 
 const createAlmaPayment = async (orderInfo: OrderData) => {
-    console.log('okokokok')
     console.log("Alma Payload:", {
         payment: {
             purchase_amount: parseInt(orderInfo.total) * 100, // Convertit en centimes
@@ -43,13 +42,13 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
                 city: orderInfo.billing.city,
                 country: orderInfo.billing.country,
             },
-            customer_cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`,
+            customer_cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/checkout`,
             custom_data: "Quelques données personnalisées",
             deferred_months: 0,
             deferred_days: 0,
-            ipn_callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/validate-payment`,
+            ipn_callback_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/payments/validate-payment`,
             origin: "online",
-            return_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}`,
             shipping_address: {
                 company: orderInfo.shipping.company,
                 first_name: orderInfo.shipping.first_name,
@@ -65,7 +64,7 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             locale: "fr",
             expires_after: 2880,
             capture_method: "automatic",
-            failure_return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/failure`,
+            failure_return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/failure`,
         },
         customer: {
             id: orderInfo.customer_id, // 
@@ -114,13 +113,13 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
                 city: orderInfo.billing.city,
                 country: orderInfo.billing.country,
             },
-            customer_cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`,
+            customer_cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/checkout`,
             custom_data: "Quelques données personnalisées",
             deferred_months: 0,
             deferred_days: 0,
-            ipn_callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/order-summary/${orderInfo.id}`, // penser à créer les pages front !
+            ipn_callback_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}`, // penser à créer les pages front !
             origin: "online",
-            return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/order-summary/${orderInfo.id}`,
+            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}`,
             shipping_address: {
                 company: orderInfo.shipping.company,
                 first_name: orderInfo.shipping.first_name,
@@ -136,7 +135,7 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             locale: "fr",
             expires_after: 2880,
             capture_method: "automatic",
-            failure_return_url: `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
+            failure_return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/paiement-error`,
 
         },
 
@@ -171,8 +170,8 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
         },
         order: {
             merchant_reference: orderInfo.number,
-            merchant_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
-            customer_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`,
+            merchant_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}`,
+            customer_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/account`,
             comment: "Commande de test"
         }
 

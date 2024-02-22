@@ -38,6 +38,7 @@ const OrderSummary = () => {
     const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
     const [isLoading, setIsLoading] = useState(false); // État de chargement
     const [error, setError] = useState<string | null>(null); // État d'erreur
+    const [paymentStatus, setPaymentStatus] = useState<string>('pending');
     useEffect(() => {
         // console.log(router.query); // Log pour voir tous les query params
         // console.log(router.isReady); // Vérifie si le router est prêt
@@ -65,26 +66,38 @@ const OrderSummary = () => {
         }
     }, [router.isReady, router.query, orderId]);
 
-    /*   useEffect(() => {
-           // Définition de la fonction asynchrone pour récupérer les détails de la commande
-           const fetchOrderDetails = async (id: string) => {
-               setIsLoading(true); // Début du chargement
-               try {
-                   const response = await axios.get(`/api/orders/${id}`);
-                   setOrderDetails(response.data);
-               } catch (error) {
-                   console.error("Error fetching order details:", error);
-                   setError("Une erreur est survenue lors de la récupération des détails de la commande."); // Mise à jour de l'état d'erreur
-               } finally {
-                   setIsLoading(false); // Fin du chargement
-               }
-           };
-   
-           if (router.isReady && orderId) {
-               console.log('ok')
-               fetchOrderDetails(orderId);
-           }
-       }, [router.isReady, orderId]);*/
+    //Mise à jour information de paiement si validé
+    // Gestion de la validation du paiement si 'pid' est présent dans l'URL
+    useEffect(() => {
+        const validatePayment = async (paymentId: string) => {
+            // Ici, vous effectuerez la validation du paiement avec l'API d'Alma
+            // Et mettez à jour le statut de la commande en conséquence
+        };
+
+        if (router.query.pid) {
+            validatePayment(router.query.pid as string);
+        }
+    }, [router.query.pid]);
+
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
+    if (!orderDetails) return <div>Aucune commande trouvée.</div>;
+
+    // Gestion de l'affichage basé sur le statut de paiement
+    let paymentMessage;
+    switch (paymentStatus) {
+        case 'success':
+            paymentMessage = <div>Votre paiement a été validé avec succès.</div>;
+            break;
+        case 'failure':
+            paymentMessage = <div>Le paiement a échoué. Veuillez essayer à nouveau.</div>;
+            break;
+        case 'pending':
+        default:
+            paymentMessage = <div>Le statut du paiement est en attente de confirmation.</div>;
+            break;
+    }
+
 
     // Gestion des états de chargement et d'erreur
     if (isLoading) return <div>Loading...</div>;
