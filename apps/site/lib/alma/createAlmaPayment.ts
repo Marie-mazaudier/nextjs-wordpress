@@ -43,13 +43,13 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
                 city: orderInfo.billing.city,
                 country: orderInfo.billing.country,
             },
-            customer_cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
+            customer_cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`,
             custom_data: "Quelques données personnalisées",
             deferred_months: 0,
             deferred_days: 0,
-            ipn_callback_url: `${process.env.NEXT_PUBLIC_BASE_URL}/validate-payment`,
+            ipn_callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/validate-payment`,
             origin: "online",
-            return_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
+            return_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
             shipping_address: {
                 company: orderInfo.shipping.company,
                 first_name: orderInfo.shipping.first_name,
@@ -65,7 +65,7 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             locale: "fr",
             expires_after: 2880,
             capture_method: "automatic",
-            failure_return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/failure`,
+            failure_return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/failure`,
         },
         customer: {
             id: orderInfo.customer_id, // 
@@ -114,13 +114,13 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
                 city: orderInfo.billing.city,
                 country: orderInfo.billing.country,
             },
-            customer_cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
+            customer_cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`,
             custom_data: "Quelques données personnalisées",
             deferred_months: 0,
             deferred_days: 0,
-            ipn_callback_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order-summary/${orderInfo.id}`, // penser à créer les pages front !
+            ipn_callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/order-summary/${orderInfo.id}`, // penser à créer les pages front !
             origin: "online",
-            return_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
+            return_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
             shipping_address: {
                 company: orderInfo.shipping.company,
                 first_name: orderInfo.shipping.first_name,
@@ -136,7 +136,7 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             locale: "fr",
             expires_after: 2880,
             capture_method: "automatic",
-            failure_return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
+            failure_return_url: `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
 
         },
 
@@ -171,8 +171,8 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
         },
         order: {
             merchant_reference: orderInfo.number,
-            merchant_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
-            customer_url: `${process.env.NEXT_PUBLIC_BASE_URL}/account`,
+            merchant_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+            customer_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`,
             comment: "Commande de test"
         }
 
