@@ -120,7 +120,7 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             deferred_days: 0,
             ipn_callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/order-summary/${orderInfo.id}`, // penser à créer les pages front !
             origin: "online",
-            return_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+            return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/order-summary/${orderInfo.id}`,
             shipping_address: {
                 company: orderInfo.shipping.company,
                 first_name: orderInfo.shipping.first_name,
