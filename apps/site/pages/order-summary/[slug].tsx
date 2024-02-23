@@ -70,8 +70,18 @@ const OrderSummary = () => {
     // Gestion de la validation du paiement si 'pid' est présent dans l'URL
     useEffect(() => {
         const validatePayment = async (paymentId: string) => {
-            // Ici, vous effectuerez la validation du paiement avec l'API d'Alma
-            // Et mettez à jour le statut de la commande en conséquence
+            try {
+                const response = await axios.get(`/api/payments/validate-payment?pid=${paymentId}`);
+                if (response.data && response.data.message === "Payment validated and order updated successfully") {
+                    setPaymentStatus('success');
+                } else {
+                    setPaymentStatus('failure');
+                    console.log(response.data + response.data.message, 'response.data')
+                }
+            } catch (error) {
+                console.error("Error during payment validation:", error);
+                setPaymentStatus('failure');
+            }
         };
 
         if (router.query.pid) {
@@ -87,17 +97,15 @@ const OrderSummary = () => {
     let paymentMessage;
     switch (paymentStatus) {
         case 'success':
-            paymentMessage = <div>Votre paiement a été validé avec succès.</div>;
+            paymentMessage = <div className="text-green-500">Votre paiement a été validé avec succès.</div>;
             break;
         case 'failure':
-            paymentMessage = <div>Le paiement a échoué. Veuillez essayer à nouveau.</div>;
+            paymentMessage = <div className="text-red-500">Le paiement a échoué. Veuillez essayer à nouveau.</div>;
             break;
-        case 'pending':
         default:
             paymentMessage = <div>Le statut du paiement est en attente de confirmation.</div>;
             break;
     }
-
 
     // Gestion des états de chargement et d'erreur
     if (isLoading) return <div>Loading...</div>;
@@ -107,6 +115,7 @@ const OrderSummary = () => {
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-xl font-semibold mb-4">Récapitulatif de la commande</h1>
+            {paymentMessage}
 
             <div className="mb-8">
                 <h2 className="text-lg font-semibold mb-2">Détails de la commande</h2>

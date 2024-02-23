@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Utilisation des variables d'environnement pour l'URL de l'API Alma et la clé API
-        const almaAPIUrl = `${process.env.NEXT_PUBLIC_ALMA_API_URL_TEST}/v1/payments/${pid}`;
+        const almaAPIUrl = `${process.env.NEXT_PUBLIC_ALMA_API_URL_TEST}/${pid}`;
         const almaAPIKey = process.env.NEXT_PUBLIC_ALMA_API_KEY;
 
         try {
