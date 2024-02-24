@@ -33,67 +33,68 @@ interface OrderDetails {
 
 const OrderSummary = () => {
     const router = useRouter();
-    // Utilisation de router.isReady pour s'assurer que les données de route sont disponibles
     const orderId = router.query.slug as string;
+    const provider = router.query.provider as string;
+    const paymentId = router.query.pid as string; // Utiliser pid pour Alma, et id pour PayPlug
+
     const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
-    const [isLoading, setIsLoading] = useState(false); // État de chargement
-    const [error, setError] = useState<string | null>(null); // État d'erreur
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [paymentStatus, setPaymentStatus] = useState<string>('pending');
-    useEffect(() => {
-        // console.log(router.query); // Log pour voir tous les query params
-        // console.log(router.isReady); // Vérifie si le router est prêt
-        if (router.isReady) {
-            //   console.log('Router is ready:', router.query);
-            // Définition de la fonction asynchrone pour récupérer les détails de la commande
-            const fetchOrderDetails = async (id: string) => {
-                setIsLoading(true); // Début du chargement
-                try {
-                    const response = await axios.get(`/api/orders/${id}`);
-                    setOrderDetails(response.data);
-                } catch (error) {
-                    console.error("Error fetching order details:", error);
-                    setError("Une erreur est survenue lors de la récupération des détails de la commande."); // Mise à jour de l'état d'erreur
-                } finally {
-                    setIsLoading(false); // Fin du chargement
-                }
-            };
 
-            if (orderId) {
-                // console.log('Order ID ok:', orderId);
-                fetchOrderDetails(orderId);
-
-            }
+    // Fonction pour récupérer les détails de la commande
+    const fetchOrderDetails = async (id: string) => {
+        try {
+            const response = await axios.get(`/api/orders/${id}`);
+            setOrderDetails(response.data);
+            setIsLoading(false);
+        } catch (error) {
+            console.error("Error fetching order details:", error);
+            setError("Une erreur est survenue lors de la récupération des détails de la commande.");
+            setIsLoading(false);
         }
-    }, [router.isReady, router.query, orderId]);
+    };
 
-    //Mise à jour information de paiement si validé
-    // Gestion de la validation du paiement si 'pid' est présent dans l'URL
-    useEffect(() => {
-        const validatePayment = async (paymentId: string) => {
+    // Fonction pour valider le paiement selon le fournisseur
+    const validatePayment = async () => {
+        let url = '';
+        if (provider === 'alma') {
+            url = `/api/payments/validate-payment-alma?pid=${paymentId}`;
+        } else if (provider === 'payplug') {
+            url = `/api/payments/notification-payplug?${paymentId}`;
+        }
+
+        if (url) {
             try {
-                const response = await axios.get(`/api/payments/validate-payment?pid=${paymentId}`);
-                if (response.data && response.data.message === "Payment validated and order updated successfully") {
+                const response = await axios.get(url);
+                if (response.data && response.data.message.includes("successfully")) {
                     setPaymentStatus('success');
                 } else {
                     setPaymentStatus('failure');
-                    console.log(response.data + response.data.message, 'response.data')
                 }
             } catch (error) {
                 console.error("Error during payment validation:", error);
                 setPaymentStatus('failure');
             }
-        };
-
-        if (router.query.pid) {
-            validatePayment(router.query.pid as string);
         }
-    }, [router.query.pid]);
+    };
+
+    useEffect(() => {
+        if (router.isReady && orderId) {
+            fetchOrderDetails(orderId);
+        }
+    }, [router.isReady, orderId]);
+
+    useEffect(() => {
+        if (router.isReady && paymentId && provider) {
+            validatePayment();
+        }
+    }, [router.isReady, paymentId, provider]);
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
     if (!orderDetails) return <div>Aucune commande trouvée.</div>;
 
-    // Gestion de l'affichage basé sur le statut de paiement
     let paymentMessage;
     switch (paymentStatus) {
         case 'success':
@@ -107,10 +108,6 @@ const OrderSummary = () => {
             break;
     }
 
-    // Gestion des états de chargement et d'erreur
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
-    if (!orderDetails) return <div>Aucune commande trouvée.</div>;
 
     return (
         <div className="container mx-auto p-4">

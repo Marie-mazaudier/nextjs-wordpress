@@ -15,6 +15,8 @@ import { useGetCartTotals } from "../lib/coCart/getTotals";
 import { useCart } from "src/CartContext";
 import { updateCartItemHandler, removeCartItemHandler } from "src/utils/cart.utils";
 import createAlmaPayment from "lib/alma/createAlmaPayment";
+import createPayPlugPayment from "lib/payplug/createPayPlugPayment";
+
 
 interface ShippingMethodInfoCheckout {
     id: number;
@@ -116,7 +118,7 @@ const Checkout = () => {
             shipping: shippingData, // Ici, shippingData sera soit identique à billingData, soit différent si l'utilisateur a spécifié une adresse de livraison différente
             line_items: lineItemsData,
             shipping_lines: shippingLines,
-            payment_method_title: selectedPaymentMethod.title,
+            payment_method_title: selectedPaymentMethod.id,
             payment_method_description: selectedPaymentMethod.description
         };
         // console.log('orderData', orderData)
@@ -138,6 +140,19 @@ const Checkout = () => {
                         autoDismissTimeout: 2000
                     });
                     router.push(almaResponse.url || `/order-summary/${almaResponse.id}`);
+                    return;
+                }
+            } else if (selectedPaymentMethod.id === "payplug" && response?.data) {
+                const payPlugResponse = await createPayPlugPayment(response.data);
+                if (payPlugResponse) {
+                    // Traitez la réponse de PayPlug, comme la redirection vers l'URL de paiement
+                    addToast("Your Alma payment is initiated!", {
+                        appearance: "success",
+                        autoDismiss: true,
+                        autoDismissTimeout: 2000
+                    });
+                    router.push(payPlugResponse.hosted_payment_url)
+                    //window.location.href = payPlugResponse.hosted_payment_url;
                     return;
                 }
             } else if (response?.data) {
