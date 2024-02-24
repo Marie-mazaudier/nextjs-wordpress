@@ -21,6 +21,17 @@ interface OrderData {
 }
 
 const createPayPlugPayment = async (orderInfo: OrderData) => {
+
+    // Fonction pour formater le numéro de téléphone
+    const formatPhoneNumber = (phoneNumber: string) => {
+        // Supposons que tous les numéros sont des numéros français sans l'indicatif international
+        const formatted = phoneNumber.startsWith('0') ? '+33' + phoneNumber.substring(1) : phoneNumber;
+        return formatted.replace(/\s/g, ''); // Supprimer les espaces s'il y en a
+    };
+
+    // Fournir une valeur par défaut pour company_name si vide
+    const defaultCompanyName = 'N/A'; // ou tout autre valeur par défaut que vous jugez appropriée
+
     const payload = {
         amount: parseInt(orderInfo.total) * 100,
         currency: "EUR",
@@ -32,7 +43,7 @@ const createPayPlugPayment = async (orderInfo: OrderData) => {
             postcode: orderInfo.billing.postcode,
             city: orderInfo.billing.city,
             country: orderInfo.billing.country,
-            mobile_phone_number: orderInfo.billing.phone,
+            mobile_phone_number: formatPhoneNumber(orderInfo.billing.phone),
             language: "fr"
         },
         shipping: {
@@ -43,10 +54,10 @@ const createPayPlugPayment = async (orderInfo: OrderData) => {
             postcode: orderInfo.shipping.postcode,
             city: orderInfo.shipping.city,
             country: orderInfo.shipping.country,
-            mobile_phone_number: orderInfo.shipping.phone,
+            mobile_phone_number: formatPhoneNumber(orderInfo.billing.phone),
             delivery_type: "BILLING",
             language: "fr",
-            company_name: orderInfo.shipping.company
+            company_name: orderInfo.shipping.company || defaultCompanyName
         },
         hosted_payment: {
             return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}?dummy=1&provider=payplug`,
