@@ -11,7 +11,6 @@ interface BillingAddress {
     country: string;
     phone: string;
     company: string;
-
 }
 
 interface OrderData {
@@ -22,7 +21,6 @@ interface OrderData {
 }
 
 const createPayPlugPayment = async (orderInfo: OrderData) => {
-    const apiKey = process.env.NEXT_PUBLIC_PAYPLUG_API_KEY; // 
     const payload = {
         amount: parseInt(orderInfo.total) * 100,
         currency: "EUR",
@@ -50,21 +48,21 @@ const createPayPlugPayment = async (orderInfo: OrderData) => {
             language: "fr",
             company_name: orderInfo.shipping.company
         },
-        notification_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/payments/notification-payplug/${orderInfo.id}`,
         hosted_payment: {
-            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}?dummy=1&provider=payplug`
-        }
+            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}?dummy=1&provider=payplug`,
+            cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/paiement-error`
+        },
+        notification_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/payments/notification-payplug/${orderInfo.id}`,
+        metadata: {
+            customer_id: orderInfo.id
+        },
+        save_card: false,
+        force_3ds: true
     };
 
     try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_PAYPLUG_API_URL}`, payload, {
-            headers: {
-                'Authorization': `Bearer ${process.env.NEXT_PUBLIC_PAYPLUG_API_KEY}`,
-                'PayPlug-Version': '2019-08-06',
-                'Content-Type': 'application/json'
-            }
-        });
-
+        // Notez que nous pointons maintenant vers le proxy
+        const response = await axios.post(`/api/payments/payplug-proxy`, payload);
         return response.data;
     } catch (error) {
         console.error('Error creating PayPlug payment:', error);
