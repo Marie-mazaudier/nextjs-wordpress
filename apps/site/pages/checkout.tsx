@@ -143,7 +143,11 @@ const Checkout = () => {
                     return;
                 }
             } else if (selectedPaymentMethod.id === "payplug" && response?.data) {
+                console.log("response.data:", response.data);
+                console.log("Preparing to create Payplug payment");
                 const payPlugResponse = await createPayPlugPayment(response.data);
+                console.log("payPlugResponse:", payPlugResponse);
+
                 if (payPlugResponse) {
                     // Traitez la réponse de PayPlug, comme la redirection vers l'URL de paiement
                     addToast("Your Alma payment is initiated!", {
