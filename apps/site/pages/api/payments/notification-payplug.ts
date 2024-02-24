@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         try {
             const payplugResponse = await axios.get(payplugAPIUrl, {
-                headers: { 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_PAYPLUG_API_KEY}` }
+                headers: { 'Authorization': `Bearer ${process.env.PAYPLUG_SECRET_KEY}` }
             });
 
             const paymentDetails = payplugResponse.data;
