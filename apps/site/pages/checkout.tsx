@@ -155,7 +155,7 @@ const Checkout = () => {
                         autoDismiss: true,
                         autoDismissTimeout: 2000
                     });
-                    router.push(payPlugResponse.payment_url)
+                    router.push(payPlugResponse.hosted_payment.payment_url)
                     //window.location.href = payPlugResponse.hosted_payment_url;
                     return;
                 }
