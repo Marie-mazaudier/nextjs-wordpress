@@ -5,7 +5,7 @@ import axios, { AxiosError } from 'axios';
 export default async function almaProxy(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method === 'POST') {
         try {
-            const almaAPIUrl = 'https://api.getalma.eu/v1/payments';
+            const almaAPIUrl = `${process.env.NEXT_PUBLIC_ALMA_API_URL_TEST}`;
             const response = await axios.post(almaAPIUrl, req.body, {
                 headers: {
                     'Authorization': `Alma-Auth ${process.env.ALMA_API_SECRET_KEY}`,

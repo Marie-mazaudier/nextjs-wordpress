@@ -5,7 +5,7 @@ import axios, { AxiosError } from 'axios';
 export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     if (req.method === 'POST') {
         try {
-            const response = await axios.post('https://api.payplug.com/v1/payments', req.body, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_PAYPLUG_API_URL}`, req.body, {
                 headers: {
                     'Authorization': `Bearer ${process.env.PAYPLUG_SECRET_KEY}`,
                     'Content-Type': 'application/json',
