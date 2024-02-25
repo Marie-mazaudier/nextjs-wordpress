@@ -47,7 +47,7 @@ const createAlmaPayment = async (orderInfo: any, installmentsCount: number | nul
             custom_data: "Quelques données personnalisées",
             deferred_months: 0,
             deferred_days: 0,
-            ipn_callback_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/payments/validate-payment-alma/${orderInfo.id}`,
+            ipn_callback_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/payments/validate-payment-alma`, //voir plus tars pour ajout ${orderInfo.id} il faudrait faire aussi endpoint [orderID]
             origin: "online",
             return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}`,
 
