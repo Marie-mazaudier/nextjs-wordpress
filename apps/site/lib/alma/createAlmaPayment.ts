@@ -25,13 +25,12 @@ interface OrderData {
     date_created: Date
 }
 
-const createAlmaPayment = async (orderInfo: OrderData) => {
-    // switcher l'api api côté serveur next js => route api comme payplug
-    const apiKey = process.env.NEXT_PUBLIC_ALMA_API_KEY; // 
+const createAlmaPayment = async (orderInfo: any, installmentsCount: number | null) => {
+    const actualInstallmentsCount = installmentsCount ?? 3;
     const payload = {
         payment: {
             purchase_amount: parseInt(orderInfo.total) * 100, // Convertit en centimes
-            installments_count: 3,
+            installments_count: actualInstallmentsCount,
             billing_address: {
                 company: orderInfo.billing.company,
                 first_name: orderInfo.billing.first_name,
@@ -50,7 +49,7 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
             deferred_days: 0,
             ipn_callback_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/payments/validate-payment-alma/${orderInfo.id}`,
             origin: "online",
-            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}?dummy=1&provider=alma`,
+            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}`,
 
             shipping_address: {
                 company: orderInfo.shipping.company,
@@ -111,16 +110,11 @@ const createAlmaPayment = async (orderInfo: OrderData) => {
     console.log("Alma Payload:", payload);
 
     try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_ALMA_API_URL_TEST}`, payload, {
-            headers: {
-                'Authorization': `Alma-Auth ${apiKey}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        return response.data; // Retourne la réponse de l'API Alma
+        // Utiliser le chemin relatif vers votre endpoint API proxy
+        const response = await axios.post(`/api/payments/alma-proxy`, payload);
+        return response.data;
     } catch (error) {
-        console.error('Error creating Alma payment:', error);
+        console.error('Error creating Alma payment through proxy:', error);
         throw error;
     }
 };

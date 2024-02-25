@@ -60,7 +60,7 @@ const createPayPlugPayment = async (orderInfo: OrderData) => {
             company_name: orderInfo.shipping.company || defaultCompanyName
         },
         hosted_payment: {
-            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}?dummy=1&provider=payplug`,
+            return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/order-summary/${orderInfo.id}`,
             cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/paiement-error`
         },
         notification_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/payments/notification-payplug/`,

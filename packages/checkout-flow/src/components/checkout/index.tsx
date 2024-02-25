@@ -4,8 +4,7 @@ import { FormLoader, LoaderGrowing } from "../loader";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import DeliveryOptions from "../DeliveryOptions";
-import { PaymentMethods } from "../PaymentMethods";
-
+import PaymentMethods from "../PaymentMethods";
 
 // user data interface
 interface userDataInterface {
@@ -83,7 +82,18 @@ interface FormValues {
   postcode?: string;
   state?: string;
 }
-
+interface AlmaEligibilityResponse {
+  eligible: boolean;
+  installments_count: number;
+  payment_plan: {
+    due_date: number;
+    purchase_amount: number;
+    customer_fee: number;
+    customer_interest: number;
+    total_amount: number;
+    localized_due_date: string;
+  }[];
+}
 // check out component props
 interface CheckOutProps {
   updateCartItemHandler: (itemKey: any, count: number, setLoading: (loading: boolean) => void) => Promise<{ message: string; data: any; }>;
@@ -110,6 +120,9 @@ interface CheckOutProps {
   updateCart: () => void;
   paymentMethods?: any;
   onPaymentMethodChange?: (method: { id: string; title: string; description: string }) => void; // Ajout de cette prop pour gérer le changement de la méthode de paiement
+  isAlmaEligible?: boolean; // Nouvelle propriété pour gérer l'éligibilité d'Alma
+  almaEligibilityDetails?: AlmaEligibilityResponse[]; // Ajoutez cette ligne
+  onInstallmentsChange?: (count: number) => void; // Nouvelle fonction callback pour gérer le changement du nombre d'échéances
 
 }
 
@@ -137,8 +150,10 @@ export const CheckOut = ({
   updateCart,
   removeCartItemHandler,
   paymentMethods,
-  onPaymentMethodChange
-
+  onPaymentMethodChange,
+  isAlmaEligible,
+  almaEligibilityDetails,
+  onInstallmentsChange
 }: CheckOutProps) => {
   const country = Country.getAllCountries();
   //const [state, setState] = useState(State.getAllStates());
@@ -1304,7 +1319,7 @@ export const CheckOut = ({
                 />
               </div>
               {/*Paiement*/}
-              <PaymentMethods onPaymentMethodChange={onPaymentMethodChange} paymentMethods={paymentMethods} billing={watchedFields} shippingDetails={shippingDetails} shipingCheck={shipingCheck} />
+              <PaymentMethods onPaymentMethodChange={onPaymentMethodChange} paymentMethods={paymentMethods} billing={watchedFields} shippingDetails={shippingDetails} shipingCheck={shipingCheck} isAlmaEligible={isAlmaEligible} almaEligibilityDetails={almaEligibilityDetails} onInstallmentsChange={onInstallmentsChange} />
             </div>
           </div>
         </div>

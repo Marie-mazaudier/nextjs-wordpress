@@ -21,7 +21,8 @@ export const ProductDetails = ({ data, isLoading }: ProductDetailsProps) => {
         <div className="w-full lg:w-1/2">
           <ProductShortDescription data={data?.[0]} />
           <div className="mt-5">
-            <AlmaWidget amount={data?.[0]?.regular_price} />
+            {data?.[0]?.regular_price && <AlmaWidget amount={data?.[0]?.regular_price} />}
+
 
           </div>
           <div className="mt-5">

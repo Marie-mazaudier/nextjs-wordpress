@@ -16,7 +16,7 @@ import { useCart } from "src/CartContext";
 import { updateCartItemHandler, removeCartItemHandler } from "src/utils/cart.utils";
 import createAlmaPayment from "lib/alma/createAlmaPayment";
 import createPayPlugPayment from "lib/payplug/createPayPlugPayment";
-
+import { checkEligibilityAlma } from "lib/alma/checkEligibilityAlma";
 
 interface ShippingMethodInfoCheckout {
     id: number;
@@ -46,13 +46,32 @@ interface PaymentMethodDetails {
     title: string;
     description: string;
 }
+interface EligibilityResult {
+    eligible: boolean;
+    // Incluez d'autres champs selon la structure de la réponse d'Alma
+}
+interface AlmaEligibilityResponse {
+    eligible: boolean;
+    installments_count: number;
+    payment_plan: {
+        due_date: number;
+        purchase_amount: number;
+        customer_fee: number;
+        customer_interest: number;
+        total_amount: number;
+        localized_due_date: string;
+    }[];
+}
+
 const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const [selectedShippingMethodId, setSelectedShippingMethodId] = useState<string>('');
     const { setSelectedShippingMethod, selectedShippingMethod, updateCart } = useCart();
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({ id: '', title: '', description: '' });
-
+    const [isAlmaEligible, setIsAlmaEligible] = useState(false);
+    const [almaEligibilityDetails, setAlmaEligibilityDetails] = useState<AlmaEligibilityResponse[]>([]);
+    const [selectedInstallmentsCount, setSelectedInstallmentsCount] = useState<number | null>(null);
     const { addToast } = useToasts();
 
     // ==================Get all delivery methods  // Utiliser le hook useShippingMethods=================
@@ -66,6 +85,8 @@ const Checkout = () => {
     const { user, error, isLoading } = useUserDetails();
     // ==================Get all cart items billing  data=================
     const { data: billingData } = useGetCartTotals();
+    // ==================Get cart data=================
+    const { cart } = useCart(); // Déstructuration pour obtenir directement 'cart' depuis le contexte
     // console.log('billingData', billingData)
     // console.log('cartData', cartData)
     // console.log('methode de paiement', paymentMethods)
@@ -81,11 +102,31 @@ const Checkout = () => {
         quantity: item.quantity.value,
     }));
 
+    useEffect(() => {
+        const cartTotal = Number(cart.subtotal) * 100;
+        if (cartTotal > 0) {
+            checkEligibilityAlma(cartTotal)
+                .then(response => {
+                    const eligible = response.some((result: EligibilityResult) => result.eligible);
+                    setIsAlmaEligible(eligible);
+                    // Mettre à jour l'état avec les détails d'éligibilité d'Alma
+                    setAlmaEligibilityDetails(response);
+                })
+                .catch(error => {
+                    console.error("Error checking eligibility:", error);
+                    setIsAlmaEligible(false);
+                });
+        }
+    }, [cart.subtotal]);
 
     // Fonction pour mettre à jour la méthode de paiement sélectionnées
     const handlePaymentMethodChange = (method: PaymentMethodDetails) => {
         console.log('Updating selected payment method in Checkout:', method);
         setSelectedPaymentMethod(method);
+    };
+    //stocker le nombre d'échéances et définissez une fonction callback 
+    const handleInstallmentsChange = (count: number) => {
+        setSelectedInstallmentsCount(count);
     };
     useEffect(() => {
         setSelectedPaymentMethod(selectedPaymentMethod);
@@ -132,7 +173,7 @@ const Checkout = () => {
                 console.log("response.data:", response.data);
                 console.log("Preparing to create Alma payment");
 
-                const almaResponse = await createAlmaPayment(response.data);
+                const almaResponse = await createAlmaPayment(response.data, selectedInstallmentsCount);
                 if (almaResponse) {
                     addToast("Your Alma payment is initiated!", {
                         appearance: "success",
@@ -150,7 +191,7 @@ const Checkout = () => {
 
                 if (payPlugResponse) {
                     // Traitez la réponse de PayPlug, comme la redirection vers l'URL de paiement
-                    addToast("Your Alma payment is initiated!", {
+                    addToast("Your Payplug payment is initiated!", {
                         appearance: "success",
                         autoDismiss: true,
                         autoDismissTimeout: 2000
@@ -215,10 +256,11 @@ const Checkout = () => {
                         updateCart={updateCart}
                         paymentMethods={paymentMethods}
                         onPaymentMethodChange={handlePaymentMethodChange}
+                        isAlmaEligible={isAlmaEligible}
+                        almaEligibilityDetails={almaEligibilityDetails}
+                        onInstallmentsChange={handleInstallmentsChange}
 
                     />
-
-
                 </>
             )}
         </div>

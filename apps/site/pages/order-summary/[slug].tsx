@@ -29,18 +29,16 @@ interface OrderDetails {
     shipping: ShippingDetails;
     line_items: LineItem[];
     total: string;
+    status: string;
 }
 
 const OrderSummary = () => {
     const router = useRouter();
     const orderId = router.query.slug as string;
-    const provider = router.query.provider as string;
-    const paymentId = router.query.pid as string; // Utiliser pid pour Alma, et id pour PayPlug
 
     const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [paymentStatus, setPaymentStatus] = useState<string>('pending');
 
     // Fonction pour récupérer les détails de la commande
     const fetchOrderDetails = async (id: string) => {
@@ -55,59 +53,23 @@ const OrderSummary = () => {
         }
     };
 
-    // Fonction pour valider le paiement selon le fournisseur
-    const validatePayment = async () => {
-        let url = '';
-        if (provider === 'alma') {
-            url = `/api/payments/validate-payment-alma?pid=${paymentId}`;
-        } else if (provider === 'payplug') {
-            url = `/api/payments/notification-payplug?${paymentId}`;
-        }
-
-        if (url) {
-            try {
-                const response = await axios.get(url);
-                if (response.data && response.data.message.includes("successfully")) {
-                    setPaymentStatus('success');
-                } else {
-                    setPaymentStatus('failure');
-                }
-            } catch (error) {
-                console.error("Error during payment validation:", error);
-                setPaymentStatus('failure');
-            }
-        }
-    };
-
     useEffect(() => {
         if (router.isReady && orderId) {
             fetchOrderDetails(orderId);
         }
     }, [router.isReady, orderId]);
 
-    useEffect(() => {
-        if (router.isReady && paymentId && provider) {
-            validatePayment();
-        }
-    }, [router.isReady, paymentId, provider]);
-
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
     if (!orderDetails) return <div>Aucune commande trouvée.</div>;
 
     let paymentMessage;
-    switch (paymentStatus) {
-        case 'success':
-            paymentMessage = <div className="text-green-500">Votre paiement a été validé avec succès.</div>;
-            break;
-        case 'failure':
-            paymentMessage = <div className="text-red-500">Le paiement a échoué. Veuillez essayer à nouveau.</div>;
-            break;
-        default:
-            paymentMessage = <div>Le statut du paiement est en attente de confirmation.</div>;
-            break;
+    if (orderDetails.status === 'completed') {
+        paymentMessage = <div className="text-green-500">Votre paiement a été validé avec succès.</div>;
+    } else {
+        // Vous pouvez ajuster ce message en fonction de la logique de votre application
+        paymentMessage = <div>Le statut du paiement est en attente de confirmation.</div>;
     }
-
 
     return (
         <div className="container mx-auto p-4">

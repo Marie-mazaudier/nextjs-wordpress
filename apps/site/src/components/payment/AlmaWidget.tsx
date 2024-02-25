@@ -27,7 +27,7 @@ const AlmaWidget: React.FC<AlmaWidgetProps> = ({ amount }) => {
     const minAmountForPlans = 50 * 100; // 50.00 € en centimes
     const maxAmountForPlans = 8000 * 100; // 8000.00 € en centimes
     const initializeAlmaWidget = () => {
-        // Utilisation d'une assertion de type pour accéder à Alma sur l'objet window
+        // Utilisation d'une assertion de type directe pour accéder à Alma
         const alma = (window as any).Alma;
 
         if (alma) {
@@ -46,11 +46,10 @@ const AlmaWidget: React.FC<AlmaWidgetProps> = ({ amount }) => {
                 ],
             });
         } else {
-            console.error("Alma widget script not loaded");
+            // Si Alma n'est pas encore disponible, réessayer après un court délai
+            setTimeout(initializeAlmaWidget, 100); // Attendre 100ms avant de réessayer
         }
     };
-
-
 
     return (
         <div id="alma-widget-container"></div>
