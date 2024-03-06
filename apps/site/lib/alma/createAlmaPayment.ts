@@ -66,7 +66,7 @@ const createAlmaPayment = async (orderInfo: any, installmentsCount: number | nul
             locale: "fr",
             expires_after: 2880,
             capture_method: "automatic",
-            failure_return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/paiement-error`,
+            failure_return_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/paiement-error/${orderInfo.id}`,
 
         },
 

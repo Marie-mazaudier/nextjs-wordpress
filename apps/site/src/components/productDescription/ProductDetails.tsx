@@ -12,6 +12,9 @@ interface ProductDetailsProps {
 
 export const ProductDetails = ({ data, isLoading }: ProductDetailsProps) => {
   //console.log('data?.[0]', data?.[0])
+  // Utilisez le prix soldé si disponible et différent de zéro, sinon utilisez le prix régulier
+  const priceForAlma = data?.[0]?.sale_price && data?.[0]?.sale_price !== "0" ? data?.[0]?.sale_price : data?.[0]?.regular_price;
+
   return (
     <section className="px-5 md:px-0">
       <div className="container mx-auto flex flex-col lg:flex-row gap-12">
@@ -21,9 +24,8 @@ export const ProductDetails = ({ data, isLoading }: ProductDetailsProps) => {
         <div className="w-full lg:w-1/2">
           <ProductShortDescription data={data?.[0]} />
           <div className="mt-5">
-            {data?.[0]?.regular_price && <AlmaWidget amount={data?.[0]?.regular_price} />}
-
-
+            {/* Passer priceForAlma à AlmaWidget */}
+            {priceForAlma && <AlmaWidget amount={priceForAlma} />}
           </div>
           <div className="mt-5">
             <CartAndBuy data={data?.[0]} />

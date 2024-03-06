@@ -56,19 +56,21 @@ export const TrendingProductCard = ({ data }: TrendingProductCardProps) => {
           <Skeleton height={20} />
         </div>
       )}
-      {data?.sale_price && data?.regular_price ? (
-        <div className="flex items-center gap-2 mt-3">
-          <BodyText size="xl" className=" text-themePrimary600">
+      {data?.sale_price ? (
+        <>
+          <BodyText size="xl" className="text-themePrimary600">
             ${data.sale_price}
           </BodyText>
-          <BodyText size="sm" className=" text-themeSecondary400 line-through">
+          <BodyText size="sm" className="text-themeSecondary400 line-through">
             ${data.regular_price}
           </BodyText>
-        </div>
+        </>
+      ) : data?.regular_price ? (
+        <BodyText size="xl" className="text-themePrimary600">
+          ${data.regular_price}
+        </BodyText>
       ) : (
-        <div className="mt-2">
-          <Skeleton height={12} width={140} />
-        </div>
+        <Skeleton height={20} width={140} />
       )}
       {data?.rating ? (
         <div className="flex items-center gap-2 mt-3">

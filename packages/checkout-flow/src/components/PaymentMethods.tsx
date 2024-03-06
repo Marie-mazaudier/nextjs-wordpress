@@ -139,7 +139,7 @@ const PaymentMethods = ({
           // Ajouter une condition pour inclure 'alma' uniquement si isAlmaEligible est vrai
           .filter(method => method.id !== 'alma' || (method.id === 'alma' && isAlmaEligible))
           .map((method) => (
-            console.log("Method ID:", method.id), // Ajoutez cette ligne pour afficher method.id dans les logs
+            //  console.log("Method ID:", method.id), // Ajoutez cette ligne pour afficher method.id dans les logs
             <div key={method.id}>
               <label className="flex flex-col md:flex-row items-center gap-7 rounded-lg w-full cursor-pointer">
                 <input

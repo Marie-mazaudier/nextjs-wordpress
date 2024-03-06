@@ -10,7 +10,15 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (req.method === "POST") {
-    const { data } = await WooCommerce.post(`customers`, req.body);
-    return res.status(200).json(data);
+    try {
+      const { data } = await WooCommerce.post(`customers`, req.body);
+      return res.status(200).json(data);
+    } catch (error: any) {
+      console.error("Error:", error.response.data);
+      return res.status(500).json({
+        message: "Un utilisateur existe déjà avec cet email",
+        code: 'user'
+      });
+    }
   }
 }

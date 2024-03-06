@@ -71,20 +71,25 @@ export const ProductCardTwo = ({ data }: ProductCardTwoProps) => {
           </div>
         )}
 
-        {data?.sale_price && data?.regular_price ? (
-          <div className="flex items-center gap-2 mt-3">
-            <BodyText size="xl" className=" text-themePrimary600">
-              ${data.sale_price}
-            </BodyText>
-            <BodyText size="sm" className=" text-themeSecondary400 line-through">
+        {/* Logique mise à jour pour gérer les prix soldés et réguliers */}
+        <div className="flex items-center gap-2 mt-3">
+          {data?.sale_price ? (
+            <>
+              <BodyText size="xl" className="text-themePrimary600">
+                ${data.sale_price}
+              </BodyText>
+              <BodyText size="sm" className="text-themeSecondary400 line-through">
+                ${data.regular_price}
+              </BodyText>
+            </>
+          ) : data?.regular_price ? (
+            <BodyText size="xl" className="text-themePrimary600">
               ${data.regular_price}
             </BodyText>
-          </div>
-        ) : (
-          <div className="mt-2">
+          ) : (
             <Skeleton height={20} width={140} />
-          </div>
-        )}
+          )}
+        </div>
         {data?.rating ? (
           <div className="flex items-center gap-2 mt-3">
             {/* @ts-ignore */}

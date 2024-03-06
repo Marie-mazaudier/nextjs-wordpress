@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SimpleSlider from "../src/components/bannerSlider/Sliderhome";
 import { miniBannerData } from "../src/data/BannerData";
 //import { BrandData } from "../src/data/BrandData";
@@ -10,6 +10,7 @@ import { useRecentViewedProducts } from "../lib/woocommerce/useRecentProducts";
 import { useProductCategories } from "../lib/woocommerce/useCategories";
 import { useGetAllClients } from "lib/swr-wordpress/getAllClients";
 import { addEmailToBrevoList } from "../lib/brevo/brevo"; // Adjust the path accordingly
+import Popup from "src/components/popup/popup";
 import {
   Presentation,
   Newsletter,
@@ -25,6 +26,8 @@ import {
 
 export default function Home() {
   const [active, setActive] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
+
 
   // ==================Get recently viewed products  data=================
   const { recentViewData } = useRecentViewedProducts(4);
@@ -77,6 +80,14 @@ export default function Home() {
     (active === 2 && all) ||
     (active === 3 && all) ||
     (active === 4 && all);
+  //============Show popup=======================
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 500); // Délai de 3 secondes
+
+    return () => clearTimeout(timer); // Nettoyer le timer si le composant est démonté
+  }, []);
 
   return (
     <>
@@ -86,6 +97,11 @@ export default function Home() {
       </Head>
       <SimpleSlider className="z-10" />
       <Spaces />
+      {
+        showPopup && <div className={`fixed inset-0 z-50 transition-opacity duration-500 ease-in ${showPopup ? 'opacity-100' : 'opacity-0'}`}>
+          <Popup />
+        </div>
+      }
       <Presentation />
       <Spaces />
       <IconBoxOne data={IconBoxData} />

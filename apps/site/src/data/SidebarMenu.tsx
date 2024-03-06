@@ -19,5 +19,24 @@ export const sidebarMenu = [
       </svg>
     ),
     link: "/dashboard/account-settings",
-  }
+  },
+  {
+    title: "Mes Commandes",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 2L3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6L18 2H6ZM5 6L6.17 4H17.83L19 6H5ZM5 20V9H19V20H5Z" fill="currentColor" />
+        <path d="M7 11H17V13H7V11ZM7 15H14V17H7V15Z" fill="currentColor" />
+      </svg>
+    ),
+    link: "/dashboard/orders",
+  },
+  {
+    title: "Favoris",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fillRule="evenodd" clipRule="evenodd" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
+      </svg>
+    ),
+    link: "/dashboard/wishlist",
+  },
 ];

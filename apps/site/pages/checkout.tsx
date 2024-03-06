@@ -17,6 +17,12 @@ import { updateCartItemHandler, removeCartItemHandler } from "src/utils/cart.uti
 import createAlmaPayment from "lib/alma/createAlmaPayment";
 import createPayPlugPayment from "lib/payplug/createPayPlugPayment";
 import { checkEligibilityAlma } from "lib/alma/checkEligibilityAlma";
+import validatePassword from "lib/woocommerce/passwordCheck";
+import { useCreateUser } from "lib/woocommerce/user/useUser";
+import SmallLoginForm from "src/components/loginRegistrationForm/SmallLoginForm";
+import dynamic from "next/dynamic";
+import SignupSignin from "src/components/signupSignin/SignupSignin";
+import { useCoupons } from "lib/woocommerce/useCoupons";
 
 interface ShippingMethodInfoCheckout {
     id: number;
@@ -35,11 +41,13 @@ interface ShippingLine {
 
 interface OrderData {
     payment_method_title: string,
-    payment_method_description: string,
+    payment_method: string,
     billing: any;
     shipping: any;
     line_items: any[];
     shipping_lines?: ShippingLine[]; // Utilisation de ShippingLine au lieu de ShippingMethodInfoCheckout
+    customer_id?: number;
+    customer_ip_address: string
 }
 interface PaymentMethodDetails {
     id: string;
@@ -67,17 +75,24 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const [selectedShippingMethodId, setSelectedShippingMethodId] = useState<string>('');
-    const { setSelectedShippingMethod, selectedShippingMethod, updateCart } = useCart();
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({ id: '', title: '', description: '' });
     const [isAlmaEligible, setIsAlmaEligible] = useState(false);
     const [almaEligibilityDetails, setAlmaEligibilityDetails] = useState<AlmaEligibilityResponse[]>([]);
     const [selectedInstallmentsCount, setSelectedInstallmentsCount] = useState<number | null>(null);
+    const [customerId, setCustomerId] = useState<number | undefined>(0);
+    const [customerIpAddress, setCustomerIpAddress] = useState("");
+    const [loginModalOn, setLoginModalOn] = useState(false);
+
     const { addToast } = useToasts();
 
+    //============Utiliser le hook useCreateUser=====================//
+    const { createUser, loading: createUserLoading } = useCreateUser();
     // ==================Get all delivery methods  // Utiliser le hook useShippingMethods=================
     const { shippingMethods, isError } = useShippingMethods();
     // ==================Get all payment methods  // Utiliser le hook useShippingMethods=================
     const { paymentMethods, Error } = usePaymentMethods();
+    // ==================Get all coupons  // Utiliser le hook coupons=================
+    const { coupons, couponError } = useCoupons();
     // ==================Get all cart items data =================
     const { data: cartData } = useGetCartData();
 
@@ -86,7 +101,8 @@ const Checkout = () => {
     // ==================Get all cart items billing  data=================
     const { data: billingData } = useGetCartTotals();
     // ==================Get cart data=================
-    const { cart } = useCart(); // Déstructuration pour obtenir directement 'cart' depuis le contexte
+    const { setSelectedShippingMethod, selectedShippingMethod, updateCart, updateDiscount, cart } = useCart();
+
     // console.log('billingData', billingData)
     // console.log('cartData', cartData)
     // console.log('methode de paiement', paymentMethods)
@@ -94,7 +110,7 @@ const Checkout = () => {
     const cartSummaryData = {
         total: Number(cartData?.totals?.total) / 100,
         subtotal: Number(cartData?.totals?.subtotal) / 100,
-        discount: Number(cartData?.totals?.discount_total)
+        discount: Number(cart?.discount?.amount)
     };
 
     const lineItemsData = cartData?.items.map((item: any) => ({
@@ -121,7 +137,7 @@ const Checkout = () => {
 
     // Fonction pour mettre à jour la méthode de paiement sélectionnées
     const handlePaymentMethodChange = (method: PaymentMethodDetails) => {
-        console.log('Updating selected payment method in Checkout:', method);
+        //console.log('Updating selected payment method in Checkout:', method);
         setSelectedPaymentMethod(method);
     };
     //stocker le nombre d'échéances et définissez une fonction callback 
@@ -130,13 +146,27 @@ const Checkout = () => {
     };
     useEffect(() => {
         setSelectedPaymentMethod(selectedPaymentMethod);
-        console.log("Méthode choisie checkout", selectedPaymentMethod)
+        console.log("payment_method: ", selectedPaymentMethod.id,
+            "payment_method_title:", selectedPaymentMethod.title)
+
     }, [selectedPaymentMethod]);
     useEffect(() => {
         setSelectedShippingMethodId(selectedShippingMethod);
     }, [selectedShippingMethod]);
     // clic bouton commande
-    // console.log('selectedShippingMethodId', selectedShippingMethodId)
+    useEffect(() => {
+        // Récupération et mise à jour de l'adresse IP du client
+        const fetchClientIp = async () => {
+            try {
+                const response = await axios.get("https://api.ipify.org?format=json");
+                setCustomerIpAddress(response.data.ip);
+            } catch (error) {
+                console.error("Could not fetch client IP address:", error);
+            }
+        };
+
+        fetchClientIp();
+    }, []);
     const onSubmit = async (data: any, shippingData: any) => {
         setLoading(true);
 
@@ -154,19 +184,51 @@ const Checkout = () => {
             }
         }
 
-        const orderData: OrderData = {
-            billing: data,
-            shipping: shippingData, // Ici, shippingData sera soit identique à billingData, soit différent si l'utilisateur a spécifié une adresse de livraison différente
-            line_items: lineItemsData,
-            shipping_lines: shippingLines,
-            payment_method_title: selectedPaymentMethod.id,
-            payment_method_description: selectedPaymentMethod.description
-        };
-        // console.log('orderData', orderData)
+        //  console.log('orderData', orderData)
+        const username = `${data.first_name.toLowerCase()}.${data.last_name.toLowerCase()}`;
+
         try {
+            let localCustomerId = customerId; // Utilisez une variable locale pour gérer l'ID client
+
+            if (!user) {
+                const username = `${data.first_name.toLowerCase()}.${data.last_name.toLowerCase()}`;
+                const userData = {
+                    email: data.email,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    username: username,
+                    billing: data,
+                    shipping: shippingData,
+                    password: data.password
+                    // Ajoutez d'autres données nécessaires pour créer un client
+                };
+
+                // Créer le nouvel utilisateur
+                const response = await axios.post("/api/auth/register", userData);
+                localCustomerId = response.data.id;
+
+            } else {
+                // Utiliser l'ID de l'utilisateur existant
+                localCustomerId = user.id;
+            }
+
+            // Associer l'ID de l'utilisateur à la commande
+            if (customerId) {
+                localCustomerId = customerId;
+            }
+            const orderData: OrderData = {
+                billing: data,
+                shipping: shippingData, // Ici, shippingData sera soit identique à billingData, soit différent si l'utilisateur a spécifié une adresse de livraison différente
+                line_items: lineItemsData,
+                shipping_lines: shippingLines,
+                payment_method: selectedPaymentMethod.id,
+                payment_method_title: selectedPaymentMethod.title,
+                customer_id: localCustomerId,
+                customer_ip_address: customerIpAddress,
+            };
             const response = await axios.post("/api/orders", orderData);
             setLoading(false);
-            console.log("Selected Payment Method ID:", selectedPaymentMethod.id);
+            // console.log("Selected Payment Method ID:", selectedPaymentMethod.id);
 
             if (selectedPaymentMethod.id === "alma" && response?.data) {
                 // Assurez-vous que response.data contient les informations nécessaires pour Alma
@@ -208,9 +270,17 @@ const Checkout = () => {
                 });
                 router.push(`/order-summary/${response.data.id}`);
             }
-        } catch (error) {
+        } catch (error: any) {
             setLoading(false);
-            addToast("An error occurred while processing your order", {
+            let errorMessage = "An error occurred while processing your order";
+
+            // Vérifier si l'erreur est due à un nom d'utilisateur existant
+            if (error.response && error.response.data && error.response.data.code === "user") {
+                errorMessage = "Un utilisateur existe déjà avec cet email. Connecter vous ou essayer avec un autre email.";
+            }
+
+            // Afficher le message d'erreur dans la notification toast
+            addToast(errorMessage, {
                 appearance: "error",
                 autoDismiss: true,
             });
@@ -254,13 +324,19 @@ const Checkout = () => {
                         updateCartItemHandler={updateCartItemHandler}
                         removeCartItemHandler={removeCartItemHandler}
                         updateCart={updateCart}
+                        updateDiscount={updateDiscount}
                         paymentMethods={paymentMethods}
+                        coupons={coupons}
                         onPaymentMethodChange={handlePaymentMethodChange}
                         isAlmaEligible={isAlmaEligible}
                         almaEligibilityDetails={almaEligibilityDetails}
                         onInstallmentsChange={handleInstallmentsChange}
-
+                        validatePassword={validatePassword}
+                        setLoginModalOn={setLoginModalOn} // Ajoutez ceci pour passer la fonction au composant enfant
+                        cart={cart}
                     />
+                    {loginModalOn && <SignupSignin setLoginModalOn={setLoginModalOn} LoginmodalOn={loginModalOn} />}
+
                 </>
             )}
         </div>

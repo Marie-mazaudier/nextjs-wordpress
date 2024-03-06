@@ -75,13 +75,20 @@ const DashboardSideBar = ({ sidebarMenu, userData }: DashboardSideBarProps) => {
             </Link>
           </div>
         </div>
+
+
+        <Link href="/dashboard/orders">
+          <BodyText size="sm" intent="medium" className="mt-1 text-themePrimary600">
+            Voir
+          </BodyText>
+        </Link>
+
         <div className="mt-5">
           {sidebarMenu?.map((item, index) => (
             <Link key={index} href={`${item?.link}`}>
               <div
-                className={`flex items-center gap-4 p-4 rounded-lg cursor-pointer ${
-                  item?.link === router.pathname && "bg-themePrimary600 transition duration-500 ease-in-out"
-                }`}
+                className={`flex items-center gap-4 p-4 rounded-lg cursor-pointer ${item?.link === router.pathname && "bg-themePrimary600 transition duration-500 ease-in-out"
+                  }`}
               >
                 <p className={`${item?.link === router.pathname ? "text-white" : "text-themeSecondary600"}`}>
                   {item.icon}
@@ -129,16 +136,15 @@ const DashboardSideBar = ({ sidebarMenu, userData }: DashboardSideBarProps) => {
             ""
           )}
         </div>
-      </div>
+      </div >
 
       {/* small device dashboard */}
-      <div className="flex justify-center items-center gap-1.5 p-3 border border-themeSecondary200 rounded-2xl cursor-pointer lg:hidden">
+      < div className="flex justify-center items-center gap-1.5 p-3 border border-themeSecondary200 rounded-2xl cursor-pointer lg:hidden" >
         {sidebarMenu?.map((item, index) => (
           <Link key={index} href={`${item?.link}`} className="w-full">
             <div
-              className={`flex justify-center w-full py-5 rounded-lg cursor-pointer ${
-                item?.link === router.pathname && "bg-themePrimary600 transition duration-500 ease-in-out"
-              }`}
+              className={`flex justify-center w-full py-5 rounded-lg cursor-pointer ${item?.link === router.pathname && "bg-themePrimary600 transition duration-500 ease-in-out"
+                }`}
             >
               <p className={`${item?.link === router.pathname ? "text-white" : "text-themeSecondary600"}`}>
                 {item.icon}
@@ -164,7 +170,7 @@ const DashboardSideBar = ({ sidebarMenu, userData }: DashboardSideBarProps) => {
             />
           </svg>
         </div>
-      </div>
+      </div >
     </>
   );
 };

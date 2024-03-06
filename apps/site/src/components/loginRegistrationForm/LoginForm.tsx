@@ -70,11 +70,18 @@ const LoginForm = ({ setLoginModalOn }: LoginFormProps) => {
         }
       })
       .catch((err) => {
-        addToast(err.response.data.message, {
+        const errorMessage = err.response && err.response.data && err.response.data.message
+          ? err.response.data.message
+          : "Une erreur s'est produite lors de la connexion."; // Message d'erreur par défaut si `err.response.data.message` n'est pas disponible
+        const errorDescription = err.response && err.response.data && err.response.data.description
+          ? err.response.data.description
+          : ""; // Description d'erreur par défaut si `err.response.data.description` n'est pas disponible
+
+        addToast(errorMessage, {
           appearance: "error",
           autoDismiss: true,
           autoDismissTimeout: 2000,
-          description: err.response.data.description,
+          description: errorDescription,
         });
         setLoading(false);
       });

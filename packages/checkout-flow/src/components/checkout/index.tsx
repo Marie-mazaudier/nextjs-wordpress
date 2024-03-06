@@ -1,11 +1,45 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Country } from "country-state-city";
 import { FormLoader, LoaderGrowing } from "../loader";
-import { useForm } from "react-hook-form";
+import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import Image from "next/image";
 import DeliveryOptions from "../DeliveryOptions";
 import PaymentMethods from "../PaymentMethods";
+import Link from "next/link";
 
+interface CouponFormData {
+  couponCode: string;
+}
+interface Coupon {
+  code: string;
+  amount: string | number;
+}
+interface Billing {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  address_1?: string;
+  city?: string;
+  state?: string;
+  postcode?: string;
+  country?: string;
+  company?: string;
+
+}
+interface Shipping {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  address_1?: string;
+  city?: string;
+  state?: string;
+  postcode?: string;
+  country?: string;
+  company?: string;
+
+}
 // user data interface
 interface userDataInterface {
   first_name?: string;
@@ -18,6 +52,8 @@ interface userDataInterface {
   postcode?: string;
   country?: string;
   company?: string;
+  billing?: Billing,
+  shipping?: Shipping
 }
 
 // cart data interface array of object
@@ -81,6 +117,8 @@ interface FormValues {
   country?: string;
   postcode?: string;
   state?: string;
+  password?: string;
+
 }
 interface AlmaEligibilityResponse {
   eligible: boolean;
@@ -93,6 +131,17 @@ interface AlmaEligibilityResponse {
     total_amount: number;
     localized_due_date: string;
   }[];
+}
+interface DiscountInfo {
+  code: string;
+  type: string; // 'percent' ou 'fixed_cart', etc.
+  amount: string; // Montant de la réduction
+}
+interface cart {
+  subtotal: string; // Sous-total du panier au format string avec 2 décimales
+  totalQuantity: number; // Quantité totale d'articles dans le panier
+  selectedShippingMethod: string; // Nouvelle propriété pour la méthode de livraison
+  discount: DiscountInfo; //
 }
 // check out component props
 interface CheckOutProps {
@@ -123,7 +172,12 @@ interface CheckOutProps {
   isAlmaEligible?: boolean; // Nouvelle propriété pour gérer l'éligibilité d'Alma
   almaEligibilityDetails?: AlmaEligibilityResponse[]; // Ajoutez cette ligne
   onInstallmentsChange?: (count: number) => void; // Nouvelle fonction callback pour gérer le changement du nombre d'échéances
-
+  validatePassword?: any;
+  loginForm?: JSX.Element | null; // Permet un composant React, ou `null`
+  setLoginModalOn: any;
+  coupons?: any;
+  updateDiscount: (discount: DiscountInfo) => void;
+  cart: cart
 }
 
 export const CheckOut = ({
@@ -153,7 +207,13 @@ export const CheckOut = ({
   onPaymentMethodChange,
   isAlmaEligible,
   almaEligibilityDetails,
-  onInstallmentsChange
+  onInstallmentsChange,
+  validatePassword,
+  loginForm,
+  setLoginModalOn,
+  coupons,
+  updateDiscount,
+  cart
 }: CheckOutProps) => {
   const country = Country.getAllCountries();
   //const [state, setState] = useState(State.getAllStates());
@@ -173,17 +233,51 @@ export const CheckOut = ({
     postcode: "",
     state: "",
   });
-
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [showLoginLink, setShowLoginLink] = useState(true);
+  console.log('cartSummaryData', summeryData?.discount)
+  // Dans la fonction handleOnChangeShipingCheck
   const handleOnChangeShipingCheck = () => {
     setShipingCheck(!shipingCheck);
+
+    if (!shipingCheck) {
+      // Lorsque shipingCheck passe à true, initialiser les champs avec shippingDetails
+      setValue("shipping_first_name", shippingDetails.first_name);
+      setValue("shipping_last_name", shippingDetails.last_name);
+      setValue("shipping_phone", shippingDetails.phone);
+      setValue("shipping_address_1", shippingDetails.address_1);
+      setValue("shipping_address_2", shippingDetails.address_2);
+      setValue("shipping_city", shippingDetails.city);
+      setValue("shipping_country", shippingDetails.country);
+      setValue("shipping_postcode", shippingDetails.postcode);
+      setValue("shipping_state", shippingDetails.state);
+      // Répétez pour les autres champs nécessaires
+    } else {
+      // Lorsque shipingCheck passe à false, réinitialiser les champs à vide ou à leurs valeurs par défaut
+      setValue("shipping_first_name", "");
+      setValue("shipping_last_name", "");
+      setValue("shipping_phone", "");
+      setValue("shipping_address_1", "");
+      setValue("shipping_address_2", "");
+      setValue("shipping_city", "");
+      setValue("shipping_country", "");
+      setValue("shipping_postcode", "");
+      setValue("shipping_state", "");
+      // Répétez pour les autres champs nécessaires
+    }
   };
+  // Surveiller tous les champs de formulaire
+
+
+  // Cette fonction semble déjà bien configurée pour mettre à jour shippingDetails
   const handleOnChangeShipingDetails = (e: any) => {
     if (shipingCheck) {
       const { name, value } = e.target;
-
       setShippingDetails({ ...shippingDetails, [name]: value });
+      console.log('ShippingDetails', shippingDetails)
     }
   };
+
 
 
   const handleRemoveCartItem = async (itemKey: string) => {
@@ -241,11 +335,33 @@ export const CheckOut = ({
     return finalPrice;
   };
   const calculateTotal = () => {
+    let total = 0;
+
+    // Déterminer le montant initial en fonction de la méthode de livraison sélectionnée
     if (selectedShippingMethod === 'free_shipping' || selectedShippingMethod === 'local_pickup') {
-      return billingData?.subtotal ? convertPrice(billingData?.subtotal) : " $00.00 ";
+      total = billingData?.subtotal ? parseFloat(convertPrice(billingData?.subtotal)) : 0;
+    } else {
+      total = billingData?.total ? parseFloat(convertPrice(billingData?.total)) : 0;
     }
-    return billingData?.total ? convertPrice(billingData?.total) : " $00.00 ";
+    // Vérifier si un discount est appliqué et ajuster le total en conséquence
+    if (cart?.discount?.amount && parseFloat(cart.discount.amount) > 0) {
+      const discountAmount = parseFloat(cart.discount.amount);
+      if (cart.discount.type === 'percent') {
+        // Si le discount est un pourcentage, calculer la réduction basée sur le total
+        total = total - (total * discountAmount / 100);
+      } else if (cart.discount.type === 'fixed_cart') {
+        // Si le discount est un montant fixe, simplement le soustraire du total
+        total = total - discountAmount;
+      }
+    }
+
+    // S'assurer que le total n'est pas négatif
+    total = Math.max(0, total);
+
+    // Retourner le total formaté en chaîne de caractères avec le symbole de la devise
+    return `$${total.toFixed(2)}`;
   };
+
 
   // billing form register hook
   const {
@@ -259,13 +375,30 @@ export const CheckOut = ({
   });
   // Surveiller tous les champs de formulaire
   const watchedFields = watch(); // watch() sans argument renvoie toutes les valeurs du formulaire
-  //  console.log('watchedFields', watchedFields)
+  /* useEffect(() => {
+     if (shipingCheck) {
+       // Mettre à jour `shippingDetails` avec les valeurs des champs spécifiques à la livraison
+       // Assurez-vous que les noms de vos champs de formulaire correspondent à ceux attendus par `shippingDetails`
+       setShippingDetails({
+         first_name: watchedFields.shipping_first_name || "",
+         last_name: watchedFields.shipping_last_name || "",
+         phone: watchedFields.shipping_phone || "",
+         address_1: watchedFields.shipping_address_1 || "",
+         address_2: watchedFields.shipping_address_2 || "",
+         city: watchedFields.shipping_city || "",
+         country: watchedFields.shipping_country || "",
+         postcode: watchedFields.shipping_postcode || "",
+         state: watchedFields.shipping_state || "",
+       });
+     }
+     console.log("ShippingDetails", shippingDetails)
+   }, [watchedFields, shipingCheck]); // Dépendances du useEffect*/
   // coupon form register hook
   const {
     register: couponRegister,
     handleSubmit: couponHandleSubmit,
     formState: { errors: couponErrors, isValid: couponIsValid },
-  } = useForm({
+  } = useForm<CouponFormData>({ // Assurez-vous de passer le type ici
     mode: "onBlur",
   });
 
@@ -348,32 +481,59 @@ export const CheckOut = ({
   /* -------------------------------------------------------------------------- */
   useEffect(() => {
     if (autoFill && userData) {
-      // react hook form setValue
-      Object.keys(userData).forEach((key) => {
-        // if country is true then set the state
-        //  if (key === "country") setState(State.getStatesOfCountry(userData.country));
-        // @ts-ignore
-        // setValue(key, userData[key], { shouldValidate: true });
-      });
+      setShowLoginLink(false);
+      console.log('showLoginLink', showLoginLink)
+      // Remplir les champs de facturation si billing n'est pas undefined
+      const billingInfo: Billing | undefined = userData;
+      //console.log(billingInfo)
+      if (billingInfo) {
+        (Object.keys(billingInfo) as (keyof Billing)[]).forEach((key) => {
+          const value = billingInfo[key]; // TypeScript devrait maintenant reconnaître le type correctement
+          if (value) {
+            setValue(key, value, { shouldValidate: true }); // Utilisez directement 'key' sans préfixe
+
+          }
+        });
+      }
+
+      // Remplir les champs de livraison si shipping n'est pas undefined
+      const shippingInfo: Shipping | undefined = userData;
+      if (shippingInfo) {
+        (Object.keys(shippingInfo) as (keyof Shipping)[]).forEach((key) => {
+          const value = shippingInfo[key]; // TypeScript devrait maintenant reconnaître le type correctement
+          if (value) {
+            setValue(`shipping_${key}`, value, { shouldValidate: true });
+            console.log(value)
+          }
+        });
+      }
     }
-    // if userLogin is true then auto fill the form using useEffect hook
-    // if (!userLogin) {
-    //   // accountPolicy setValues using react hook form setValue
-    //   setValue("accountPolicy", true);
-    // } else {
-    //   // accountPolicy setValues using react hook form setValue
-    //   setValue("accountPolicy", false);
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoFill, userData, userLogin]);
+  }, [userData]);
 
   /* -------------------------------------------------------------------------- */
   /*                        Soumission du formulaire                   */
   /* -------------------------------------------------------------------------- */
   const onSubmit = async (data: any) => {
     // form data console
-    let shippingData = shipingCheck ? shippingDetails : data; // Utilisez les données de livraison si l'option est cochée, sinon utilisez les données de facturation
-    console.log("shippingData", shippingData)
+    let shippingData;
+
+    if (shipingCheck) {
+      shippingData = {
+        first_name: data.shipping_first_name || "",
+        last_name: data.shipping_last_name || "",
+        phone: data.shipping_phone || "",
+        address_1: data.shipping_address_1 || "",
+        address_2: data.shipping_address_2 || "",
+        city: data.shipping_city || "",
+        country: data.shipping_country || "",
+        postcode: data.shipping_postcode || "",
+        state: data.shipping_state || "",
+      };
+    } else {
+      // Si shipingCheck est faux, utilisez les données de facturation
+      shippingData = data;
+    } console.log("shippingData", shippingData)
+
     if (formSubmit) {
       formSubmit(data, shippingData);
     } else {
@@ -385,12 +545,29 @@ export const CheckOut = ({
   // /* -------------------------------------------------------------------------- */
   // /*                         Coupon Code submit handler                         */
   // /* -------------------------------------------------------------------------- */
-  const couponSubmitHandler = async (data: any) => {
-    // form data console
-    if (couponSubmit) {
-      couponSubmit(data);
+  const couponSubmitHandler = async (data: CouponFormData) => {
+    // Extrait le code du coupon saisi par l'utilisateur
+    const { couponCode } = data;
+    console.log('code', couponCode)
+    // Recherche le coupon dans la liste des coupons disponibles
+    const couponFound = coupons.find((coupon: Coupon) => coupon.code === data.couponCode);
+    console.log('coupons', coupons)
+    if (couponFound) {
+      // Si le coupon est trouvé et valide, appliquez la réduction ici
+      console.log(`Coupon valide: ${couponFound.code}, ${couponFound.amount} de réduction.`);
+
+      // Ici, vous pouvez appeler une fonction pour appliquer la réduction au panier de l'utilisateur
+      updateDiscount({
+        code: couponFound.code,
+        type: couponFound.discount_type,
+        amount: couponFound.amount,
+      });
+
+      // Assurez-vous de gérer l'état de l'application pour refléter l'application du coupon
     } else {
-      console.log("couponSubmit", data);
+      // Si le coupon n'est pas trouvé, affichez une erreur
+      console.error("Coupon invalide ou non trouvé.");
+      // Vous pourriez vouloir mettre à jour l'état de l'interface utilisateur pour refléter cette erreur
     }
   };
 
@@ -398,20 +575,29 @@ export const CheckOut = ({
   /*                         Remove Coupon Code handler                         */
   /* -------------------------------------------------------------------------- */
   const couponRemoveHandler = async (data: any) => {
-    // form data console
-    if (removeCouponHandler) {
-      removeCouponHandler();
-    } else {
-      console.warn("Remove Coupon Props not passed. Please pass removeCouponHandler function props.");
-    }
+    updateDiscount({
+      code: '',
+      type: 'fixed_cart', // ou 'percent', selon ce qui était défini par défaut
+      amount: '0',
+    });
   };
-
+  const toggleLoginForm = () => {
+    setShowLoginForm(!showLoginForm);
+  };
   return (
     <div className="container mx-auto">
       <div className="lg:flex grid gap-10 mt-16 mb-28">
         {/* Form Body */}
         <div className="2xl:w-3/4 lg:w-2/3 w-11/12 mx-auto">
           <div className="bg-white shadow-md rounded-xl overflow-hidden p-6 relative">
+            {showLoginLink && (
+              <p>Déjà client ?
+                <button onClick={() => setLoginModalOn(true)} className="text-blue-500 hover:underline">
+                  Cliquez pour vous connecter
+                </button>
+              </p>
+            )}
+            {/*showLoginForm && showLoginLink && loginForm*/}
             {/* Form Loader */}
             {(!cartData || loading) && <LoaderGrowing />}
             <div className=" grid lg:gap-3 gap-8">
@@ -643,8 +829,7 @@ export const CheckOut = ({
                             Phone
                           </label>
                           <input
-                            className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 border-[#DDE6F5] leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.phone ? "border-red-400" : "border-[#DDE6F5]"
-                              }`}
+                            className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.phone ? "border-red-400" : "border-[#DDE6F5]"} `}
                             type="tel"
                             placeholder="Your Phone"
                             id="phone"
@@ -652,6 +837,7 @@ export const CheckOut = ({
                               required: "Phone is required",
                             })}
                           />
+
                         </div>
                       </div>
                     </div>
@@ -680,9 +866,46 @@ export const CheckOut = ({
                               },
                             })}
                           />
+
+                          {errors.email && typeof errors.email.message === 'string' && (
+                            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                          )}
+
                         </div>
                       </div>
                     </div>
+                    {/* Mot de passe */}
+                    {!userLogin && (
+                      <div className="sm:flex grid sm:gap-5 gap-8">
+                        <div className="w-full">
+                          <div className="relative">
+                            <label
+                              className={`absolute -top-2 ${errors.password ? "text-red-400" : "text-[#85929E]"} left-3 bg-white text-xs`}
+                              htmlFor="password"
+                            >
+                              Mot de passe
+                            </label>
+                            <input
+                              type="password"
+                              id="password"
+                              className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.password ? "border-red-500" : "border-themeSecondary300"}`}
+                              placeholder="Password"
+                              {...register("password", {
+                                required: "Le mot de passe est requis",
+                                pattern: {
+                                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                                  message: "Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial"
+                                },
+                              })}
+                            />
+                            {errors.password && typeof errors.password.message === 'string' && (
+                              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Account Policy checkbox */}
                     {/* {!userLogin && (
                       <div className="sm:flex grid sm:gap-5 gap-8">
@@ -755,15 +978,13 @@ export const CheckOut = ({
                                 First Name
                               </label>
                               <input
-
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 ${errors.first_name ? "border-red-400" : "border-[#DDE6F5]"
-                                  } text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline`}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 ${errors.shipping_first_name ? "border-red-400" : "border-[#DDE6F5]"} text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline`}
                                 type="text"
                                 placeholder="First Name"
-                                id="first_name"
-                                onChange={handleOnChangeShipingDetails}
-                                name="first_name"
-
+                                id="shipping_first_name" // Ajustez l'ID pour correspondre au nom enregistré
+                                {...register("shipping_first_name", {
+                                  required: shipingCheck && "First Name is required", // Rendre obligatoire si shipingCheck est true
+                                })}
                               />
                             </div>
                           </div>
@@ -778,14 +999,12 @@ export const CheckOut = ({
                                 Last Name
                               </label>
                               <input
-
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.last_name ? "border-red-400" : "border-[#DDE6F5]"
-                                  }`}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 ${errors.shipping_last_name ? "border-red-400" : "border-[#DDE6F5]"} text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline`}
                                 type="text"
                                 placeholder="Last Name"
-                                id="last_name"
-                                name="last_name"
-                                onChange={handleOnChangeShipingDetails}
+                                {...register("shipping_last_name", {
+                                  required: shipingCheck ? "Last Name is required" : false,
+                                })}
                               />
                             </div>
                           </div>
@@ -799,13 +1018,10 @@ export const CheckOut = ({
                                 Company Name (Optional)
                               </label>
                               <input
-
                                 className="appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 border-[#DDE6F5] leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline"
                                 type="text"
-                                placeholder="Company Name"
-                                id="company"
-                                name="company"
-                                onChange={handleOnChangeShipingDetails}
+                                placeholder="Company Name (Optional)"
+                                {...register("shipping_company")}
                               />
                             </div>
                           </div>
@@ -821,12 +1037,10 @@ export const CheckOut = ({
                               </label>
                               <select
                                 title="Country"
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.country ? "border-red-400" : "border-[#DDE6F5]"
-                                  }`}
-                                id="country"
-
-                                name="country"
-                                onChange={handleOnChangeShipingDetails}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.shipping_country ? "border-red-400" : "border-[#DDE6F5]"}`}
+                                {...register("shipping_country", {
+                                  required: shipingCheck ? "Country is required" : false,
+                                })}
                               >
                                 <option value="">Select Country</option>
                                 {country.map((item, index) => (
@@ -850,14 +1064,12 @@ export const CheckOut = ({
                                 Street Address
                               </label>
                               <input
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.address_1 ? "border-red-400" : "border-[#DDE6F5]"
-                                  }`}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.shipping_address_1 ? "border-red-400" : "border-[#DDE6F5]"}`}
                                 type="text"
                                 placeholder="Address"
-                                id="address_1"
-
-                                name="address_1"
-                                onChange={handleOnChangeShipingDetails}
+                                {...register("shipping_address_1", {
+                                  required: shipingCheck ? "Address is required" : false,
+                                })}
                               />
                             </div>
                           </div>
@@ -875,14 +1087,12 @@ export const CheckOut = ({
                                 Your Town / City
                               </label>
                               <input
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.city ? "border-red-400" : "border-[#DDE6F5]"
-                                  }`}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.shipping_city ? "border-red-400" : "border-[#DDE6F5]"}`}
                                 type="text"
                                 placeholder="City"
-                                id="city"
-
-                                name="city"
-                                onChange={handleOnChangeShipingDetails}
+                                {...register("shipping_city", {
+                                  required: shipingCheck ? "City is required" : false,
+                                })}
                               />
                             </div>
                           </div>
@@ -904,7 +1114,7 @@ export const CheckOut = ({
                                 id="address_2"
 
                                 name="address_2"
-                                onChange={handleOnChangeShipingDetails}
+
                               />
                               {/*  <label
                             className={`absolute -top-2 ${errors.state ? "text-red-400" : "text-[#85929E]"
@@ -945,14 +1155,12 @@ export const CheckOut = ({
                                 Postcode / ZIP
                               </label>
                               <input
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.postcode ? "border-red-400" : "border-[#DDE6F5]"
-                                  }`}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.shipping_postcode ? "border-red-400" : "border-[#DDE6F5]"}`}
                                 type="text"
                                 placeholder="Your Postcode / ZIP"
-                                id="postcode"
-
-                                name="postcode"
-                                onChange={handleOnChangeShipingDetails}
+                                {...register("shipping_postcode", {
+                                  required: shipingCheck ? "Postcode is required" : false,
+                                })}
                               />
                             </div>
                           </div>
@@ -967,15 +1175,15 @@ export const CheckOut = ({
                                 Phone
                               </label>
                               <input
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 border-[#DDE6F5] leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.phone ? "border-red-400" : "border-[#DDE6F5]"
-                                  }`}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.phone ? "border-red-400" : "border-[#DDE6F5]"} `}
                                 type="tel"
                                 placeholder="Your Phone"
                                 id="phone"
-
-                                name="phone"
-                                onChange={handleOnChangeShipingDetails}
+                                {...register("phone", {
+                                  required: "Phone is required",
+                                })}
                               />
+
                             </div>
                           </div>
                         </div>
@@ -991,14 +1199,16 @@ export const CheckOut = ({
                                 Email Address
                               </label>
                               <input
-                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.email ? "border-red-400" : "border-[#DDE6F5]"
-                                  }`}
+                                className={`appearance-none border rounded-md w-full py-3.5 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-lg focus:shadow-outline ${errors.shipping_email ? "border-red-400" : "border-[#DDE6F5]"}`}
                                 type="email"
                                 placeholder="Your Email Address"
-                                id="email"
-
-                                name="email"
-                                onChange={handleOnChangeShipingDetails}
+                                {...register("shipping_email", {
+                                  required: shipingCheck ? "Email is required" : false,
+                                  pattern: {
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                                    message: "Invalid email address",
+                                  },
+                                })}
                               />
                             </div>
                           </div>
@@ -1206,7 +1416,8 @@ export const CheckOut = ({
                 <li className="flex font-medium justify-between py-2 text-base text-[#5D6D7E]">
                   <span>Discount</span>
                   <span className="text-[#FA4F58] flex gap-3 items-center">
-                    - ${summeryData?.discount.toFixed(2) || 0}
+                    - {summeryData?.discount.toFixed(2) || 0}
+                    {cart?.discount?.type === 'percent' ? '%' : '€'}
                     {/* add delete icon */}
                     {summeryData?.discount > 0 && (
                       <svg
@@ -1234,43 +1445,13 @@ export const CheckOut = ({
                   <span className="text-[#1B2631]">
                     {/*${summeryData?.total?.toFixed(2) || 0}*/}
                     {calculateTotal()}
-                    {/* <span className="text-[#85929E] text-sm">/year</span> */}
                   </span>
                 </li>
               </ul>
             </div>
             {/* checkboxs */}
             <div className="mt-8">
-              {/* tracking-coupone checkbox }
-              {policyData && (
-                <Fragment>
-                  <div className="mb-5">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2 justify-between">
-                        <input id="Coupons" type="checkbox" defaultChecked />
-                        <label htmlFor="Coupons" className="font-normal text-sm text-themeNevyLight">
-                          {policyData.title || "Text me Tracking Updates  & Periodic Coupons (optional)"}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <p className="font-normal text-sm text-themeNevyLight">
-                      {policyData.description ||
-                        "Your personal data will be used to process your order, support your experience throughout this website, and for other purpose describe in our"}
-                      <a
-                        href={policyData.link.url || "#"}
-                        target={policyData.link.target || "_self"}
-                        rel="noopener noreferrer"
-                        className="font-semibold text-themeNevyLight hover:text-themeRedLight transition hover:duration-300"
-                      >
-                        {" "}
-                        {policyData.link.title || "privacy policy"}
-                      </a>
-                    </p>
-                  </div>
-                </Fragment>
-              )}
+
               {/* newsletter checkbox */}
               {signUpData && (
                 <div className="mb-4">
