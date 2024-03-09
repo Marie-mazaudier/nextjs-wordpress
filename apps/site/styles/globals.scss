@@ -28,9 +28,25 @@ h6 {
 .text-principal {
   color: $couleur-principal;
 }
-.text-secondaire,
+.main_font {
+  font-family: $font-titre;
+}
+.main_clor {
+  color: $couleur-principal;
+}
+.texte_class {
+  color: $couleur-principal;
+  font-family: $font-texte;
+  font-size: 1.1rem;
+}
+
 .text-themePrimary600 {
   color: $couleur-secondaire;
+}
+.titre_secondaire {
+  font-size: $size-titre-h2;
+  color: $couleur-principal;
+  line-height: 1.1em;
 }
 a {
   color: $couleur-secondaire;

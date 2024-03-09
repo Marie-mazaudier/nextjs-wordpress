@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getCookie, setCookie } from "cookies-next";
 import { usePopups } from 'lib/graphQL/usePopups'; // Assurez-vous que le chemin d'importation est correct
-import { PopupNode } from '../types/popupsTypes'; // Ajustez selon votre chemin d'importation
+import { PopupNode } from '../../types/popupsTypes'; // Ajustez selon votre chemin d'importation
 
 const Popup: React.FC = () => {
     const { data, loading, error } = usePopups();
@@ -39,18 +39,23 @@ const Popup: React.FC = () => {
             }
         }
     }, [data]);
-
+    console.log(showPopup)
     const handleClose = () => {
         setPopupClass("opacity-0");
         setTimeout(() => setShowPopup(false), 500); // Attendez la fin de la transition pour cacher
     };
+
+    // La classe 'fixed' est maintenant conditionnelle à la valeur de 'showPopup' et 'popupClass'
+    const containerClasses = showPopup && popupClass === 'opacity-100'
+        ? `fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 z-[999999999]`
+        : `opacity-0`;
 
     if (!showPopup || loading || error) return null;
 
     const popupToShow = data?.popupsAcf.nodes.find((node: PopupNode) => node.popupChamps.popupActive && new Date() >= new Date(node.popupChamps.dateDebut) && new Date() <= new Date(node.popupChamps.dateDeFin));
 
     return (
-        <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ${popupClass} ${showPopup ? '' : 'hidden'}`}>
+        <div className={containerClasses}>
             {popupToShow && (
                 <div key={popupToShow.id} className="relative popup bg-white p-4 shadow-lg" style={{ width: '600px', maxWidth: '100%' }}>
                     <button onClick={handleClose} className="absolute top-0 right-0 m-2 bg-black p-1">

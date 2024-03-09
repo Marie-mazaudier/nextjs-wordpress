@@ -23,8 +23,32 @@ import {
   Brands,
   Spaces,
 } from "@jstemplate/ecommerce-ui";
+import client from "lib/utils/apollo-client";
+//IMPORT COMPOSANTS HOME
+import { PresentationSite } from "src/components/home/presentationSite";
+import { TwoCategories } from "src/components/home/twoCategories";
+import { RecentProducts } from "src/components/home/recentProduct";
+import { PresentationBijoux } from "src/components/home/presentationBijoux";
+import { InfoBijouterie } from "src/components/home/InfoBijouterie";
+//IMPORT DATA GRAPHQL
+import { SLIDERS_QUERY } from "src/data/graphQl/sliderQueries";
+import { HOME_QUERY } from "src/data/graphQl/homeQueries";
+import { GET_RECENT_JEWELRY_QUERY, GET_RECENT_WATCHES_QUERY } from "src/data/graphQl/woo/products/recentProducts";
+//IMPORT TYPES
+import { SliderType } from "src/types/sliderType";
+import { HomePageData } from "src/types/homeType";
+import { Product } from "src/types/recentProductsType";
+interface HomeProps {
+  slidersData: SliderType[];
+  homeData: HomePageData; // Pas besoin de tableau ici, selon votre requête GraphQL
+  recentJewelry: Product[]; // Ici, recentJewelry est un tableau de produits
+  recentWatches: Product[]; // Ici, recentJewelry est un tableau de produits
 
-export default function Home() {
+}
+
+
+// Utilisez l'interface HomeProps pour typer les props de la fonction Home
+export default function Home({ slidersData, homeData, recentJewelry, recentWatches }: HomeProps) {
   const [active, setActive] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
 
@@ -95,26 +119,35 @@ export default function Home() {
         <title>Home Page | Metashop</title>
         <meta name="description" content="Home page description" />
       </Head>
-      <SimpleSlider className="z-10" />
+      <SimpleSlider sliderData={slidersData} />
       <Spaces />
       {
-        showPopup && <div className={`fixed inset-0 z-50 transition-opacity duration-500 ease-in ${showPopup ? 'opacity-100' : 'opacity-0'}`}>
-          <Popup />
-        </div>
+        showPopup && <Popup />
       }
-      <Presentation />
+      {/*<Presentation />*/}
       <Spaces />
-      <IconBoxOne data={IconBoxData} />
+      <PresentationSite infoData={homeData.page.homeChamps.bloc1} />
       <Spaces />
+      <TwoCategories infoData={homeData.page.homeChamps.bloc2} />
+      <Spaces />
+      {/*<IconBoxOne data={IconBoxData} />
       {/*<FlashSale data={featuredProducts} sectionTitle="Our Best Selling Products" />
       <Spaces />
       <MiniBanner data={miniBannerData} />
       <Spaces />
-      <TrendingProducts data={showingProducts} active={active} setActive={setActive} />
-  <Spaces />*/}
-      <ProductCategories data={dynamicTab} category={productCategories} active={active} setActive={setActive} />
       <Spaces />
-      <Brands data={clients} />
+      <TrendingProducts data={showingProducts} active={active} setActive={setActive} />
+      <Spaces />*/}
+      <RecentProducts products={recentWatches} type="watches" />
+      <Spaces />
+      <PresentationBijoux infoData={homeData.page.homeChamps.bloc3Bijoux} />
+      <Spaces />
+      <RecentProducts products={recentJewelry} type="jewelry" />
+      { /*<ProductCategories data={dynamicTab} category={productCategories} active={active} setActive={setActive} />
+      <Spaces />
+      <Brands data={clients} />*/}
+      <Spaces />
+      <InfoBijouterie infoData={homeData.page.homeChamps.bloc4savoir_plus} />
       <Spaces />
       <Newsletter
         placeholder="Enter Email"
@@ -128,4 +161,31 @@ export default function Home() {
 
     </>
   );
+}
+
+//Générer les données via SSG
+export async function getStaticProps() {
+  const [slidersResponse, homeResponse, recentJewelryResponse, recentWatchesResponse] = await Promise.all([
+    client.query({ query: SLIDERS_QUERY }),
+    client.query({ query: HOME_QUERY }),
+    client.query({ query: GET_RECENT_JEWELRY_QUERY }), // Assurez-vous que cette requête est correctement importée
+    client.query({ query: GET_RECENT_WATCHES_QUERY }), // Assurez-vous que cette requête est correctement importée
+
+  ]);
+
+  const slidersData = slidersResponse.data.sliders.nodes;
+  const homeData = homeResponse.data;
+  // Ajustez l'accès aux données ici en fonction de la structure réelle de la réponse
+  const recentJewelry = recentJewelryResponse.data.products.nodes; // Ajustement correct
+  const recentWatches = recentWatchesResponse.data.products.nodes; // Ajustement correct
+
+  return {
+    props: {
+      slidersData,
+      homeData,
+      recentJewelry,
+      recentWatches
+    },
+    revalidate: 10800, // Revalidation toutes les 3 heures comme souhaité
+  };
 }

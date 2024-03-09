@@ -3,7 +3,7 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}",],
+  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     screens: {
       sm: "576px",
@@ -99,11 +99,11 @@ module.exports = {
       },
       keyframes: {
         moveTestimonialShow: {
-          "100%": {transform: "translateY(-40%)"},
+          "100%": { transform: "translateY(-40%)" },
         },
       },
       transform: {
-        moveTestimonialShow: {transform: "translate3d(0, 0, 0)"},
+        moveTestimonialShow: { transform: "translate3d(0, 0, 0)" },
       },
     },
     plugins: [],

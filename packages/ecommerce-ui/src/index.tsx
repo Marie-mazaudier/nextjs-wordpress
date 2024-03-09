@@ -35,6 +35,7 @@ export * from "./molecules/filter/FilterWithRating";
 export * from "./molecules/filter/FilterWithSlider";
 export * from "./molecules/product-card/ProductCardOne";
 export * from "./molecules/product-card/ProductCardTwo";
+export * from "./molecules/product-card/ProductCardHome";
 export * from "./molecules/order/Order";
 export * from "./molecules/cart/CuponCode";
 export * from "./molecules/cart/CartCount";
