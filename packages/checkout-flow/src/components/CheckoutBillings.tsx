@@ -1,6 +1,6 @@
 import React from "react";
 import { Country, State } from "country-state-city";
-import { PaymentMethods } from "./PaymentMethods";
+import PaymentMethods from "./PaymentMethods";
 // import { BodyText } from "@jstemplate/ecommerce-ui";
 
 interface FormValues {
