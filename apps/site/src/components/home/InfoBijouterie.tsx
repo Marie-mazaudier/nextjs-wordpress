@@ -1,12 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { Placeholder } from "@jstemplate/ecommerce-ui";
-import { BodyText } from "@jstemplate/ecommerce-ui";
-import { Heading1 } from "@jstemplate/ecommerce-ui";
+import React, { useEffect, useRef, useState } from "react";
 import { Bloc4SavoirPlus } from "src/types/homeType";
-import { Button } from "@jstemplate/ecommerce-ui";
 import useFadeIn from "lib/gsap/fadeIn";
-import useFadeInUp from "lib/gsap/fadeInUp";
-import useVerticalScroll from "lib/gsap/verticalScroll";
 import * as DOMPurify from 'dompurify';
 
 interface InfoBijouterieProps {
@@ -14,14 +8,14 @@ interface InfoBijouterieProps {
 }
 
 export const InfoBijouterie: React.FC<InfoBijouterieProps> = ({ infoData }) => {
+    const [htmlContent, setHtmlContent] = useState('');
+    const [htmlContent2, setHtmlContent2] = useState('');
+
     /*=============GSAP INITIALISATION===================*/
     // Références pour les éléments que vous souhaitez animer
 
     useFadeIn({ repeat: true }); // Pour répéter l'animation à chaque fois que l'élément entre dans la vue
 
-
-    const sanitizedDescription = DOMPurify.sanitize(infoData.descriptionEnSavoirPlus);
-    const sanitizedDescription2 = DOMPurify.sanitize(infoData.description2EnSavoirPlus);
 
     // Nous utilisons un style inline pour l'URL de l'image de fond pour une meilleure lisibilité.
     const styleBackground1 = {
@@ -30,7 +24,13 @@ export const InfoBijouterie: React.FC<InfoBijouterieProps> = ({ infoData }) => {
         backgroundPosition: 'center', // pour centrer l'image de fond
 
     };
+    useEffect(() => {
+        // Mettre à jour le contenu HTML ici si nécessaire
+        setHtmlContent(DOMPurify.sanitize(infoData.descriptionEnSavoirPlus))
+        setHtmlContent2(DOMPurify.sanitize(infoData.description2EnSavoirPlus))
 
+
+    }, [infoData.descriptionEnSavoirPlus]);
 
     return (
         <div className=" px-2 md:px-20">
@@ -40,11 +40,11 @@ export const InfoBijouterie: React.FC<InfoBijouterieProps> = ({ infoData }) => {
                     <h2 className="text-left titre_secondaire">
                         {infoData.titresavoirplus}
                     </h2>
-                    <p className="text-left texte_class my-8" dangerouslySetInnerHTML={{ __html: sanitizedDescription }}></p>
+                    <p className="text-left texte_class my-8" dangerouslySetInnerHTML={{ __html: htmlContent }}></p>
                     <h3 className="text-left text-3xl">
                         {infoData.sousTitreEnSavoirPlus}
                     </h3>
-                    <p className="text-left texte_class my-8" dangerouslySetInnerHTML={{ __html: sanitizedDescription2 }}></p>
+                    <p className="text-left texte_class my-8" dangerouslySetInnerHTML={{ __html: htmlContent2 }}></p>
 
                 </div>
                 {/* Section */}

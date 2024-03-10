@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Placeholder } from "../../atoms/placeholder/Placeholder";
 import { BodyText } from "../../atoms/typography/bodyText/BodyText";
 import { Heading3 } from "../../atoms/typography/headingText/heading3";
 import Skeleton from "react-loading-skeleton";
 import Link from "next/link";
+import * as DOMPurify from 'dompurify';
 
 export type BlogCardProps = {
   data?: {
@@ -26,6 +27,12 @@ export const BlogCard = ({ data }: BlogCardProps) => {
   const contentWithStyle = data?.content?.replace(/<p>/g, "<p/>");
   const contentWithoutHtml = contentWithStyle?.replace(/(<([^>]+)>)/gi, "");
   const contentWithoutHtmlAndLimit = contentWithoutHtml?.slice(0, 375);
+  const [htmlContent, setHtmlContent] = useState('');
+  useEffect(() => {
+    // Mettre à jour le contenu HTML ici si nécessaire
+    setHtmlContent(DOMPurify.sanitize(contentWithoutHtmlAndLimit))
+
+  }, [contentWithoutHtmlAndLimit]);
   return (
     <div className="p-6 border rounded-2xl h-full">
       <div className="flex items-center justify-center">
@@ -82,7 +89,7 @@ export const BlogCard = ({ data }: BlogCardProps) => {
         <BodyText size="md" className="text-themeGray mt-2.5 line-clamp-2">
           <span
             dangerouslySetInnerHTML={{
-              __html: contentWithoutHtmlAndLimit,
+              __html: htmlContent,
             }}
           ></span>
         </BodyText>

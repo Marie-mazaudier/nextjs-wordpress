@@ -1,5 +1,5 @@
 import { Badge, BodyText, Heading2 } from "@jstemplate/ecommerce-ui";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import * as DOMPurify from 'dompurify';
@@ -11,8 +11,13 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
   // const repliceContent = data?.short_description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
   // Nettoyage du HTML de la description courte du produit
 
-  const cleanDescription = typeof window === 'undefined' ? data?.short_description : DOMPurify.sanitize(data?.short_description);
+  //const cleanDescription = typeof window === 'undefined' ? data?.short_description : DOMPurify.sanitize(data?.short_description);
+  const [htmlContent, setHtmlContent] = useState('');
+  useEffect(() => {
+    // Mettre à jour le contenu HTML ici si nécessaire
+    setHtmlContent(DOMPurify.sanitize(data?.short_description))
 
+  }, [data?.short_description]);
   return (
     <div>
       {data?.name ? (
@@ -89,7 +94,7 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
       </div>
 
       {data ? (
-        <div className="text-themeSecondary500 mt-5 line-clamp-3" dangerouslySetInnerHTML={{ __html: cleanDescription }} />
+        <div className="text-themeSecondary500 mt-5 line-clamp-3" dangerouslySetInnerHTML={{ __html: htmlContent }} />
 
       ) : (
         <>

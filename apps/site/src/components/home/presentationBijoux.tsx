@@ -1,12 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { Placeholder } from "@jstemplate/ecommerce-ui";
-import { BodyText } from "@jstemplate/ecommerce-ui";
-import { Heading1 } from "@jstemplate/ecommerce-ui";
+import React, { useEffect, useRef, useState } from "react";
 import { Bloc3Bijoux } from "src/types/homeType";
 import { Button } from "@jstemplate/ecommerce-ui";
-import useFadeIn from "lib/gsap/fadeIn";
-import useFadeInUp from "lib/gsap/fadeInUp";
-import useVerticalScroll from "lib/gsap/verticalScroll";
 import * as DOMPurify from 'dompurify';
 
 interface PresentationBijouxProps {
@@ -14,14 +8,13 @@ interface PresentationBijouxProps {
 }
 
 export const PresentationBijoux: React.FC<PresentationBijouxProps> = ({ infoData }) => {
-    /*=============GSAP INITIALISATION===================*/
-    // Références pour les éléments que vous souhaitez animer
+    const [htmlContent, setHtmlContent] = useState('');
 
-    useFadeIn({ repeat: true }); // Pour répéter l'animation à chaque fois que l'élément entre dans la vue
+    useEffect(() => {
+        // Mettre à jour le contenu HTML ici si nécessaire
+        setHtmlContent(DOMPurify.sanitize(infoData.descriptionBijoux))
 
-
-    const sanitizedDescription = DOMPurify.sanitize(infoData.descriptionBijoux);
-
+    }, [infoData.descriptionBijoux]);
     // Nous utilisons un style inline pour l'URL de l'image de fond pour une meilleure lisibilité.
     const styleBackground1 = {
         backgroundImage: `url(${infoData.photoBijoux.node.mediaItemUrl})`,
@@ -44,7 +37,7 @@ export const PresentationBijoux: React.FC<PresentationBijouxProps> = ({ infoData
                     <h2 className="text-left titre_secondaire">
                         {infoData.titreBijoux}
                     </h2>
-                    <p className="text-left texte_class my-8" dangerouslySetInnerHTML={{ __html: sanitizedDescription }}></p>
+                    <p className="text-left texte_class my-8" dangerouslySetInnerHTML={{ __html: htmlContent }}></p>
                     <Button> {infoData.boutonBijoux}</Button>
 
                 </div>
