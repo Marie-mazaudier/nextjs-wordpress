@@ -15,7 +15,7 @@ export const RecentProducts: React.FC<RecentProductsProps> = ({ products, type }
   const title = type === 'jewelry' ? 'Nos derniers bijoux' : 'Nos dernières montres';
 
   return (
-    <div className="px-2 md:px-20">
+    <div className="px-2 md:px-60">
       <h2 className="text-center titre_secondaire">{title}</h2>
       <Slider {...slickSettings}>
         {products.map((product) => (

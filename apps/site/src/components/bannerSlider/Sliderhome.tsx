@@ -51,7 +51,7 @@ export default function SyncSlider({ className, sliderData }: SyncSliderProps) {
                                 <div className="w-1/2 flex flex-col justify-center px-44">
                                     <h1 className="text-5xl mb-4">{title}</h1>
                                     {/* Utilisation de sanitizedContent[index] pour afficher le contenu nettoyé */}
-                                    <div className="mb-8" dangerouslySetInnerHTML={{ __html: sanitizedContent[index] ?? '' }}></div>
+                                    <div className="mb-8 texte_class" dangerouslySetInnerHTML={{ __html: sanitizedContent[index] ?? '' }}></div>
                                     <div className="flex justify-left">
                                         <a href={lienBouton} className="px-6 py-2 border inline-flex shrink-0">Découvrir</a>
                                     </div>

@@ -5,13 +5,15 @@ import { useProductCategories } from "../../../lib/woocommerce/useCategories";
 import { AccountData, QuickLinkData, SupportData } from "../../data/FooterData";
 import Navbar from "../navbar/Navbar";
 
-const Layout = ({ children }: any) => {
+const Layout = ({ children, menuData }: any) => {
+  //  console.log("menuData", menuData)
+
   const { productCategories } = useProductCategories();
   const { data: cartData } = useGetCartData();
   const filterCategories = productCategories?.filter((item: any) => item.name != "Uncategorized");
   return (
     <>
-      <Navbar category={filterCategories} cartData={cartData} className="z-[99999]" />
+      <Navbar category={filterCategories} cartData={cartData} menuData={menuData} className="z-[99999]" />
       <main>{children}</main>
       <Footer QuickLinkData={QuickLinkData} AccountData={AccountData} SupportData={SupportData} />
     </>

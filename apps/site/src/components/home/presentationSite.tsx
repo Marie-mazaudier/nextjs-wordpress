@@ -53,7 +53,7 @@ export const PresentationSite: React.FC<PresentationSiteProps> = ({ infoData }) 
                 <div className="flex flex-col justify-center items-center h-full">
                     <div className="text-center w-3/5 p-10 bg-white bg-opacity-90 fade-in" >
                         <Heading1>{infoData.titreDuSite}</Heading1>
-                        <BodyText className="mt-2 mb-4">{infoData.descriptionDuSite}</BodyText>
+                        <BodyText size="lg" className="mt-2 mb-4 ">{infoData.descriptionDuSite}</BodyText>
                         <Button className="mt-4">{infoData.boutonPopup}</Button>
                     </div>
                 </div>

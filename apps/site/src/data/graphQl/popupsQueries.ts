@@ -30,5 +30,5 @@ export const POPUPS_QUERY = gql`
         }
       }
     }
-  }
+  } 
 `;

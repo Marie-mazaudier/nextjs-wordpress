@@ -25,10 +25,10 @@ export const PresentationBijoux: React.FC<PresentationBijouxProps> = ({ infoData
 
 
     return (
-        <div className=" h-[70vh] px-2 md:px-20">
+        <div className=" h-[60vh] px-2 md:px-20">
             <div className="flex h-full justify-between items-center mx-auto  gap-5 md:gap-10">
                 {/* Section pour les montres pour dames */}
-                <div className="w-1/2 flex px-20 items-center justify-end	  h-full bg-no-repeat bg-slate-50 bg-center bg-cover" style={styleBackground1}>
+                <div className="w-1/2 flex px-20 rounded-md items-center justify-end h-full bg-no-repeat bg-slate-50 bg-center bg-cover" style={styleBackground1}>
 
                 </div>
 
@@ -38,8 +38,9 @@ export const PresentationBijoux: React.FC<PresentationBijouxProps> = ({ infoData
                         {infoData.titreBijoux}
                     </h2>
                     <p className="text-left texte_class my-8" dangerouslySetInnerHTML={{ __html: htmlContent }}></p>
-                    <Button> {infoData.boutonBijoux}</Button>
-
+                    <div className="flex">
+                        <Button size="sm"> {infoData.boutonBijoux}</Button>
+                    </div>
                 </div>
             </div>
         </div>

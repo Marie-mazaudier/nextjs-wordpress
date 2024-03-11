@@ -39,7 +39,7 @@ const Popup: React.FC = () => {
             }
         }
     }, [data]);
-    console.log(showPopup)
+    //  console.log(showPopup)
     const handleClose = () => {
         setPopupClass("opacity-0");
         setTimeout(() => setShowPopup(false), 500); // Attendez la fin de la transition pour cacher

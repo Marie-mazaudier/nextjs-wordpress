@@ -4,7 +4,8 @@ import React, { FC } from "react";
 const btStyle = cva([""], {
   variants: {
     intent: {
-      regular: ["font-normal"],
+      thin: ["font-extralight"],
+      regular: ["font-light"],
       medium: ["font-medium"],
       semibold: ["font-semibold"],
       bold: ["font-bold"],
@@ -20,7 +21,7 @@ const btStyle = cva([""], {
 });
 
 export interface BTProps {
-  intent?: "regular" | "medium" | "semibold" | "bold";
+  intent?: "thin" | "regular" | "medium" | "semibold" | "bold";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
   children?: React.ReactNode;

@@ -67,7 +67,7 @@ export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
             <div className="flex items-center justify-center gap-2 mt-3">
                 {data?.salePrice ? (
                     <>
-                        <BodyText size="xl" className="main_clor text-center">
+                        <BodyText size="md" className="main_clor text-center">
                             ${data.salePrice}
                         </BodyText>
                         <BodyText size="sm" className="main_clor line-through text-center" >
@@ -75,7 +75,7 @@ export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
                         </BodyText>
                     </>
                 ) : data?.regularPrice ? (
-                    <BodyText size="xl" className="main_clor text-center">
+                    <BodyText size="md" className="main_clor text-center">
                         ${data.regularPrice}
                     </BodyText>
                 ) : (

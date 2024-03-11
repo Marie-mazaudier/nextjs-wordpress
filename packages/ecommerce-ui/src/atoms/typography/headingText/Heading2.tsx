@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 import React, { FC } from "react";
-const h2Style = cva(["text-xl lg:text-3xl", "md:leading-10"], {
+const h2Style = cva(["text-xl lg:text-4xl", "md:leading-20"], {
   variants: {
     intent: {
       normal: ["font-normal"],

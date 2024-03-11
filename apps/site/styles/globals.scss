@@ -3,7 +3,7 @@
 @tailwind utilities;
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Open+Sans:wght@400;500;600;700;800&display=swap");
 @import "variables"; // Importe les variables SCSS
-
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 /* Utilisez des classes personnalisées pour définir vos couleurs */
 
 // Appliquer les styles de base
@@ -38,6 +38,7 @@ h6 {
   color: $couleur-principal;
   font-family: $font-texte;
   font-size: 1.1rem;
+  font-weight: 300;
 }
 
 .text-themePrimary600 {
@@ -59,10 +60,10 @@ p {
   color: $blanc;
 }
 .bg-secondaire {
-  background: $couleur-secondaire;
+  background: $couleur-principal;
 }
 .bg-principal {
-  background: $couleur-principal;
+  background: $couleur-secondaire;
 }
 .hover\:bg-secondaire:hover {
   background: $couleur-secondaire;

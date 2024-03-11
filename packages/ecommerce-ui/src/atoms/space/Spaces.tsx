@@ -19,6 +19,6 @@ export interface SpacesProps {
   size?: "xss" | "xs" | "sm" | "md" | "mdd" | "lg" | "xl";
 }
 
-export const Spaces = ({ size = "lg" }: SpacesProps) => {
+export const Spaces = ({ size = "xl" }: SpacesProps) => {
   return <div className={`${SpaceStyle({ size })}`}></div>;
 };

@@ -32,17 +32,31 @@ export interface Bloc4SavoirPlus {
     photo2EnSavoirPlus: PhotoNode;
 }
 
-export interface Marque {
-    titreMarque: string;
-    descriptionMarque: string;
-    boutonMarque: string;
+export interface Marque1 {
+    titreMarque1: string;
+    descriptionMarque1: string;
+    boutonMarque1: string;
 }
-
+export interface Marque2 {
+    titreMarque2: string;
+    descriptionMarque2: string;
+    boutonMarque2: string;
+}
+export interface Marque3 {
+    titreMarque3: string;
+    descriptionMarque3: string;
+    boutonMarque3: string;
+}
+export interface Marque4 {
+    titreMarque4: string;
+    descriptionMarque4: string;
+    boutonMarque4: string;
+}
 export interface Bloc5MarquesDeBijoux {
-    marque1: Marque;
-    marque2: Marque;
-    marque3: Marque;
-    marque4: Marque;
+    marque1: Marque1;
+    marque2: Marque2;
+    marque3: Marque3;
+    marque4: Marque4;
 }
 
 export interface HomeChamps {
