@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Placeholder } from "../../atoms/placeholder/Placeholder";
 import { BodyText } from "../../atoms/typography/bodyText/BodyText";
 import { Heading3 } from "../../atoms/typography/headingText/heading3";
-import { Button } from "atoms/button/Button";
 import Skeleton from "react-loading-skeleton";
 import Link from "next/link";
 import * as DOMPurify from 'dompurify';
