@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ["next", "turbo", "prettier"], // "next/babel" a été supprimé de cette ligne
+  extends: ["next/babel", "next", "turbo", "prettier"], // Ajoutez ces extensions
   rules: {
     "@next/next/no-html-link-for-pages": "off",
     "react/jsx-key": "off",
