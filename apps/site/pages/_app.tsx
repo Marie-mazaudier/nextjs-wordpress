@@ -14,10 +14,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <ApolloProvider client={client}>
       <ToastProvider>
         <CartProvider>
-          <Layout className="z-[999999999]" menuData={pageProps.menuData}>
-            <Component {...pageProps} />
-            <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
-          </Layout>
+          {/* <Layout className="z-[999999999]" menuData={pageProps.menuData}>*/}
+          <Component {...pageProps} />
+          <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+          {/*</Layout>*/}
         </CartProvider>
       </ToastProvider>
     </ApolloProvider>

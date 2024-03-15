@@ -47,10 +47,12 @@ const Product = () => {
 export default Product;
 
 
+{/*export default Category;
+
 export const getStaticProps = HocMenuData(async (context) => {
   return {
     props: {
 
     },
   }
-})
+})*/}

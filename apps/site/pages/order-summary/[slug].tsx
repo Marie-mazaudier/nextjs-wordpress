@@ -229,10 +229,12 @@ const OrderSummary = () => {
 
 export default OrderSummary;
 
-export const getStaticProps = HocMenuData(async (context) => {
-    return {
-        props: {
+{/*
 
-        },
-    }
-})
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})*/}

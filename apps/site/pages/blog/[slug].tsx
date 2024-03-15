@@ -105,3 +105,4 @@ export const getStaticProps: GetStaticProps = HocMenuData(async (context) => {
   };
 
 })
+

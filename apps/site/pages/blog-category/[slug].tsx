@@ -31,7 +31,7 @@ const Category = () => {
   );
 };
 
-export default Category;
+{/*export default Category;
 
 export const getStaticProps = HocMenuData(async (context) => {
   return {
@@ -39,4 +39,4 @@ export const getStaticProps = HocMenuData(async (context) => {
 
     },
   }
-})
+})*/}
