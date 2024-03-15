@@ -1,7 +1,6 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import SimpleSlider from "../src/components/bannerSlider/Sliderhome";
-import { miniBannerData } from "../src/data/BannerData";
 //import { BrandData } from "../src/data/BrandData";
 import { IconBoxData } from "../src/data/IconBoxData";
 import { useAllFeaturedProducts } from "../lib/woocommerce/useFeaturedProducts";
@@ -12,15 +11,6 @@ import { useGetAllClients } from "lib/swr-wordpress/getAllClients";
 import { addEmailToBrevoList } from "../lib/brevo/brevo"; // Adjust the path accordingly
 import Popup from "src/components/popup/popup";
 import {
-  Presentation,
-  Newsletter,
-  IconBoxOne,
-  FlashSale,
-  MiniBanner,
-  TrendingProducts,
-  ProductCategories,
-  RecentlyViewed,
-  Brands,
   Spaces,
 } from "@jstemplate/ecommerce-ui";
 import client from "lib/utils/apollo-client";

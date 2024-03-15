@@ -33,14 +33,13 @@ export const ProductFilter = ({
         {/* <FilterWithRadio name="brands" filterItems={brandsItems} /> */}
         <FilterWithOnlyRadio name="colors" filterItems={colorAttributeData} seValue={setColorAttribute} />
         {/* <FilterWithRating name="ratings" filterItems={ratings} /> */}
-        <FilterWithSlider name="price" setPriceRange={setPriceRange} />
+        { /*       <FilterWithSlider name="price" setPriceRange={setPriceRange} />*/}
       </div>
       {/* small device design */}
       <div className="block lg:hidden relative">
         <div
-          className={`overflow-y-auto z-40 flex pt-5 top-0 flex-col  h-screen w-full max-w-[300px]  fixed bg-white duration-300 ease-in-out gap-2 md:gap-0 ${
-            filterOpen ? "left-0" : "-left-full"
-          }`}
+          className={`overflow-y-auto z-40 flex pt-5 top-0 flex-col  h-screen w-full max-w-[300px]  fixed bg-white duration-300 ease-in-out gap-2 md:gap-0 ${filterOpen ? "left-0" : "-left-full"
+            }`}
         >
           <div className="flex items-center justify-between px-6 mb-4">
             <BodyText size="lg" intent="semibold">
@@ -57,15 +56,14 @@ export const ProductFilter = ({
             {/* <FilterWithRadio name="brands" filterItems={brandsItems} /> */}
             <FilterWithOnlyRadio name="colors" filterItems={colorAttributeData} seValue={setColorAttribute} />
             {/* <FilterWithRating name="ratings" filterItems={ratings} /> */}
-            <FilterWithSlider name="price" setPriceRange={setPriceRange} />
+            {/*<FilterWithSlider name="price" setPriceRange={setPriceRange} />*/}
           </div>
         </div>
       </div>
       {/* background overlay */}
       <div
-        className={`lg:hidden fixed top-0 z-30 transition-all duration-500 ease-in-out  bg-[#868687] opacity-80 h-full w-full ${
-          filterOpen ? "left-0" : "-left-full"
-        }`}
+        className={`lg:hidden fixed top-0 z-30 transition-all duration-500 ease-in-out  bg-[#868687] opacity-80 h-full w-full ${filterOpen ? "left-0" : "-left-full"
+          }`}
         onClick={() => setFilterOpen(false)}
       />
     </>

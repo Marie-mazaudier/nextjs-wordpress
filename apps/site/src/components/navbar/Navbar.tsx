@@ -6,7 +6,7 @@ const TopNavbar = dynamic(() => import("./TopNavbar"), {
   ssr: false,
 });
 
-const MiddleNavbar = dynamic(() => import("./MiddleNavbar"), {
+const MiddleNavbar = dynamic(() => import("./MiddleNavbars"), {
   ssr: false,
 });
 
@@ -27,12 +27,13 @@ const Navbar = ({ category, menuData, cartData }: NavbarProps) => {
   return (
     <>
       <header className="z-[99] relative">
-        {/*<TopNavbar LoginmodalOn={LoginmodalOn} setLoginModalOn={setLoginModalOn} />*/}
+        <TopNavbar LoginmodalOn={LoginmodalOn} setLoginModalOn={setLoginModalOn} />
+        <NavbarBottom />
         <MiddleNavbar cartData={cartData} menuData={menuData} LoginmodalOn={LoginmodalOn} setLoginModalOn={setLoginModalOn} />
-        {/*  <NavbarBottom category={category} />
-        <div className="fixed bottom-0 md:hidden  w-full">
+        {/*<div className="fixed bottom-0 md:hidden  w-full">
           <BottomNavbarMenu category={category} cartData={cartData} />
-        </div>*/}
+
+  </div>*/}
       </header >
     </>
   );

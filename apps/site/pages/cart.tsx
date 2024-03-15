@@ -8,7 +8,9 @@ import { useGetCartTotals } from "../lib/coCart/getTotals";
 import { BlockLayout, Breadcrumb, Spaces } from "@jstemplate/ecommerce-ui";
 import { useShippingMethods } from 'lib/woocommerce/shippingMethods';
 import { useCart } from "src/CartContext";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const Checkout = () => {
   const router = useRouter();
 
@@ -51,3 +53,11 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

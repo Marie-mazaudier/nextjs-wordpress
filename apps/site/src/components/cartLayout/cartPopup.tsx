@@ -61,7 +61,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ onClose }) => {
 
 
     return (
-        <div ref={popupRef} className={`bg-white p-4 w-[400px] rounded-xl z-9999999999 shadow-lg fixed top-0 right-0 h-screen overflow-y-auto ${popupClass} cart-popup`}>            <div className="flex justify-between mb-4">
+        <div ref={popupRef} className={`bg-white p-4 w-[400px] rounded-xl z-[99999] shadow-lg fixed top-0 right-0 h-screen overflow-y-auto ${popupClass} cart-popup`}>            <div className="flex justify-between mb-4">
             <h2 className="text-2xl font-semibold">Votre Panier</h2>
             <button
                 onClick={closePopup} // Utilisez closePopup au lieu de onClose

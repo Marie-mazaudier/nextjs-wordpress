@@ -23,7 +23,7 @@ const layoutStyle = cva(["container", "mx-auto", "px-5", "sm:px-0", "w-full"], {
 
 export const BlockLayout: FC<layoutProps> = ({ children, Reverse, layout }) => {
   return (
-    <div className={`${layoutStyle({ Reverse, layout })} justify-center`}>
+    <div className={`${layoutStyle({ Reverse, layout })} flex justify-center`}>
       {children}
     </div>
   );

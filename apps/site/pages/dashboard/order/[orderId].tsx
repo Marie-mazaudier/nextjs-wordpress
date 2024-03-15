@@ -7,7 +7,9 @@ import { BlockLayout, Spaces, DashBoard } from "@jstemplate/ecommerce-ui";
 import { sidebarMenu } from "../../../src/data/SidebarMenu";
 import dynamic from "next/dynamic";
 import { useUserDetails } from "lib/woocommerce/user/useUserDetails";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const DashboardSideBar = dynamic(() => import("../../../src/components/DashboardSideBar/DashboardSideBar"), {
     ssr: false,
 });
@@ -281,3 +283,12 @@ const ViewOrder = () => {
 };
 
 export default ViewOrder;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

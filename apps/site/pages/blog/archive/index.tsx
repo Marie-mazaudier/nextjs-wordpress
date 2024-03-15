@@ -3,7 +3,9 @@ import { useRouter } from "next/router";
 import React from "react";
 import { useGetAllPostsByDate } from "../../../lib/swr-wordpress/getPosts";
 import { Breadcrumb, CategoryCards, Spaces } from "@jstemplate/ecommerce-ui";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const index = () => {
   const router = useRouter();
   const slug = router.asPath.split("=")[1];
@@ -25,3 +27,12 @@ const index = () => {
 };
 
 export default index;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

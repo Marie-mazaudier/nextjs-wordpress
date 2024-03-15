@@ -9,6 +9,9 @@ import { BlogContent } from "../../src/components/singleBlog/BlogContent";
 import { CommentsSection } from "../../src/components/singleBlog/CommentsSection";
 import { CommentsForm } from "../../src/components/comment/CommentsForm";
 import { useCommentsByPostId } from "../../lib/swr-wordpress/getComments";
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 import {
   BlockLayout,
   BlogFilter,
@@ -89,7 +92,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps = HocMenuData(async (context) => {
   const slug = context?.params?.slug;
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/wp-json/wp/v2/posts?slug=${slug}&_embed`);
   const post = await res.json();
@@ -100,15 +103,5 @@ export const getStaticProps: GetStaticProps = async (context) => {
     },
     revalidate: 60,
   };
-};
 
-const filterDataTwo = [
-  {
-    name: "December 2022",
-    link: "December-2022",
-  },
-  {
-    name: "January 2023",
-    link: "January-2023",
-  },
-];
+})

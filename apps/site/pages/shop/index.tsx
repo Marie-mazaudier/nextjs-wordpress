@@ -10,6 +10,9 @@ import { useProductsAttributes } from "../../lib/woocommerce/useAttributes";
 import { useAttributeTerms } from "../../lib/woocommerce/useAttributeTerms";
 import { useGetAllProducts } from "../../lib/woocommerce/useProducts";
 import { useProductCategories } from "../../lib/woocommerce/useCategories";
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 import {
   BlockLayout,
   Brands,
@@ -124,3 +127,11 @@ const ShopRightSidebar = () => {
 };
 
 export default ShopRightSidebar;
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

@@ -6,7 +6,9 @@ import { BlockLayout, Spaces, DashBoard } from "@jstemplate/ecommerce-ui";
 import { sidebarMenu } from "../../src/data/SidebarMenu";
 import dynamic from "next/dynamic";
 import generatePDF from "src/components/invoice/generatePDF";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 
 const DashboardSideBar = dynamic(() => import("../../src/components/DashboardSideBar/DashboardSideBar"), {
     ssr: false,
@@ -181,3 +183,12 @@ const Orders = () => {
 };
 
 export default Orders;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

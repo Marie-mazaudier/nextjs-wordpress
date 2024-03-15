@@ -5,6 +5,7 @@ interface PaginationProps {
   totalCount?: any;
   showPerPage?: any;
   handlePageChange?: any;
+
 }
 
 export const Pagination = ({ totalCount, showPerPage, handlePageChange }: PaginationProps) => {
@@ -38,7 +39,7 @@ export const Pagination = ({ totalCount, showPerPage, handlePageChange }: Pagina
           containerClassName={`flex flex-row flex-nowrap gap-3 justify-between md:justify-center items-center`}
           pageLinkClassName={`flex items-center justify-center text-base bg-themePrimary600 hover:bg-themeSecondary800 transition duration-300 ease-in-out text-white rounded-lg px-3 py-1`}
           breakLinkClassName={`flex items-center justify-center text-base bg-themePrimary600 hover:bg-themeSecondary800 transition duration-300 ease-in-out text-white rounded-lg`}
-          activeLinkClassName={`flex items-center justify-center text-base bg-themeSecondary800 transition duration-300 ease-in-out  text-white rounded-lg px-3 py-1`}  
+          activeLinkClassName={`flex items-center justify-center text-base bg-themeSecondary800 transition duration-300 ease-in-out  text-white rounded-lg px-3 py-1`}
         />
       </div>
     </>

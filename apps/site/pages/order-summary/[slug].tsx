@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useBacsMethods } from "lib/woocommerce/useBacsMethods";
 import { BodyText } from "../../../../packages/ecommerce-ui/src";
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 // Définition des interfaces pour typer les données de commande
 interface BillingDetails {
     first_name: string;
@@ -225,3 +228,11 @@ const OrderSummary = () => {
 };
 
 export default OrderSummary;
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

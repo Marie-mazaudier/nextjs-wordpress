@@ -2,7 +2,9 @@ import React from "react";
 import Head from "next/head";
 import { useRecentViewedProducts } from "../lib/woocommerce/useRecentProducts";
 import { Breadcrumb, TrendingProductCard } from "@jstemplate/ecommerce-ui";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const RecentlyViewed = () => {
   // ==================Get recently viewed products  data=================
   const { recentViewData } = useRecentViewedProducts(12);
@@ -24,3 +26,11 @@ const RecentlyViewed = () => {
 };
 
 export default RecentlyViewed;
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

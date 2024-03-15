@@ -5,7 +5,9 @@ import { sidebarMenu } from "../../src/data/SidebarMenu";
 import dynamic from "next/dynamic";
 import { useUserDetails } from "lib/woocommerce/user/useUserDetails";
 import React, { useEffect } from "react";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const DashboardSideBar = dynamic(() => import("../../src/components/DashboardSideBar/DashboardSideBar"), {
     ssr: false,
 });
@@ -58,3 +60,11 @@ const WishlistComponent = (/*{ userId }*/) => {
 };
 
 export default WishlistComponent;
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

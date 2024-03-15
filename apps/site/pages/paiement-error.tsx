@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import updateOrderStatus from "lib/woocommerce/paymentFailed";
 import { useRouter } from 'next/router';
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 interface PaymentErrorProps {
     orderId: string; // Assurez-vous que cela correspond à la manière dont vous passez orderId à ce composant
 }
@@ -43,3 +45,11 @@ const PaymentError = () => {
 };
 
 export default PaymentError;
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

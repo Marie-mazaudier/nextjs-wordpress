@@ -4,7 +4,9 @@ import { useGetAllCategories } from "../../lib/swr-wordpress/getAllCategories";
 import { useGetAllPosts } from "../../lib/swr-wordpress/getAllPosts";
 import { useGetTags } from "../../lib/swr-wordpress/getAllTags";
 import { BreadcrumbTwo, BlockLayout, BlogLayout, Spaces } from "@jstemplate/ecommerce-ui";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const Blog = () => {
   const [pageData, setPageData] = useState<number>(6);
   const handleClick = () => {
@@ -42,3 +44,11 @@ const Blog = () => {
 };
 
 export default Blog;
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

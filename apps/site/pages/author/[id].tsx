@@ -3,6 +3,9 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { useGetPostsByAuthorId } from "../../lib/swr-wordpress/getPosts";
 import { CategoryCards, Spaces, Breadcrumb } from "@jstemplate/ecommerce-ui";
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const Author = () => {
   const [pageData, setPageData] = useState<number>(6);
   const router = useRouter();
@@ -31,3 +34,11 @@ const Author = () => {
 };
 
 export default Author;
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

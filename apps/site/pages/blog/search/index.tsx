@@ -3,7 +3,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { usePostsBySearch } from "../../../lib/swr-wordpress/getPosts";
 import { Breadcrumb, CategoryCards, Spaces, BodyText } from "@jstemplate/ecommerce-ui";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const blogs = () => {
   const router = useRouter();
   const SearchQuery = router?.query?.query;
@@ -57,3 +59,12 @@ const blogs = () => {
 };
 
 export default blogs;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

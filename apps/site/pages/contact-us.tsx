@@ -3,7 +3,9 @@ import React from "react";
 import { contactData } from "../src/data/ContactData";
 import { BreadcrumbTwo, ContactForm, ContactInfo, Spaces } from "@jstemplate/ecommerce-ui";
 import { useToasts } from "react-toast-notifications";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const ContactUs = () => {
   const { addToast } = useToasts();
   const [formInfo, setFormInfo] = React.useState({
@@ -49,3 +51,12 @@ const ContactUs = () => {
 };
 
 export default ContactUs;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

@@ -3,7 +3,9 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { usePostsByCatSlug } from "../../lib/swr-wordpress/getPosts";
 import { Breadcrumb, CategoryCards, Spaces } from "@jstemplate/ecommerce-ui";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const Category = () => {
   const [pageData, setPageData] = useState<number>(6);
   const router = useRouter();
@@ -30,3 +32,11 @@ const Category = () => {
 };
 
 export default Category;
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

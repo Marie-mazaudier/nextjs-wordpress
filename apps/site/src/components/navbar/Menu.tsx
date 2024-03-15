@@ -28,16 +28,17 @@ const renderMenuItems = (items: MenuItem[]) => {
                     <Link legacyBehavior href={item.path}>
                         <a>
                             <BodyText
-                                size="sm"
-                                className="item whitespace-nowrap group-hover:text-themePrimary600 transition group-hover:duration-700 py-2"
+                                size="md"
+                                intent="bold"
+                                className="item  uppercase main_font whitespace-nowrap group-hover:text-themePrimary600 transition group-hover:duration-700 py-2"
                             >
                                 {item.label}
                             </BodyText>
                         </a>
                     </Link>
-                    <RiArrowDownSLine className="text-lg blanc whitespace-nowrap group-hover:text-themePrimary600 transition group-hover:duration-700" />
+                    <RiArrowDownSLine className="text-lg black whitespace-nowrap group-hover:text-themePrimary600 transition group-hover:duration-700" />
                     {/* Sous-menu */}
-                    <div className="opacity-0 absolute top-10 left-0 invisible group-hover:opacity-100 group-hover:visible transition group-hover:duration-500 absolute z-10 ease-in-out">
+                    <div className="opacity-0 absolute bg-principal p-2 top-10 left-0 invisible group-hover:opacity-100 group-hover:visible transition group-hover:duration-500 absolute z-10 ease-in-out">
                         {renderMenuItems(item.children)}
                     </div>
                 </div>
@@ -46,8 +47,9 @@ const renderMenuItems = (items: MenuItem[]) => {
                 <Link legacyBehavior href={item.path}>
                     <a>
                         <BodyText
-                            size="sm"
-                            className=" blanc whitespace-nowrap hover:text-themePrimary600 transition hover:duration-700 py-2"
+                            size="md"
+                            intent="bold"
+                            className=" main_font  uppercase black whitespace-nowrap hover:text-themePrimary600 transition hover:duration-700 py-2"
                         >
                             {item.label}
                         </BodyText>
@@ -60,11 +62,11 @@ const renderMenuItems = (items: MenuItem[]) => {
 
 export const Menu = ({ isSticky, menuData }: MenuProps) => {
     return (
-        <nav className={`bg-transparent hidden md:block ${isSticky ? 'black-menu' : 'white-menu'}`}>
+        <nav className={`bg-transparent hidden md:block black-menu`}>
             <div className="container mx-auto px-5 md:px-0 flex items-center justify-center">
                 <div className="flex items-center gap-14">
                     <div className="hidden lg:block">
-                        <div className="flex justify-center gap-6">
+                        <div className="flex justify-center gap-6 ">
                             {renderMenuItems(menuData)}
                         </div>
                     </div>

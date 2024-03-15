@@ -5,6 +5,9 @@ import { BrandData } from "../../src/data/BrandData";
 import { ShopProductWarperTwo } from "../../src/components/products/ShopProductWarperTwo";
 import { useRecentViewedProducts } from "../../lib/woocommerce/useRecentProducts";
 import { useGetAllProducts } from "../../lib/woocommerce/useProducts";
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 import {
   BlockLayout,
   Brands,
@@ -81,3 +84,12 @@ const ShopNoSidebar = () => {
 };
 
 export default ShopNoSidebar;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

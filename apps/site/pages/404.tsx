@@ -1,6 +1,9 @@
 import React from "react";
 import Head from "next/head";
 import { BlockLayout, Contact404, Header404, Spaces } from "@jstemplate/ecommerce-ui";
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const NotFound404 = () => {
   return (
     <>
@@ -19,3 +22,12 @@ const NotFound404 = () => {
 };
 
 export default NotFound404;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

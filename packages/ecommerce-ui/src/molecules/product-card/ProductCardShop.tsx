@@ -10,21 +10,23 @@ import { HiStar } from "react-icons/hi"; // Assurez-vous que le chemin d'importa
 interface Product {
     id: string;
     name: string;
-    salePrice?: string; // Ajouté
-    regularPrice?: string; // Ajouté
-    image?: {
-        mediaItemUrl: string; // Mise à jour pour correspondre à la nouvelle structure
-        alt?: string;
+    salePrice?: string;
+    regularPrice?: string;
+    featuredImage?: {
+        node: {
+            mediaItemUrl: string;
+        };
     };
-    slug?: string;
-
+    slug: string;
 }
-
-interface ProductCardHomeProps {
+interface media {
+    mediaItemUrl: string;
+}
+interface ProductCardShopProps {
     data?: Product;
 }
 
-export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
+export const ProductCardShop = ({ data }: ProductCardShopProps) => {
     // Calcul du pourcentage de remise si les prix de vente et réguliers sont disponibles
     const discount = data?.salePrice && data?.regularPrice
         ? ((parseFloat(data.regularPrice) - parseFloat(data.salePrice)) / parseFloat(data.regularPrice)) * 100
@@ -33,11 +35,11 @@ export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
     return (
         <div className="p-5  w-full ">
             <div className="p-4 b text-center relative flex items-center justify-center">
-                {data?.image ? (
+                {data?.featuredImage ? (
                     <Placeholder
                         className="w-full"
                         key={data.id}
-                        src={data.image.mediaItemUrl}
+                        src={data.featuredImage.node.mediaItemUrl}
                         imageWidth={350}
                         imageHeight={350}
                         alt={data.name}

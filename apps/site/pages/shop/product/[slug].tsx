@@ -9,6 +9,9 @@ import { ProductDescription } from "../../../src/components/productDescription/P
 import { ProductsData } from "../../../src/data/ProductsDetails";
 import { BrandData } from "../../../src/data/BrandData";
 import { Brands, RecentlyViewed, Spaces } from "@jstemplate/ecommerce-ui";
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 const Product = () => {
   const router = useRouter();
   const slug = router?.query?.slug;
@@ -42,3 +45,12 @@ const Product = () => {
 };
 
 export default Product;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

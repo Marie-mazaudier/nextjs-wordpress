@@ -5,12 +5,14 @@ import dynamic from "next/dynamic";
 import withAuth from "../../src/components/Auth/AuthWrapper";
 import { useUpdateCustomer } from "../../lib/woocommerce/user/useUserUpdate";
 import { useToasts } from "react-toast-notifications";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 
 const DashboardSideBar = dynamic(() => import("../../src/components/DashboardSideBar/DashboardSideBar"), {
   ssr: false,
 });
- 
+
 interface DashboardProps {
   userData?: any;
 }
@@ -146,3 +148,12 @@ const UserAccountSettings = ({ userData }: DashboardProps) => {
 };
 
 export default withAuth(UserAccountSettings);
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+  return {
+    props: {
+
+    },
+  }
+})

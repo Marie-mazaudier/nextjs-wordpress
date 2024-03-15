@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import Head from 'next/head';
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 declare global {
     interface Window {
         dalenys: any;
@@ -124,3 +126,11 @@ const PaymentPage = () => {
 };
 
 export default PaymentPage;
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

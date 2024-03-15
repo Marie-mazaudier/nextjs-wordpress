@@ -1,6 +1,8 @@
 import React from 'react';
 import { useShippingMethods } from 'lib/woocommerce/shippingMethods';
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 interface ShippingMethod {
     id: string;
     title: string;
@@ -27,3 +29,11 @@ const ShippingMethodsComponent: React.FC = () => {
 };
 
 export default ShippingMethodsComponent;
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

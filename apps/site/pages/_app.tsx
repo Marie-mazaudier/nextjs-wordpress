@@ -18,7 +18,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
             <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
           </Layout>
-
         </CartProvider>
       </ToastProvider>
     </ApolloProvider>

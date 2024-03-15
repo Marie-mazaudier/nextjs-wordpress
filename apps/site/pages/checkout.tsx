@@ -23,7 +23,9 @@ import SmallLoginForm from "src/components/loginRegistrationForm/SmallLoginForm"
 import dynamic from "next/dynamic";
 import SignupSignin from "src/components/signupSignin/SignupSignin";
 import { useCoupons } from "lib/woocommerce/useCoupons";
-
+//IMPORT DATA GRAPHQL
+/*Menu*/
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 interface ShippingMethodInfoCheckout {
     id: number;
     method_id: string;
@@ -344,3 +346,12 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})

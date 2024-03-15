@@ -6,7 +6,8 @@ import { FilterHeader } from "../filter-items/FilterHeader";
 
 interface FilterWithTextProps {
   name?: string;
-  filterItems?: { name: string; id?: string }[];
+  filterItems?: { name: string; id?: string; slug?: string; }[];
+
 }
 
 export const FilterWithText = ({ filterItems, name }: FilterWithTextProps) => {
@@ -19,30 +20,30 @@ export const FilterWithText = ({ filterItems, name }: FilterWithTextProps) => {
         <div className="p-6 w-full h-full">
           {filterItems && filterItems.length > 0
             ? filterItems.map((item, index) => (
-                <Link key={index} href={`/product-category/${item.id}`}>
-                  <div className="flex items-center justify-between group cursor-pointer">
-                    <BodyText
-                      className="text-themeSecondary600 capitalize py-1.5 group-hover:text-themePrimary600 transition duration-300 ease-in-out"
-                      size="md"
-                    >
-                      {item?.name}
-                    </BodyText>
-                    <svg
-                      className="text-themeSecondary400 group-hover:text-themePrimary600 transition duration-300 ease-in-out"
-                      width="8"
-                      height="12"
-                      viewBox="0 0 8 12"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.97656 5.99999L0.851562 1.87499L2.0299 0.696655L7.33323 5.99999L2.0299 11.3033L0.851562 10.125L4.97656 5.99999Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </div>
-                </Link>
-              ))
+              <Link key={index} href={`/categorie-produit/${item.slug}`}>
+                <div className="flex items-center justify-between group cursor-pointer">
+                  <BodyText
+                    className="text-themeSecondary600 capitalize py-1.5 group-hover:text-themePrimary600 transition duration-300 ease-in-out"
+                    size="md"
+                  >
+                    {item?.name}
+                  </BodyText>
+                  <svg
+                    className="text-themeSecondary400 group-hover:text-themePrimary600 transition duration-300 ease-in-out"
+                    width="8"
+                    height="12"
+                    viewBox="0 0 8 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4.97656 5.99999L0.851562 1.87499L2.0299 0.696655L7.33323 5.99999L2.0299 11.3033L0.851562 10.125L4.97656 5.99999Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+              </Link>
+            ))
             : [1, 2, 3, 4, 5].map((index: number) => <Skeleton key={index} height={20} />)}
         </div>
       )}
