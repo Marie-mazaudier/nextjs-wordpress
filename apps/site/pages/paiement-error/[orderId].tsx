@@ -46,12 +46,3 @@ const PaymentError = () => {
 
 export default PaymentError;
 
-{/*
-
-export const getStaticProps = HocMenuData(async (context) => {
-  return {
-    props: {
-
-    },
-  }
-})*/}

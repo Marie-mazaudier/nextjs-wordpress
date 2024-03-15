@@ -34,12 +34,3 @@ const index = () => {
 
 export default index;
 
-{/*
-
-export const getStaticProps = HocMenuData(async (context) => {
-  return {
-    props: {
-
-    },
-  }
-})*/}

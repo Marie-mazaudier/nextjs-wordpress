@@ -284,12 +284,3 @@ const ViewOrder = () => {
 
 export default ViewOrder;
 
-{/*
-
-export const getStaticProps = HocMenuData(async (context) => {
-  return {
-    props: {
-
-    },
-  }
-})*/}
