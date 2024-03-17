@@ -7,7 +7,7 @@ import Skeleton from "react-loading-skeleton";
 import Rating from "react-rating";
 import { HiStar } from "react-icons/hi"; // Assurez-vous que le chemin d'importation est correct
 import CartAndBuy from "../productDescription/CartAndBuy";
-import { useProduct } from 'lib/woocommerce/useProduct';
+import { useProduct } from '../../../lib/woocommerce/useProduct';
 
 interface Product {
     id: string;

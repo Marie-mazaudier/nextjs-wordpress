@@ -7,8 +7,8 @@ import { addBuyNowHandler, addToCartHandler } from "../../utils/cart.utils";
 import { useToasts } from "react-toast-notifications";
 import { useRouter } from "next/router";
 import { LoaderRound } from "../../loaders/Loader";
-import { useCart } from "src/CartContext";
-import { useGetCartData } from "lib/coCart/getCart";
+import { useCart } from "../../CartContext";
+import { useGetCartData } from '../../../lib/coCart/getCart';
 
 interface CartAndBuyProps {
   data?: any;
