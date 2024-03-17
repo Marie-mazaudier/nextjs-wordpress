@@ -89,10 +89,7 @@ const ShopRightSidebar = () => {
           <ProductHeader
             filterOpen={filterOpen}
             setFilterOpen={setFilterOpen}
-            setpage={setPageLimit}
             setSort={setProductSort}
-            productActive={productActive}
-            setProductActive={setProductActive}
             totalProductShow={totalProductShow}
             totalProductCount={totalProductCount}
           />

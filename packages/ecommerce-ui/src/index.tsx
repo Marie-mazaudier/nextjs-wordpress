@@ -27,6 +27,7 @@ export * from "./atoms/space/Spaces";
 /*                               molecules                                        */
 /* -------------------------------------------------------------------------- */
 export * from "./molecules/dropdown/FilterDropDown";
+export * from "./molecules/filter/FilterWithMarques";
 export * from "./molecules/filter/FilterWithText";
 export * from "./molecules/filter-items/FilterHeader";
 export * from "./molecules/filter/FilterWithOnlyRadio";
@@ -36,7 +37,7 @@ export * from "./molecules/filter/FilterWithSlider";
 export * from "./molecules/product-card/ProductCardOne";
 export * from "./molecules/product-card/ProductCardTwo";
 export * from "./molecules/product-card/ProductCardHome";
-export * from "./molecules/product-card/ProductCardShop";
+export * from "../../../apps/site/src/components/products/ProductCardShop";
 export * from "./molecules/order/Order";
 export * from "./molecules/cart/CuponCode";
 export * from "./molecules/cart/CartCount";

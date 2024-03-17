@@ -1,20 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FilterHeader } from "../filter-items/FilterHeader";
 import { Range } from "react-range";
 
 interface FilterWithSliderProps {
   name?: string;
-  setPriceRange?: any;
+  setPriceRange?: (range: [number, number]) => void;
+  priceRange?: [number, number];
 }
 
-export const FilterWithSlider = ({ name, setPriceRange }: FilterWithSliderProps) => {
-  const [isOpen, setIsOpen] = React.useState(true);
+export const FilterWithSlider = ({ name, setPriceRange, priceRange }: FilterWithSliderProps) => {
+  const [isOpen, setIsOpen] = useState(true);
 
-  const [values, setValues] = React.useState([0, 999]);
+  // Initialise l'état des valeurs avec priceRange ou une plage par défaut.
+  const [values, setValues] = useState<[number, number]>(priceRange || [0, 10000000]);
 
-  React.useEffect(() => {
-    setPriceRange(values);
-  }, [values]);
+  // Mise à jour de l'état des valeurs lorsque priceRange change.
+  useEffect(() => {
+    if (priceRange) {
+      setValues(priceRange);
+    }
+  }, [priceRange]); // Écoute les changements de priceRange
+
+  useEffect(() => {
+    // Mise à jour de la plage de prix via setPriceRange lorsqu'il change
+    if (setPriceRange) {
+      setPriceRange(values);
+    }
+  }, [values]); // Dépendances : values et setPriceRange
 
   return (
     <div className="border border-themeSecondary200 rounded-t-xl">
@@ -24,9 +36,9 @@ export const FilterWithSlider = ({ name, setPriceRange }: FilterWithSliderProps)
           <Range
             step={1}
             min={0}
-            max={1000}
+            max={1000000}
             values={values}
-            onChange={(values) => setValues(values)}
+            onChange={(newValues) => setValues([newValues[0], newValues[1]])}
             renderTrack={({ props, children }) => (
               <div
                 {...props}
@@ -57,8 +69,8 @@ export const FilterWithSlider = ({ name, setPriceRange }: FilterWithSliderProps)
           />
           <div className="mt-2">
             <p className="flex justify-between text-themeSecondary600 font-normal text-base">
-              <span>${values[0].toFixed(1)}</span>
-              <span>${values[1].toFixed(1)}</span>
+              <span>${values[0] ? values[0].toFixed(1) : '0.0'}</span>
+              <span>${values[1] ? values[1].toFixed(1) : '10000000'}</span>
             </p>
           </div>
         </div>

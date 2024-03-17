@@ -1,6 +1,7 @@
 import React from "react";
 import {
   FilterWithText,
+  FilterWithMarques,
   FilterWithOnlyRadio,
   FilterWithSlider,
   BodyText,
@@ -12,7 +13,9 @@ interface ProductFilterProps {
   // setFilterOpen?: (value: boolean) => void;
   setFilterOpen?: any;
   categorydata?: any;
+  marquesdata?: any;
   setPriceRange?: (value: any) => void;
+  priceRange?: [number, number],
   colorAttributeData?: any;
   setColorAttribute?: (value: any) => void;
 }
@@ -21,7 +24,9 @@ export const ProductFilter = ({
   filterOpen,
   setFilterOpen,
   categorydata,
+  marquesdata,
   setPriceRange,
+  priceRange,
   colorAttributeData,
   setColorAttribute,
 }: ProductFilterProps) => {
@@ -29,11 +34,12 @@ export const ProductFilter = ({
     <>
       {/* large device design */}
       <div className="w-full hidden lg:block lg:w-3/12 space-y-7">
-        <FilterWithText name="category" filterItems={categorydata} />
+        <FilterWithMarques name="marques" filterItems={marquesdata} />
+        <FilterWithText name="categories" filterItems={categorydata} />
         {/* <FilterWithRadio name="brands" filterItems={brandsItems} /> */}
         <FilterWithOnlyRadio name="colors" filterItems={colorAttributeData} seValue={setColorAttribute} />
         {/* <FilterWithRating name="ratings" filterItems={ratings} /> */}
-        { /*       <FilterWithSlider name="price" setPriceRange={setPriceRange} />*/}
+        <FilterWithSlider name="price" setPriceRange={setPriceRange} priceRange={priceRange} />
       </div>
       {/* small device design */}
       <div className="block lg:hidden relative">
@@ -52,11 +58,12 @@ export const ProductFilter = ({
           </div>
           <hr />
           <div className="grid gap-5 mt-7 px-6">
-            <FilterWithText name="category" filterItems={categorydata} />
+            <FilterWithMarques name="marques" filterItems={marquesdata} />
+            <FilterWithText name="categories" filterItems={categorydata} />
             {/* <FilterWithRadio name="brands" filterItems={brandsItems} /> */}
             <FilterWithOnlyRadio name="colors" filterItems={colorAttributeData} seValue={setColorAttribute} />
             {/* <FilterWithRating name="ratings" filterItems={ratings} /> */}
-            {/*<FilterWithSlider name="price" setPriceRange={setPriceRange} />*/}
+            <FilterWithSlider name="price" setPriceRange={setPriceRange} priceRange={priceRange} />
           </div>
         </div>
       </div>

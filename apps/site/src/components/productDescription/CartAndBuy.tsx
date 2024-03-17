@@ -150,7 +150,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
           ) : (
             <Skeleton height={52} width={147} borderRadius={50} />
           )}
-          {data ? (
+          {/*data ? (
             <button
               onClick={() => {
                 addBuyNowHandler(data, setbuyLoading, count, productToast, router);
@@ -165,12 +165,12 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
             </button>
           ) : (
             <Skeleton height={52} width={128} borderRadius={50} />
-          )}
+          )*/}
         </div>
       </div>
       {maxQuantity === 0 && (
         <div className="out-of-stock-message">
-          Cet article est dans votre panier, le stock est désormais épuisé.
+          Le stock est désormais épuisé.
         </div>
       )}
       {maxQuantity > 0 && maxQuantity <= 5 && (

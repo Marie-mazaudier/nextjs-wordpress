@@ -1,11 +1,13 @@
 import Link from "next/link";
 import React from "react";
-import { Badge } from "../../atoms/badges/Badge";
-import { Placeholder } from "../../atoms/placeholder/Placeholder";
-import { BodyText } from "../../atoms/typography/bodyText/BodyText";
+import { Badge } from "../../../../../packages/ecommerce-ui/src/atoms/badges/Badge";
+import { Placeholder } from "../../../../../packages/ecommerce-ui/src/atoms/placeholder/Placeholder";
+import { BodyText } from "../../../../../packages/ecommerce-ui/src/atoms/typography/bodyText/BodyText";
 import Skeleton from "react-loading-skeleton";
 import Rating from "react-rating";
 import { HiStar } from "react-icons/hi"; // Assurez-vous que le chemin d'importation est correct
+import CartAndBuy from "../productDescription/CartAndBuy";
+import { useProduct } from 'lib/woocommerce/useProduct';
 
 interface Product {
     id: string;
@@ -27,11 +29,14 @@ interface ProductCardShopProps {
 }
 
 export const ProductCardShop = ({ data }: ProductCardShopProps) => {
+    // ==================Get all  products data using slug =================
+    const { product, isLoading } = useProduct(data?.slug);
+    console.log('product', product)
     // Calcul du pourcentage de remise si les prix de vente et réguliers sont disponibles
     const discount = data?.salePrice && data?.regularPrice
         ? ((parseFloat(data.regularPrice) - parseFloat(data.salePrice)) / parseFloat(data.regularPrice)) * 100
         : undefined;
-    console.log('data', data)
+    //  console.log('data', data)
     return (
         <div className="p-5  w-full ">
             <div className="p-4 b text-center relative flex items-center justify-center">
@@ -84,7 +89,10 @@ export const ProductCardShop = ({ data }: ProductCardShopProps) => {
                     <Skeleton height={20} width={140} />
                 )}
             </div>
+            <div className="mt-5">
+                <CartAndBuy data={product?.[0]} />
 
+            </div>
         </div>
     );
 };

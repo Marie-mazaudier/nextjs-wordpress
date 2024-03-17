@@ -36,7 +36,8 @@
   "include": [
     "index",
     "src",
-    "types"
+    "types",
+    "../../apps/site/src/components/products/ProductCardShop.tsx"
   ],
   "exclude": [
     "node_modules",

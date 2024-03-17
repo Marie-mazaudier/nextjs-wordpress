@@ -3,31 +3,31 @@ import { BodyText, FilterDropDown } from "@jstemplate/ecommerce-ui";
 
 interface BlogFilterProps {
   filterOpen?: boolean;
-  setFilterOpen: (value: any) => void;
-  productActive: number;
-  setProductActive: (value: any) => void;
-  setpage?: (value: any) => void;
-  setSort?: (value: any) => void;
-  totalProductShow?: any;
-  totalProductCount?: any;
+  setFilterOpen: (value: boolean) => void;
+  setSort: (value: string) => void; // Mise à jour pour utiliser setSort
+  totalProductShow?: number;
+  totalProductCount?: number;
 }
 
 export const ProductHeader = ({
   filterOpen,
   setFilterOpen,
-  productActive,
-  setProductActive,
-  setpage,
-  setSort,
+  setSort, // Utilisez setSort pour la fonction de tri
   totalProductShow,
   totalProductCount,
 }: BlogFilterProps) => {
+  // Options pour le tri
+  const sortOptions = [
+    { id: 1, name: 'Plus récent', value: 'recent' },
+    { id: 2, name: 'Tarif croissant', value: 'price_asc' },
+    { id: 3, name: 'Tarif décroissant', value: 'price_desc' },
+  ];
   return (
     <section className=" container mx-auto px-5 md:px-0">
       <div className="grid lg:flex gap-5  items-center lg:justify-between">
         <BodyText className="text-themeSecondary800 text-center" size="lg">
           {/* Showing 1-25 of 56 results */}
-          Showing {totalProductShow || 0} of {totalProductCount || 0} results
+          Affichage de {totalProductShow || 0} sur {totalProductCount || 0} résultats
         </BodyText>
         {/* large device */}
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -47,17 +47,16 @@ export const ProductHeader = ({
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex">
-              <FilterDropDown options={showFilter} setpage={setpage} />
+              {/*<FilterDropDown options={showFilter} setpage={setpage} />*/}
             </div>
             <div className="hidden sm:flex">
-              <FilterDropDown options={sortFilter} setpage={setSort} />
+              <FilterDropDown options={sortOptions} setSortOption={setSort} />
             </div>
-            <div
-              className={` hidden sm:flex ${
-                productActive === 0
+            {/* <div
+              className={` hidden sm:flex ${productActive === 0
                   ? "bg-themePrimary600 border border-themePrimary600"
                   : " border border-themeSecondary300"
-              } rounded-lg p-4 cursor-pointer`}
+                } rounded-lg p-4 cursor-pointer`}
               onClick={() => setProductActive(0)}
             >
               <svg
@@ -73,13 +72,12 @@ export const ProductHeader = ({
                   fill="currentColor"
                 />
               </svg>
-            </div>
+              </div>
             <div
-              className={`hidden sm:flex ${
-                productActive === 1
-                  ? "bg-themePrimary600 border border-themePrimary600"
-                  : " border border-themeSecondary300"
-              } rounded-lg p-4 cursor-pointer`}
+              className={`hidden sm:flex ${productActive === 1
+                ? "bg-themePrimary600 border border-themePrimary600"
+                : " border border-themeSecondary300"
+                } rounded-lg p-4 cursor-pointer`}
               onClick={() => setProductActive(1)}
             >
               <svg
@@ -95,7 +93,7 @@ export const ProductHeader = ({
                   fill="currentColor"
                 />
               </svg>
-            </div>
+            </div>*/}
           </div>
         </div>
         {/* small device */}
@@ -114,17 +112,16 @@ export const ProductHeader = ({
               />
             </svg>
           </div>
-          <FilterDropDown options={showFilter} setpage={setpage} />
+          {/*<FilterDropDown options={showFilter} setpage={setpage} />*/}
         </div>
         <div className="sm:hidden flex flex-wrap gap-2.5 items-center justify-between">
-          <FilterDropDown options={sortFilter} setpage={setSort} />
-          <div className="flex items-center gap-3">
+          <FilterDropDown options={sortOptions} setSortOption={setSort} />
+          {/* <div className="flex items-center gap-3">
             <div
-              className={`${
-                productActive === 0
-                  ? "bg-themePrimary600 border border-themePrimary600"
-                  : " border border-themeSecondary300"
-              } rounded-lg p-4 cursor-pointer`}
+              className={`${productActive === 0
+                ? "bg-themePrimary600 border border-themePrimary600"
+                : " border border-themeSecondary300"
+                } rounded-lg p-4 cursor-pointer`}
               onClick={() => setProductActive(0)}
             >
               <svg
@@ -142,11 +139,10 @@ export const ProductHeader = ({
               </svg>
             </div>
             <div
-              className={`${
-                productActive === 1
-                  ? "bg-themePrimary600 border border-themePrimary600"
-                  : " border border-themeSecondary300"
-              } rounded-lg p-4 cursor-pointer`}
+              className={`${productActive === 1
+                ? "bg-themePrimary600 border border-themePrimary600"
+                : " border border-themeSecondary300"
+                } rounded-lg p-4 cursor-pointer`}
               onClick={() => setProductActive(1)}
             >
               <svg
@@ -163,7 +159,7 @@ export const ProductHeader = ({
                 />
               </svg>
             </div>
-          </div>
+              </div>*/}
         </div>
       </div>
     </section>

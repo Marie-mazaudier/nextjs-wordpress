@@ -9,10 +9,13 @@ export interface Product {
         };
     };
     slug: string;
+    date: Date;
 }
-
+export interface PriceRange {
+    priceRange: [number, number]; // Définit comme un tuple de deux nombres
+}
 export interface ProductCategoryProps {
-    productCategories: Product[]; // Assurez-vous que c'est un tableau de Product
+    productCategories: Product[]; // C'est bien un tableau de Product
     found: number;
-
 }
+
