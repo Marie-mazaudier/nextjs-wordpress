@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Head from "next/head";
-import { BrandData } from "../../src/data/BrandData";
 import { ProductFilter } from "../../src/components/products/ProductFilter";
 import { ProductHeader } from "../../src/components/products/ProductHeader";
-import { filterAttribute } from "../../src/utils/productShop";
-import { ShopProductsWrapper } from "../../src/components/products/ShopProductsWrapper";
-import { useRecentViewedProducts } from "../../lib/woocommerce/useRecentProducts";
-import { useProductsAttributes } from "../../lib/woocommerce/useAttributes";
-import { useAttributeTerms } from "../../lib/woocommerce/useAttributeTerms";
-import { useGetAllProducts } from "../../lib/woocommerce/useProducts";
-import { useProductCategories } from "../../lib/woocommerce/useCategories";
-import { GetStaticPaths, GetStaticProps } from "next";
 import { ProductCardShop } from "../../src/components/products/ProductCardShop";
 import client from "lib/utils/apollo-client";
-import { useProduct } from 'lib/woocommerce/useProduct';
-
 //IMPORT DATA GRAPHQL
 import { GET_ALL_PRODUCTS } from "src/data/graphQl/woo/products/allProducts";
 import { PROD_MARQUES_QUERY } from "src/data/graphQl/woo/products/productMarquesQueries";

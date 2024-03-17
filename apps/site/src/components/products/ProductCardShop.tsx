@@ -6,7 +6,7 @@ import { BodyText } from "../../../../../packages/ecommerce-ui/src/atoms/typogra
 import Skeleton from "react-loading-skeleton";
 import Rating from "react-rating";
 import { HiStar } from "react-icons/hi"; // Assurez-vous que le chemin d'importation est correct
-import CartAndBuy from "../productDescription/CartAndBuy";
+import MiniCart from "../cartLayout/minicart";
 import { useProduct } from '../../../lib/woocommerce/useProduct';
 
 interface Product {
@@ -90,7 +90,7 @@ export const ProductCardShop = ({ data }: ProductCardShopProps) => {
                 )}
             </div>
             <div className="mt-5">
-                <CartAndBuy data={product?.[0]} />
+                <MiniCart data={product?.[0]} />
 
             </div>
         </div>
