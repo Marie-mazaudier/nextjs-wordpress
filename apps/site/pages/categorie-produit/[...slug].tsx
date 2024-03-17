@@ -149,8 +149,13 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
 
 
 export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => {
-    // Transformer le slug en chaîne, peu importe s'il vient sous forme de tableau ou de chaîne
-    const slugPath = Array.isArray(params?.slug) ? params.slug.join('/') : params?.slug;
+    // S'assurer que params et params.slug sont définis
+    if (!params || !params.slug) {
+        return { notFound: true };
+    }
+
+    // Si params.slug est défini, procéder avec le reste de la logique
+    const slugPath = Array.isArray(params.slug) ? params.slug.join('/') : params.slug;
 
     // Récupération des catégories
     const { data: categoriesData } = await client.query({ query: PROD_CAT_QUERY });
