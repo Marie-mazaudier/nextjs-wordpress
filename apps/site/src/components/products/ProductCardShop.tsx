@@ -24,14 +24,22 @@ interface Product {
 interface media {
     mediaItemUrl: string;
 }
+interface stockData {
+    id: string;
+    stock: number;
+}
 interface ProductCardShopProps {
     data?: Product;
+    stockProductsData?: stockData;
+    stockProductsLoading?: boolean;
 }
 
-export const ProductCardShop = ({ data }: ProductCardShopProps) => {
+export const ProductCardShop = ({ data, stockProductsData, stockProductsLoading }: ProductCardShopProps) => {
     // ==================Get all  products data using slug =================
-    const { product, isLoading } = useProduct(data?.slug);
-    console.log('product', product)
+    // const { product, isLoading } = useProduct(data?.slug);
+
+    console.log('stockProductsData', stockProductsData)
+    // console.log('product', product)
     // Calcul du pourcentage de remise si les prix de vente et réguliers sont disponibles
     const discount = data?.salePrice && data?.regularPrice
         ? ((parseFloat(data.regularPrice) - parseFloat(data.salePrice)) / parseFloat(data.regularPrice)) * 100
@@ -90,7 +98,7 @@ export const ProductCardShop = ({ data }: ProductCardShopProps) => {
                 )}
             </div>
             <div className="mt-5">
-                <MiniCart data={product?.[0]} />
+                <MiniCart data={stockProductsData} />
 
             </div>
         </div>

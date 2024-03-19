@@ -66,7 +66,7 @@ const MiniCart = ({ data }: MiniCartProps) => {
         <div>
             {/* Conditionally render COLOR section only if colorAttribute exists and has options */}
             <div className="border border-themeSecondary200 w-full mt-5"></div>
-            <div className="flex flex-col md:flex-row md:items-center gap-7 mt-5">
+            <div className="flex flex-col md:flex-row md:items-center justify-center gap-7 mt-5">
                 <div className=" flex items-center gap-3">
                     {data ? (
                         <button
@@ -75,11 +75,11 @@ const MiniCart = ({ data }: MiniCartProps) => {
                             }}
                             disabled={loading || stockOut || maxQuantity === 0}
                             type="submit"
-                            className={`font-medium text-base px-7 py-[14px] leading-6 text-white transition rounded-full bg-themePrimary600 hover:duration-500 flex justify-center ${stockOut ? "opacity-30" : "hover:bg-themeSecondary800"}`}
+                            className={`font-medium text-base px-5 rounded-sm py-[5px] leading-6 text-white transition bg-principal hover:duration-500 flex justify-center ${stockOut ? "opacity-30" : "hover:bg-themeSecondary800"}`}
                         >
 
                             {loading && <LoaderRound />}
-                            <span className={`${loading ? "ml-2" : ""}`}>{loading ? "Please Wait.." : "Add To Cart"}</span>
+                            <span className={`${loading ? "ml-2" : ""}`}>{loading ? "Please Wait.." : "Ajouter au panier"}</span>
                         </button>
                     ) : (
                         <Skeleton height={52} width={147} borderRadius={50} />

@@ -14,12 +14,6 @@ export const FilterWithSlider = ({ name, setPriceRange, priceRange }: FilterWith
   // Initialise l'état des valeurs avec priceRange ou une plage par défaut.
   const [values, setValues] = useState<[number, number]>(priceRange || [0, 10000000]);
 
-  // Mise à jour de l'état des valeurs lorsque priceRange change.
-  useEffect(() => {
-    if (priceRange) {
-      setValues(priceRange);
-    }
-  }, [priceRange]); // Écoute les changements de priceRange
 
   useEffect(() => {
     // Mise à jour de la plage de prix via setPriceRange lorsqu'il change

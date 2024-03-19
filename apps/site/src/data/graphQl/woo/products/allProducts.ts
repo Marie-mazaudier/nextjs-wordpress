@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const GET_ALL_PRODUCTS = gql`
   query {
-     products(first: 300) {
+  products(where: {stockStatus: IN_STOCK}, first: 300) {
     found
     edges {
       node {

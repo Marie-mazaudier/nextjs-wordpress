@@ -4,6 +4,8 @@ import { ProductFilter } from "../../src/components/products/ProductFilter";
 import { ProductHeader } from "../../src/components/products/ProductHeader";
 import { ProductCardShop } from "../../src/components/products/ProductCardShop";
 import client from "lib/utils/apollo-client";
+import { useGetAllProducts } from 'lib/woocommerce/useProducts';
+import { useGetProductsStock } from 'lib/woocommerce/useGetProductsStock';
 //IMPORT DATA GRAPHQL
 import { GET_ALL_PRODUCTS } from "src/data/graphQl/woo/products/allProducts";
 import { PROD_MARQUES_QUERY } from "src/data/graphQl/woo/products/productMarquesQueries";
@@ -27,22 +29,25 @@ import {
 
 interface ShopRightSidebarProps {
     productCategories: PostNode[];
-    products: Product[];
+    productsData: Product[];
     productMarques: MarqueNode[];
     minPrice: number;
     maxPrice: number;
 }
-const ShopRightSidebar = ({ productCategories, products, productMarques, minPrice, maxPrice }: ShopRightSidebarProps) => {
+const ShopRightSidebar = ({ productCategories, productsData, productMarques, minPrice, maxPrice }: ShopRightSidebarProps) => {
     const productsPerPage = 20;
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [filterOpen, setFilterOpen] = useState(false);
     const [sortOption, setSortOptionState] = useState('');
     const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
     const [filteredAndSortedProducts, setFilteredAndSortedProducts] = useState<Product[]>([]);
+    const [afterCursor, setAfterCursor] = useState(null);
 
+    // Appel à useGetProductsStock avec la gestion du curseur pour pagination
+    const { loading: stockProductsLoading, products: stockProductsData, pageInfo } = useGetProductsStock(250, afterCursor);
+    console.log('stockProductsData', stockProductsData)
     useEffect(() => {
-        let processedProducts = [...products];
-
+        let processedProducts = [...productsData];
         // Filtrage par prix
         processedProducts = processedProducts.filter(product => {
             const productPrice = parseFloat(product.regularPrice ?? '0');
@@ -67,7 +72,7 @@ const ShopRightSidebar = ({ productCategories, products, productMarques, minPric
         const endIndex = startIndex + productsPerPage;
         setFilteredAndSortedProducts(processedProducts.slice(startIndex, endIndex));
 
-    }, [currentPage, sortOption, priceRange, products.length]);
+    }, [currentPage, sortOption, priceRange, productsData.length]);
 
     const updateSortOption = (option: string) => {
         setSortOptionState(option);
@@ -76,6 +81,9 @@ const ShopRightSidebar = ({ productCategories, products, productMarques, minPric
 
     const handlePageChange = (selectedItem: any) => {
         setCurrentPage(selectedItem.selected);
+        /* if (pageInfo?.hasNextPage) {
+             setNextCursor(pageInfo.endCursor);
+         }*/
     };
 
     const handlePriceRangeChange = (newPriceRange: [number, number]) => {
@@ -96,17 +104,32 @@ const ShopRightSidebar = ({ productCategories, products, productMarques, minPric
                         filterOpen={filterOpen}
                         setFilterOpen={setFilterOpen}
                         setSort={updateSortOption} // Utilisation de la nouvelle fonction updateSortOption
-                        totalProductCount={products.length}
-                        totalProductShow={Math.min((currentPage + 1) * productsPerPage, products.length)} // Passer un nombre directement
+                        totalProductCount={productsData.length}
+                        totalProductShow={Math.min((currentPage + 1) * productsPerPage, productsData.length)} // Passer un nombre directement
                     />
                     <Spaces size="xs" />
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 justify-items-center">
-                        {filteredAndSortedProducts.map((product, index) => (
-                            <ProductCardShop key={index} data={product} />
-                        ))}
+                        {/*filteredAndSortedProducts.map((product, index) => (
+                            <ProductCardShop key={index} data={product} stockProductsData={stockProductsData} stockProductsLoading={stockProductsLoading} />
+                        ))*/}
+                        {filteredAndSortedProducts.map((product, index) => {
+                            // Trouver les données de stock pour le produit courant
+                            const stockInfo = stockProductsData.find((stockItem: any) => stockItem.id === product.productId);
+
+                            // Passer les données de stock au composant ProductCardShop
+                            // Assurez-vous que votre composant ProductCardShop est prêt à recevoir et à utiliser ces props!
+                            return (
+                                <ProductCardShop
+                                    key={index}
+                                    data={product}
+                                    stockProductsData={stockInfo ? stockInfo : null} // Ici vous passez la quantité en stock
+                                    stockProductsLoading={stockProductsLoading}
+                                />
+                            );
+                        })}
                     </div>
                     <Pagination
-                        totalCount={products.length}
+                        totalCount={productsData.length}
                         showPerPage={productsPerPage}
                         handlePageChange={handlePageChange}
                     />
@@ -152,7 +175,7 @@ export const getStaticProps = HocMenuData(async (context) => {
 
     return {
         props: {
-            products: productsData.products.edges.map(({ node }: any) => node), // Correction ici pour utiliser la structure correcte
+            productsData: productsData.products.edges.map(({ node }: any) => node), // Correction ici pour utiliser la structure correcte
             productCategories: categoriesData.productCategories.nodes,
             productMarques: marquesData.marquesProducts.nodes,
             minPrice,
