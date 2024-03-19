@@ -4,8 +4,6 @@ import { ProductFilter } from "../../src/components/products/ProductFilter";
 import { ProductHeader } from "../../src/components/products/ProductHeader";
 import { ProductCardShop } from "../../src/components/products/ProductCardShop";
 import client from "lib/utils/apollo-client";
-import { useGetAllProducts } from 'lib/woocommerce/useProducts';
-import { useGetProductsStock } from 'lib/woocommerce/useGetProductsStock';
 //IMPORT DATA GRAPHQL
 import { GET_ALL_PRODUCTS } from "src/data/graphQl/woo/products/allProducts";
 import { PROD_MARQUES_QUERY } from "src/data/graphQl/woo/products/productMarquesQueries";
@@ -18,11 +16,8 @@ import { Product } from "src/types/ProductByCategoryIdTypes";
 import { MarqueNode } from "src/types/productsMarquesTypes";
 import {
     BlockLayout,
-    Brands,
-    HorizontalLine,
     PageContent,
     Breadcrumb,
-    RecentlyViewed,
     Spaces,
     Pagination,
 } from "@jstemplate/ecommerce-ui";
@@ -44,8 +39,8 @@ const ShopRightSidebar = ({ productCategories, productsData, productMarques, min
     const [afterCursor, setAfterCursor] = useState(null);
 
     // Appel à useGetProductsStock avec la gestion du curseur pour pagination
-    const { loading: stockProductsLoading, products: stockProductsData, pageInfo } = useGetProductsStock(3, afterCursor);
-    console.log('stockProductsData', stockProductsData)
+    //   const { loading: stockProductsLoading, products: stockProductsData, pageInfo } = useGetProductsStock(3, afterCursor);
+    //  console.log('stockProductsData', stockProductsData)
     useEffect(() => {
         let processedProducts = [...productsData];
         // Filtrage par prix
@@ -114,7 +109,7 @@ const ShopRightSidebar = ({ productCategories, productsData, productMarques, min
                         ))*/}
                         {filteredAndSortedProducts.map((product, index) => {
                             // Trouver les données de stock pour le produit courant
-                            const stockInfo = stockProductsData.find((stockItem: any) => stockItem.id === product.productId);
+                            //const stockInfo = stockProductsData.find((stockItem: any) => stockItem.id === product.productId);
 
                             // Passer les données de stock au composant ProductCardShop
                             // Assurez-vous que votre composant ProductCardShop est prêt à recevoir et à utiliser ces props!
@@ -122,8 +117,7 @@ const ShopRightSidebar = ({ productCategories, productsData, productMarques, min
                                 <ProductCardShop
                                     key={index}
                                     data={product}
-                                    stockProductsData={stockInfo ? stockInfo : null} // Ici vous passez la quantité en stock
-                                    stockProductsLoading={stockProductsLoading}
+
                                 />
                             );
                         })}
@@ -173,14 +167,18 @@ export const getStaticProps = HocMenuData(async (context) => {
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
 
+    const transformedProducts = productsData.products.edges.map(({ node }: any) => ({
+        ...node, // On conserve toutes les propriétés existantes du produit
+        id: node.productId, // On ajoute ou écrase la propriété `id` avec la valeur de `productId`
+    }));
     return {
         props: {
-            productsData: productsData.products.edges.map(({ node }: any) => node), // Correction ici pour utiliser la structure correcte
+            productsData: transformedProducts, // Utilisation des produits transformés
             productCategories: categoriesData.productCategories.nodes,
             productMarques: marquesData.marquesProducts.nodes,
             minPrice,
             maxPrice,
         },
-        revalidate: 1800,
+        revalidate: 900, // toutes les 15 minutes
     };
 });

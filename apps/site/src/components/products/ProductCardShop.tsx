@@ -34,11 +34,11 @@ interface ProductCardShopProps {
     stockProductsLoading?: boolean;
 }
 
-export const ProductCardShop = ({ data, stockProductsData, stockProductsLoading }: ProductCardShopProps) => {
+export const ProductCardShop = ({ data, stockProductsData }: ProductCardShopProps) => {
     // ==================Get all  products data using slug =================
     // const { product, isLoading } = useProduct(data?.slug);
 
-    console.log('stockProductsData', stockProductsData)
+    // console.log('stockProductsData', stockProductsData)
     // console.log('product', product)
     // Calcul du pourcentage de remise si les prix de vente et réguliers sont disponibles
     const discount = data?.salePrice && data?.regularPrice
@@ -98,7 +98,7 @@ export const ProductCardShop = ({ data, stockProductsData, stockProductsLoading 
                 )}
             </div>
             <div className="mt-5">
-                <MiniCart data={stockProductsData} />
+                <MiniCart data={data} />
 
             </div>
         </div>

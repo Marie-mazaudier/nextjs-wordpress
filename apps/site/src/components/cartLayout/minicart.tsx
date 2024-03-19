@@ -12,9 +12,10 @@ import { useGetCartData } from '../../../lib/coCart/getCart';
 
 interface MiniCartProps {
     data?: any;
+    id?: any
 }
 
-const MiniCart = ({ data }: MiniCartProps) => {
+const MiniCart = ({ data, id }: MiniCartProps) => {
     //==========filter product color attributes============
     // const colorAttribute = data?.attributes.find((attribute: any) => attribute.name.toLowerCase() === "color");
     const { updateCart, updateStock, cart } = useCart(); // Récupération de updateStock depuis le contexte
@@ -49,7 +50,7 @@ const MiniCart = ({ data }: MiniCartProps) => {
     useEffect(() => {
         // S'assurer que `data` est défini avant de continuer
         if (data && cart.items) {
-            const productInCart = cart.items.find(item => item.id === data.id);
+            const productInCart = cart.items.find(item => item.id === id);
             if (productInCart) {
                 // Si le produit est déjà dans le panier, ajustez la quantité disponible
                 const availableQuantity = data.stock_quantity - productInCart.quantity.value;
@@ -71,7 +72,7 @@ const MiniCart = ({ data }: MiniCartProps) => {
                     {data ? (
                         <button
                             onClick={() => {
-                                addToCartHandler(data, itemValue, setLoading, count, () => updateCart(), () => updateStock(data.id, data.stock_quantity - count), productToast);
+                                addToCartHandler(data, itemValue, setLoading, count, () => updateCart(), () => updateStock(id, data.stock_quantity - count), productToast);
                             }}
                             disabled={loading || stockOut || maxQuantity === 0}
                             type="submit"

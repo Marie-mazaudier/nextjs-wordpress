@@ -8,7 +8,6 @@ import { Breadcrumb } from "../../../../packages/ecommerce-ui/src";
 import { Spaces } from "../../../../packages/ecommerce-ui/src";
 import { BlockLayout } from "../../../../packages/ecommerce-ui/src";
 import { ProductCardShop } from "../../src/components/products/ProductCardShop";
-import { EmptyDataFound } from "src/components/emptyData/EmptyDataFound";
 import { Pagination } from "../../../../packages/ecommerce-ui/src";
 import { ProductFilter } from 'src/components/products/ProductFilter';
 import { PageContent } from '../../../../packages/ecommerce-ui/src';
@@ -38,7 +37,7 @@ const MarquesPage = ({ productMarques, products, categories, minPrice, maxPrice 
     const [filterOpen, setFilterOpen] = React.useState(false);
     const [productActive, setProductActive] = React.useState(0);
     const [priceRange, setPriceRange] = React.useState<[number, number]>([minPrice, maxPrice]);
-    console.log('initial price range', priceRange, minPrice, maxPrice)
+    //  console.log('initial price range', priceRange, minPrice, maxPrice)
     const router = useRouter();
     const id = router.asPath.split("/")[2];
     const { slug } = router.query; // Utilisez le slug directement depuis router.query
@@ -171,16 +170,22 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
 
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
+    // Transformation des produits pour que `id` soit égal à `productId`
+    const transformedProducts = productsData.products.nodes.map((product: any) => ({
+        ...product, // On conserve toutes les propriétés existantes du produit
+        id: product.productId, // On ajoute ou écrase la propriété `id` avec la valeur de `productId`
+    }));
+
     return {
         props: {
-            products: productsData.products.edges.map((edge: any) => edge.node), // Mise à jour pour utiliser edges
+            products: transformedProducts, // Utilisation des produits transformés
             productMarques: marquesData.marquesProducts.nodes,
             totalProducts: productsData.products.edges.length, // Mise à jour en fonction de la structure de réponse
             categories: categoriesData.productCategories.nodes,
             minPrice,
             maxPrice,
         },
-        revalidate: 1800,
+        revalidate: 900, // toutes les 15 minutes
     };
 });
 

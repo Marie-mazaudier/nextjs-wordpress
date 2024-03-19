@@ -8,11 +8,9 @@ import { Breadcrumb } from "../../../../packages/ecommerce-ui/src";
 import { Spaces } from "../../../../packages/ecommerce-ui/src";
 import { BlockLayout } from "../../../../packages/ecommerce-ui/src";
 import { ProductCardShop } from "../../src/components/products/ProductCardShop";
-import { EmptyDataFound } from "src/components/emptyData/EmptyDataFound";
 import { Pagination } from "../../../../packages/ecommerce-ui/src";
 import { ProductFilter } from 'src/components/products/ProductFilter';
 import { PageContent } from '../../../../packages/ecommerce-ui/src';
-import { ShopProductsWrapper } from "../../src/components/products/ShopProductsWrapper";
 import { ProductHeader } from "../../src/components/products/ProductHeader";
 
 //IMPORT DATA GRAPHQL
@@ -39,7 +37,7 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
     const [filterOpen, setFilterOpen] = React.useState(false);
     const [productActive, setProductActive] = React.useState(0);
     const [priceRange, setPriceRange] = React.useState<[number, number]>([minPrice, maxPrice]);
-    console.log('initial price range', priceRange, minPrice, maxPrice)
+    // console.log('initial price range', priceRange, minPrice, maxPrice)
     const router = useRouter();
     const id = router.asPath.split("/")[2];
     const { slug } = router.query; // Utilisez le slug directement depuis router.query
@@ -187,15 +185,22 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
 
+
+    // Transformation des produits pour que `id` soit égal à `productId`
+    const transformedProducts = productsData.products.nodes.map((product: any) => ({
+        ...product, // On conserve toutes les propriétés existantes du produit
+        id: product.productId, // On ajoute ou écrase la propriété `id` avec la valeur de `productId`
+    }));
+
     return {
         props: {
-            products: productsData.products.nodes,
+            products: transformedProducts, // Utilisation des produits transformés
             productCategories: categoriesData.productCategories.nodes,
             productMarques: marquesData.marquesProducts.nodes,
             minPrice: isFinite(minPrice) ? minPrice : 0, // Gérer le cas où minPrice n'est pas un nombre fini
             maxPrice: isFinite(maxPrice) ? maxPrice : 0, // Gérer le cas où maxPrice n'est pas un nombre fini
         },
-        revalidate: 1800,
+        revalidate: 900, // toutes les 15 minutes
     };
 });
 
