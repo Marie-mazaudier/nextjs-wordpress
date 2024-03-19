@@ -171,10 +171,11 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
     // Transformation des produits pour que `id` soit égal à `productId`
-    const transformedProducts = productsData.products.nodes.map((product: any) => ({
-        ...product, // On conserve toutes les propriétés existantes du produit
-        id: product.productId, // On ajoute ou écrase la propriété `id` avec la valeur de `productId`
+    const transformedProducts = productsData.products.edges.map(({ node }: any) => ({
+        ...node, // On conserve toutes les propriétés existantes du produit
+        id: node.productId, // On ajoute ou écrase la propriété `id` avec la valeur de `productId`
     }));
+
 
     return {
         props: {
