@@ -44,7 +44,7 @@ const ShopRightSidebar = ({ productCategories, productsData, productMarques, min
     const [afterCursor, setAfterCursor] = useState(null);
 
     // Appel à useGetProductsStock avec la gestion du curseur pour pagination
-    const { loading: stockProductsLoading, products: stockProductsData, pageInfo } = useGetProductsStock(250, afterCursor);
+    const { loading: stockProductsLoading, products: stockProductsData, pageInfo } = useGetProductsStock(3, afterCursor);
     console.log('stockProductsData', stockProductsData)
     useEffect(() => {
         let processedProducts = [...productsData];
