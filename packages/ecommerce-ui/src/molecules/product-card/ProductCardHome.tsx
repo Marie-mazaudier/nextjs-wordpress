@@ -52,7 +52,7 @@ export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
                 ) : null}
             </div>
             {data?.name ? (
-                <Link href={`/shop/product/${data?.slug || ""}`}>
+                <Link href={`/produit/${data?.slug || ""}`}>
                     <BodyText
                         size="xl"
                         className="main_font mt-5 text-center text-xs  uppercase hover:text-themePrimary600 transition hover:duration-300 line-clamp-2"

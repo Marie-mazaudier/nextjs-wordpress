@@ -83,7 +83,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
           {colorAttribute.options.map((item: any, index: number) => (
             <label key={index} htmlFor={item?.name} className="cursor-pointer h-fit p-1">
               <div
-                className={`p-4 rounded-full border ${itemValue == item ? "border-themePrimary600" : " border-themeSecondary200"
+                className={`p-4 rounded-sm border ${itemValue == item ? "border-themePrimary600" : " border-themeSecondary200"
                   }  relative`}
               >
                 <input
@@ -93,7 +93,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
                   type="radio"
                   value={item}
                   style={{ backgroundColor: item }}
-                  className={`cursor-pointer appearance-none inline-block  w-6 h-6 rounded-full absolute right-1 top-1`}
+                  className={`cursor-pointer appearance-none inline-block  w-6 h-6 rounded-sm absolute right-1 top-1`}
                   onChange={handleOnchange}
                 />
               </div>
@@ -101,11 +101,10 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
           ))}
         </div>
       ) : null}
-      <div className="border border-themeSecondary200 w-full mt-5"></div>
       <div className="flex flex-col md:flex-row md:items-center gap-7 mt-5">
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4">
           {data ? (
-            <div className="flex md:mx-auto sm:mx-0 items-center h-12 border border-themeSecondary300 p-2 rounded-full">
+            <div className="flex md:mx-auto sm:mx-0 items-center h-8 border border-themeSecondary300 p-2 rounded-sm">
               <button
                 onClick={() => setCount(prevCount => Math.max(prevCount - 1, 1))}
                 disabled={loading || stockOut || count <= 1}
@@ -115,7 +114,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
               </button>
 
               <input
-                className="mx-2 text-center w-8 focus:outline-none border-none text-lg font-semibold  text-themeSecondary800"
+                className="mx-2 text-center w-8 focus:outline-none border-none h-4 text-xs font-semibold  text-themeSecondary800"
                 type="text"
                 value={count}
                 readOnly
@@ -141,7 +140,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
               }}
               disabled={loading || stockOut || maxQuantity === 0}
               type="submit"
-              className={`font-medium text-base px-7 py-[14px] leading-6 text-white transition rounded-full bg-themePrimary600 hover:duration-500 flex justify-center ${stockOut ? "opacity-30" : "hover:bg-themeSecondary800"}`}
+              className={`font-medium text-base px-5 rounded-sm py-[5px] leading-6 text-white transition bg-principal hover:duration-500 flex justify-center ${stockOut ? "opacity-30" : "hover:bg-themeSecondary800"}`}
             >
 
               {loading && <LoaderRound />}
@@ -180,7 +179,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
       )}
       <div className="border border-themeSecondary200 w-full mt-5"></div>
       <div className="flex items-center justify-end mt-5">
-        <SocialShare />
+        {/* <SocialShare />*/}
       </div>
     </div>
   );

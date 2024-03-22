@@ -36,7 +36,7 @@ export const OrderSummary = ({ cartData, billingData, createOrder, orderLoading,
             priority={true}
           />
           <div>
-            <Link href={`/shop/product/${singleItem?.slug}`}>
+            <Link href={`/produit/${singleItem?.slug}`}>
               <BodyText
                 size="md"
                 intent="medium"

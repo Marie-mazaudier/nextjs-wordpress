@@ -1290,7 +1290,7 @@ export const CheckOut = ({
         </div>
         {/* Checkout Order Summery */}
         <div id="summary" className="2xl:max-w-md lg:w-1/3 w-11/12 mx-auto h-fit">
-          <div className="bg-white sticky_menu top-2 p-6 shadow-md rounded-xl overflow-hidden">
+          <div className="bg-white sticky-menu-main top-2 p-6 shadow-md rounded-xl overflow-hidden">
             {/* Form Loader */}
             {(!cartData || loading) && <LoaderGrowing />}
             {/* Title */}

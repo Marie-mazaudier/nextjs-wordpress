@@ -129,7 +129,7 @@ export const CartItems = ({ cartData, onRemoveCartItem, onUpdateCartItem, produc
               <div className="shrink-0">
                 <Placeholder src={singleData?.featured_image} imageWidth={50} imageHeight={50} />
               </div>
-              <Link href={`/shop/product/${singleData?.slug}`}>
+              <Link href={`/produit/${singleData?.slug}`}>
                 <BodyText size="md" intent="medium" className="text-themeSecondary800 line-clamp-1">
                   {singleData?.title}
                 </BodyText>

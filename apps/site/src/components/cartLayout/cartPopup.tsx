@@ -101,7 +101,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ onClose }) => {
                                         )}
                                     </div>
                                     <img src={item.featured_image} alt={item.name} className="w-12 h-12 mr-2" />
-                                    <Link href={`/shop/product/${item.slug}`}>
+                                    <Link href={`/produit/${item.slug}`}>
                                         <p className="text-themeSecondary800 line-clamp-1">
                                             {item.name}
                                         </p>

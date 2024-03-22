@@ -1,71 +1,94 @@
 import React, { useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import { Badge } from "../../atoms/badges/Badge";
 import { Placeholder } from "../../atoms/placeholder/Placeholder";
 
-interface ImageGalleryProps {
-  images?: any;
-  discount?: any;
+interface MediaItem {
+  src: string;
+  alt: string;
+  type: 'image' | 'video';
+  poster?: string;
 }
 
-export const ImageGallery = ({ images, discount }: ImageGalleryProps) => {
-  const [active, setActive] = useState(0);
-  const [image, setImage] = useState("");
+interface ImageGalleryProps {
+  media?: MediaItem[];
+  discount?: boolean;
+}
+
+export const ImageGallery = ({ media, discount }: ImageGalleryProps) => {
+  const [activeIndex, setActiveIndex] = useState(0); // Utiliser un index pour le média actif
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
+  const handleViewerToggle = () => setIsViewerOpen(!isViewerOpen);
+
+  const goToNextMedia = () => {
+    if (media && activeIndex < media.length - 1) {
+      setActiveIndex(activeIndex + 1);
+    }
+  };
+
+  const goToPreviousMedia = () => {
+    if (activeIndex > 0) {
+      setActiveIndex(activeIndex - 1);
+    }
+  };
+
+  const activeMedia = media && media.length > 0 ? media[activeIndex] : null;
+
   return (
-    <div className="flex gap-5">
-      <div
-        className={`flex flex-col items-center justify-center gap-2.5 pr-1 scrollBar ${images && "overflow-y-auto"}`}
-      >
-        {images
-          ? images?.map((image: any, index: number) => (
-              <div
-                className={`p-2.5 border-2  w-fit h-fit rounded-[20px] cursor-pointer ${
-                  active === index ? "border-themePrimary600" : "border-themeSecondary200"
-                }`}
-                key={index}
-                onClick={() => {
-                  setImage(image?.src);
-                  setActive(index);
-                }}
+    <>
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex items-center justify-center w-full relative cursor-pointer" onClick={handleViewerToggle}>
+          {activeMedia ? (
+            activeMedia.type === 'video' ? (
+              <video
+                controls
+                width="480"
+                height="480"
+                className="rounded-xl"
+                poster={activeMedia.poster} // Utiliser l'attribut poster ici
+                autoPlay
+                loop
+                muted
               >
-                <div className="hidden sm:block">
-                  <Placeholder
-                    src={image?.src}
-                    imageWidth={100}
-                    imageHeight={100}
-                    alt={image?.alt}
-                    className="rounded-xl"
-                  />
-                </div>
-                <div className="block sm:hidden">
-                  <Placeholder
-                    src={image?.src}
-                    imageWidth={50}
-                    imageHeight={50}
-                    alt={image?.alt}
-                    className="rounded-xl"
-                  />
-                </div>
-              </div>
-            ))
-          : [1, 2, 3, 4].map((_, index) => <Skeleton key={index} height={120} width={100} />)}
-      </div>
-      <div className={`p-7 bg-themeSecondary100 rounded-xl relative ${images ? "w-fit" : "w-full"}`}>
-        {images ? (
-          <Placeholder src={image ? image : images[0]?.src} imageWidth={480} imageHeight={480} />
-        ) : (
-          <Skeleton height={480} />
-        )}
-        {discount ? (
-          <>
+                <source src={activeMedia.src} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <img src={activeMedia.src} alt={activeMedia.alt} width="480" height="480" className="rounded-xl" />
+            )
+          ) : (
+            <Skeleton height={480} width={480} />
+          )}
+          {/*discount && (
             <Badge size="md" type="pill" className="absolute top-7 right-7 rounded-full">
-              -{discount?.toFixed(0)}%
+              -{discount.toFixed(0)}%
             </Badge>
-          </>
-        ) : (
-          ""
-        )}
+          )*/}
+        </div>
+        <div className="flex items-center justify-center gap-2.5 pr-1 overflow-y-auto">
+          {media?.map((item, index) => (
+            <div
+              className={`p-2.5 border-2 w-fit h-fit rounded-[3px] cursor-pointer ${index === activeIndex ? "border-themePrincipal" : "border-themeSecondary200"}`}
+              key={index}
+              onClick={() => setActiveIndex(index)}
+            >
+              <Placeholder src={item.type === 'video' ? item.poster || item.src : item.src} imageWidth={60} imageHeight={60} alt={item.alt} className="rounded-xl" />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+      {isViewerOpen && activeMedia && (
+        <div className="fixed inset-0 z-9 flex items-center justify-center p-4 bg-black bg-opacity-75">
+          {activeMedia.type === 'video' ? (
+            <video controls autoPlay loop muted src={activeMedia.src} className="max-w-full max-h-full" poster={activeMedia.poster}></video>
+          ) : (
+            <img src={activeMedia.src} alt={activeMedia.alt} className="max-w-full max-h-full" />
+          )}
+          <button onClick={goToPreviousMedia} className="absolute left-4 top-1/2 text-white text-2xl">&lt;</button>
+          <button onClick={goToNextMedia} className="absolute right-4 top-1/2 text-white text-2xl">&gt;</button>
+          <button onClick={handleViewerToggle} className="absolute top-4 right-4 text-white text-2xl">&times;</button>
+        </div>
+      )}
+    </>
   );
 };

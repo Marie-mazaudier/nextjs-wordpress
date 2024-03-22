@@ -31,6 +31,7 @@ const AlmaWidget: React.FC<AlmaWidgetProps> = ({ amount }) => {
         const alma = (window as any).Alma;
 
         if (alma) {
+
             const merchantId = process.env.NEXT_PUBLIC_ALMA_MERCHANT_ID;
             const widgets = alma.Widgets.initialize(merchantId, alma.ApiMode.TEST);
 

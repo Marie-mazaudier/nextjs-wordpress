@@ -1,29 +1,29 @@
-import { Badge, BodyText, Heading2 } from "@jstemplate/ecommerce-ui";
+import { Badge, BodyText, Heading1 } from "@jstemplate/ecommerce-ui";
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import * as DOMPurify from 'dompurify';
 
 interface ProductShortDescriptionProps {
-  data?: any;
+  productInfo?: any;
 }
-const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
+const ProductShortDescription = ({ productInfo }: ProductShortDescriptionProps) => {
   // const repliceContent = data?.short_description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
   // Nettoyage du HTML de la description courte du produit
-
+  // console.log('short description', productInfo)
   //const cleanDescription = typeof window === 'undefined' ? data?.short_description : DOMPurify.sanitize(data?.short_description);
   const [htmlContent, setHtmlContent] = useState('');
   useEffect(() => {
     // Mettre à jour le contenu HTML ici si nécessaire
-    setHtmlContent(DOMPurify.sanitize(data?.short_description))
+    setHtmlContent(DOMPurify.sanitize(productInfo?.shortDescription))
 
-  }, [data?.short_description]);
+  }, [productInfo?.shortDescription]);
   return (
     <div>
-      {data?.name ? (
-        <Heading2 intent="bold" className="text-themeSecondary800">
-          {data?.name}
-        </Heading2>
+      {productInfo?.name ? (
+        <Heading1 className="text-themeSecondary800">
+          {productInfo?.name}
+        </Heading1>
       ) : (
         <>
           <Skeleton height={36} />
@@ -31,43 +31,37 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
         </>
       )}
       <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mt-4">
-        {data ? (
-          <div className="flex items-center gap-2">
-            {data?.sale_price ? (
-              <>
-                {/* Afficher le prix soldé s'il existe */}
-                <BodyText size="xl" intent="bold" className=" text-themePrimary600">
-                  {data?.sale_price} €
-                </BodyText>
-                {/* Barrer le prix régulier uniquement si le prix soldé existe */}
-                <BodyText size="md" className="text-themeSecondary400 line-through">
-                  {data?.regular_price} €
-                </BodyText>
-              </>
-            ) : data?.regular_price ? (
-              // Afficher le prix régulier sans le barrer s'il n'y a pas de prix soldé
-              <BodyText size="xl" intent="bold" className="text-themePrimary600">
-                {data?.regular_price} €
+        <div className="flex items-center gap-2">
+          {productInfo?.salePrice && (
+            <>
+              {/* Afficher le prix soldé s'il existe */}
+              <BodyText size="xl" intent="bold" className=" text-themePrimary600">
+                {productInfo.salePrice} €
               </BodyText>
-            ) : (
-              // Afficher un skeleton pour le prix régulier si aucun prix n'est disponible
-              <Skeleton width={50} height={28} />
-            )}
-          </div>
-        ) : (
-          <Skeleton height={28} width={85} />
-        )}
+              {/* Barrer le prix régulier uniquement si le prix soldé existe */}
+              <BodyText size="md" className="text-themeSecondary400 line-through">
+                {productInfo.regularPrice} €
+              </BodyText>
+            </>
+          )}
+          {!productInfo?.salePrice && productInfo?.regularPrice && (
+            // Afficher le prix régulier sans le barrer s'il n'y a pas de prix soldé
+            <BodyText size="xl" intent="bold" className="text-themePrimary600">
+              {productInfo.regularPrice} €
+            </BodyText>
+          )}
+        </div>
         <div className="bg-themeSecondary200 h-8  w-0.5 hidden md:block">
 
         </div>
         <div className=" flex items-center gap-3">
-          {data ? (
+          {productInfo ? (
             <div>
-              {data?.rating && (
+              {productInfo?.rating && (
                 <div className="flex gap-1">
                   <FaStar className="text-base text-themeWarning500" />
                   <BodyText size="sm" className=" text-themeSecondary800">
-                    {data?.rating}
+                    {productInfo?.rating}
                   </BodyText>
                 </div>
               )}
@@ -75,16 +69,16 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
           ) : (
             <Skeleton height={20} width={50} />
           )}
-          {data ? (
+          {/*productInfo ? (
             <BodyText size="sm" className="text-themeSecondary800">
-              • {data?.reviews} reviews
+              • {productInfo?.reviews} reviews
             </BodyText>
           ) : (
             <Skeleton height={20} width={75} />
-          )}
-          {data ? (
+          )*/}
+          {productInfo ? (
             <Badge size="sm" type="pill" className="rounded-full w-fit">
-              {data?.stock}
+              {productInfo?.stockStatus === "IN_STOCK" ? productInfo?.stockQuantity + " en stock" : "Vendu"}
             </Badge>
           ) : (
             <Skeleton height={24} width={80} borderRadius={50} />
@@ -93,7 +87,7 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
 
       </div>
 
-      {data ? (
+      {productInfo ? (
         <div className="text-themeSecondary500 mt-5 line-clamp-3" dangerouslySetInnerHTML={{ __html: htmlContent }} />
 
       ) : (
@@ -104,7 +98,6 @@ const ProductShortDescription = ({ data }: ProductShortDescriptionProps) => {
         </>
       )}
 
-      <div className="border border-themeSecondary200 w-full mt-5"></div>
     </div>
   );
 };

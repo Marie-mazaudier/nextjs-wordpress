@@ -52,7 +52,7 @@ const SingleBlogPage = () => {
               <BlogContent data={singlePost} key={index} />
             ))}
             <Spaces size="md" />
-            <SocialShare />
+            {/*<SocialShare />*/}
             <Spaces size="mdd" />
             <CommentsSection getAllComments={getAllComments} postID={post[0]?.id} />
             <Spaces size="md" />

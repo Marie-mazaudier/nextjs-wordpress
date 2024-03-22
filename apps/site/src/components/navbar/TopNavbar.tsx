@@ -57,7 +57,7 @@ const TopNavbar = ({ LoginmodalOn, setLoginModalOn, cartData }: TopNavbarProps) 
     };
   }, []);
   return (
-    <nav className={`py-2 ${isSticky ? 'sticky' : ''}`}>
+    <nav className={`py-2 ${isSticky ? 'sticky-menu-main' : ''}`}>
       <div className={`container items-center justify-between mx-auto lg:flex `}>
         <div className="container items-center flex-start justify-left mx-auto gap-2 lg:flex">
           <FaInstagram className={`h-4 w-4 white-menu-icon ${isSticky ? 'black-menu-icon' : 'white-menu-icon'}`} />

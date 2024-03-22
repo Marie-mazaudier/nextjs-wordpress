@@ -4,18 +4,30 @@ import { AdditionalInfo } from "./AdditionalInfo";
 import { CustomerReview } from "./CustomerReview";
 import Skeleton from "react-loading-skeleton";
 import * as DOMPurify from 'dompurify';
+import { ProductNode } from "src/types/productSingle";
 
 export interface ProductDescriptionProps {
-  data?: any;
-  productInfo?: any;
+
+  productInfo?: ProductNode;
   isLoading?: boolean;
 }
 
-export const ProductDescription = ({ data, productInfo, isLoading }: ProductDescriptionProps) => {
+export const ProductDescription = ({ productInfo, isLoading }: ProductDescriptionProps) => {
+  // console.log('productInfo', productInfo)
   const [active, setActive] = useState(0);
   // const repliceContent = data[0]?.description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
   // Nettoyage du HTML de la description courte du produit
-  const cleanDescription = typeof window === 'undefined' ? data?.short_description : DOMPurify.sanitize(data[0]?.description);
+  let cleanDescription = "";
+
+  if (typeof window !== 'undefined') {
+    // Côté client, sanitize la description. Utilisez shortDescription si disponible.
+    const descriptionToClean = productInfo?.description || productInfo?.shortDescription || "";
+    cleanDescription = DOMPurify.sanitize(descriptionToClean);
+  } else {
+    // Côté serveur, utilisez directement shortDescription si disponible, sinon description, sinon chaîne vide.
+    cleanDescription = productInfo?.shortDescription || productInfo?.description || "";
+  }
+
   return (
     <section className=" container mx-auto rounded-2xl bg-themeSecondary100 px-5 md:px-14 py-12">
       <div className="flex gap-4 md:gap-10 flex-col items-center md:items-start md:flex-row relative">
@@ -69,8 +81,8 @@ export const ProductDescription = ({ data, productInfo, isLoading }: ProductDesc
           ) : (
             <Skeleton height={80} />
           ))) ||
-          (active === 2 && <AdditionalInfo productInfo={data[0]?.attributes} />) ||
-          (active === 3 && <CustomerReview productId={data[0]?.id} />)}
+          (active === 2 && <AdditionalInfo productInfo={productInfo?.attributes} />)/* ||
+          (active === 3 && <CustomerReview productId={data[0]?.id} />)*/}
       </div>
     </section>
   );
