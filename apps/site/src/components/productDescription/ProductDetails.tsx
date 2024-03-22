@@ -23,14 +23,14 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
   //console.log("produit information", productInfo)
   const salePriceNumeric = parseFloat(productInfo?.salePrice?.replace(',', '.') || "0");
   const regularPriceNumeric = parseFloat(productInfo?.regularPrice?.replace(',', '.') || "0");
-  console.log('productInfo', productInfo)
+  // console.log('productInfo', productInfo)
   const priceForAlma = salePriceNumeric && salePriceNumeric !== 0 ? salePriceNumeric : regularPriceNumeric;
 
   // Obtention de l'URL de la vidéo et de l'image principale
   const videoUrl = productInfo?.produitACF?.videoProduit?.node?.mediaItemUrl;
   const videoPosterUrl = productInfo?.produitACF?.videoPoster?.node?.mediaItemUrl; // Nouveau champ pour le poster de la vidéo
   const featuredImageUrl = productInfo?.featuredImage?.node?.mediaItemUrl;
-  console.log('videoPosterUrl', videoPosterUrl)
+  //console.log('videoPosterUrl', videoPosterUrl)
   // Construction du tableau des médias, en incluant l'image principale et la vidéo
   const mediaUrls: MediaObject[] = [];
 

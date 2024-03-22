@@ -2,15 +2,11 @@ import React from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useProduct } from "../../lib/woocommerce/useProduct";
-import { useRecentViewedProducts } from "../../lib/woocommerce/useRecentProducts";
 import { getRecentlyViewed } from "../../src/utils/products.utils";
 import { ProductDetails } from "../../src/components/productDescription/ProductDetails";
-import { ProductDescription } from "../../src/components/productDescription/ProductDescription";
-import { ProductsData } from "../../src/data/ProductsDetails";
-import { BrandData } from "../../src/data/BrandData";
-import { Brands, RecentlyViewed, Spaces } from "@jstemplate/ecommerce-ui";
+import { Spaces } from "@jstemplate/ecommerce-ui";
 import client from "lib/utils/apollo-client";
-import { GetStaticPaths, GetStaticProps } from "next";
+import { GetStaticProps } from "next";
 //IMPORT TYPE
 import { ProductNode } from "src/types/productSingle";
 //IMPORT DATA GRAPHQL
