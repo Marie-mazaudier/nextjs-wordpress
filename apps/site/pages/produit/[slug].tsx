@@ -20,14 +20,14 @@ const Product = ({ productInfo }: ProductProps) => {
     const router = useRouter();
     const slug = router?.query?.slug;
     // ==================Get all  products data using slug =================
-    const { product, isLoading } = useProduct(slug);
+    // const { product, isLoading } = useProduct(slug);
 
     // ==================Get all recently viewed products data=================
     // const { recentViewData } = useRecentViewedProducts(4);
     // console.log(product)
-    if (product[0]?.id) {
-        getRecentlyViewed(product[0]?.id);
-    }
+    //if (product[0]?.id) {
+    //  getRecentlyViewed(product[0]?.id);
+    // }
     //   console.log('valeur initial product Info', productInfo)
     return (
         <>
@@ -36,7 +36,9 @@ const Product = ({ productInfo }: ProductProps) => {
                 <meta name="description" content="single page description" />
             </Head>
             <Spaces size="mdd" />
-            <ProductDetails data={product} isLoading={isLoading} productInfo={productInfo} />
+            {/*<ProductDetails data={product} isLoading={isLoading} productInfo={productInfo} />*/}
+            <ProductDetails productInfo={productInfo} />
+
             <Spaces size="mdd" />
             {/*<ProductDescription isLoading={isLoading} productInfo={productInfo} />*/}
             {/*recentViewData?.length > 0 && <RecentlyViewed title="Recently Viewed" data={recentViewData} />*/}
@@ -64,7 +66,7 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
         props: {
             productInfo: productInfo,
         },
-        revalidate: 900,
+        revalidate: 1800,
     };
 });
 

@@ -80,7 +80,7 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
             {priceForAlma && < AlmaWidget amount={priceForAlma} />}
           </div>
           <div className="mt-5">
-            <CartAndBuy data={data?.[0]} />
+            {/*<CartAndBuy data={data?.[0]} />*/}
           </div>
           <ProductSimpleDescription isLoading={isLoading} productInfo={productInfo} />
         </div>

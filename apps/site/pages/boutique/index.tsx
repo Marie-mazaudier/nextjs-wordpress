@@ -179,6 +179,6 @@ export const getStaticProps = HocMenuData(async (context) => {
             minPrice,
             maxPrice,
         },
-        revalidate: 900, // toutes les 15 minutes
+        revalidate: 1800, // toutes les 15 minutes
     };
 });
