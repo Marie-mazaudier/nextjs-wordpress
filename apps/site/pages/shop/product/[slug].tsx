@@ -34,7 +34,7 @@ const Product = () => {
       <Spaces size="mdd" />
       <ProductDetails isLoading={isLoading} data={product} />
       <Spaces size="mdd" />
-      <ProductDescription isLoading={isLoading} data={product} productInfo={ProductsData} />
+      {/*<ProductDescription isLoading={isLoading} data={product} productInfo={ProductsData} />*/}
       <Spaces size="mdd" />
       {recentViewData?.length > 0 && <RecentlyViewed title="Recently Viewed" data={recentViewData} />}
       <Spaces size="mdd" />
