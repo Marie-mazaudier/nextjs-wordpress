@@ -1,15 +1,19 @@
 export interface Product {
-    productId: string;
+    slug: string;
     name: string;
-    salePrice?: string; // Ajouté
-    regularPrice?: string; // Ajouté
+    productId: string;
+    regularPrice: string;
+    salePrice?: string;
+    stockQuantity: number;
+    date: string;
+    stockStatus: "IN_STOCK" | "OUT_OF_STOCK";
     featuredImage?: {
         node: {
             mediaItemUrl: string;
             altText?: string;
         };
     };
-    slug: string
+
 }
 
 export interface RecentProductsData {

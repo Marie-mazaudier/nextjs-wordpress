@@ -19,7 +19,7 @@ export const RecentProducts: React.FC<RecentProductsProps> = ({ products, type }
       <h2 className="text-center titre_secondaire">{title}</h2>
       <Slider {...slickSettings}>
         {products.map((product) => (
-          <div key={product.id} className="p-4">
+          <div key={product.productId} className="p-4">
             <ProductCardHome data={product} />
           </div>
         ))}
