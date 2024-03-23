@@ -1,11 +1,13 @@
 export interface Product {
-    id: string;
+    productId: string;
     name: string;
     salePrice?: string; // Ajouté
     regularPrice?: string; // Ajouté
-    image?: {
-        mediaItemUrl: string; // Mise à jour pour correspondre à la nouvelle structure
-        alt?: string;
+    featuredImage?: {
+        node: {
+            mediaItemUrl: string;
+            altText?: string;
+        };
     };
     slug: string
 }

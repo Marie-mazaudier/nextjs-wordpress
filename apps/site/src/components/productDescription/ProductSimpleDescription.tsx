@@ -1,5 +1,5 @@
 import { BodyText, Heading3 } from "@jstemplate/ecommerce-ui";
-import React, { useState } from "react";
+import React from "react";
 import { AdditionalInfo } from "./AdditionalInfo";
 import { CustomerReview } from "./CustomerReview";
 import Skeleton from "react-loading-skeleton";
@@ -7,17 +7,14 @@ import * as DOMPurify from 'dompurify';
 import { ProductNode } from "src/types/productSingle";
 
 export interface ProductSimpleDescriptionProps {
-
     productInfo?: ProductNode;
-    isLoading?: boolean;
 }
 
-export const ProductSimpleDescription = ({ productInfo, isLoading }: ProductSimpleDescriptionProps) => {
-
+export const ProductSimpleDescription = ({ productInfo }: ProductSimpleDescriptionProps) => {
     // Nettoyage du HTML de la description courte du produit
     let cleanDescription = "";
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && productInfo) {
         // Côté client, sanitize la description. Utilisez shortDescription si disponible.
         const descriptionToClean = productInfo?.description || productInfo?.shortDescription || "";
         cleanDescription = DOMPurify.sanitize(descriptionToClean);
@@ -27,16 +24,13 @@ export const ProductSimpleDescription = ({ productInfo, isLoading }: ProductSimp
     }
 
     return (
-        <section className=" container mx-auto  py-2">
-
+        <section className="container mx-auto py-2">
             <div className="mt-2">
-                {
-                    (!isLoading ? (
-                        <div className="text-themeSecondary500  " dangerouslySetInnerHTML={{ __html: cleanDescription }} />
-
-                    ) : (
-                        <Skeleton height={80} />
-                    ))}
+                {cleanDescription ? (
+                    <div className="text-themeSecondary500" dangerouslySetInnerHTML={{ __html: cleanDescription }} />
+                ) : (
+                    <Skeleton height={80} />
+                )}
             </div>
         </section>
     );

@@ -61,7 +61,7 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
       type: 'image',
     });
   });
-  // console.log('data', data)
+  //console.log('data', data)
   return (
     <section className="px-5 md:px-0">
       <div className="container mx-auto flex flex-col lg:flex-row gap-12">
@@ -74,7 +74,7 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
           </div>
         </div>
         <div className="w-full lg:w-1/2">
-          <ProductShortDescription productInfo={productInfo} />
+          <ProductShortDescription productInfo={productInfo} isLoading={isLoading} data={data} />
           <div className="mt-5">
             {/* Passer priceForAlma à AlmaWidget */}
             {priceForAlma && < AlmaWidget amount={priceForAlma} />}
@@ -82,7 +82,7 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
           <div className="mt-5">
             <CartAndBuy data={data} />
           </div>
-          <ProductSimpleDescription isLoading={isLoading} productInfo={productInfo} />
+          <ProductSimpleDescription productInfo={productInfo} />
         </div>
       </div>
     </section>

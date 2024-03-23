@@ -4,19 +4,23 @@ import { Badge } from "../../atoms/badges/Badge";
 import { Placeholder } from "../../atoms/placeholder/Placeholder";
 import { BodyText } from "../../atoms/typography/bodyText/BodyText";
 import Skeleton from "react-loading-skeleton";
-import Rating from "react-rating";
-import { HiStar } from "react-icons/hi"; // Assurez-vous que le chemin d'importation est correct
+import MiniCart from "../../../../../apps/site/src/components/cartLayout/minicart";
 
 interface Product {
-    id: string;
+    slug: string;
     name: string;
-    salePrice?: string; // Ajouté
-    regularPrice?: string; // Ajouté
-    image?: {
-        mediaItemUrl: string; // Mise à jour pour correspondre à la nouvelle structure
-        alt?: string;
+    productId: string;
+    regularPrice: string;
+    salePrice?: string;
+    stockQuantity: number;
+    date: string;
+    stockStatus: "IN_STOCK" | "OUT_OF_STOCK";
+    featuredImage?: {
+        node: {
+            mediaItemUrl: string;
+            altText?: string;
+        };
     };
-    slug?: string;
 
 }
 
@@ -33,14 +37,14 @@ export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
     return (
         <div className="p-5  w-full ">
             <div className="p-4 b text-center relative flex items-center justify-center">
-                {data?.image ? (
+                {data?.featuredImage ? (
                     <Placeholder
                         className="w-full"
-                        key={data.id}
-                        src={data.image.mediaItemUrl}
+                        key={data.productId}
+                        src={data.featuredImage.node.mediaItemUrl}
                         imageWidth={350}
                         imageHeight={350}
-                        alt={data.name}
+                        alt={data.featuredImage.node.altText}
                     />
                 ) : (
                     <Skeleton height={350} />
@@ -81,8 +85,12 @@ export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
                 ) : (
                     <Skeleton height={20} width={140} />
                 )}
-            </div>
 
+            </div>
+            <div className="mt-5">
+                <MiniCart data={data} />
+
+            </div>
         </div>
     );
 };

@@ -10,7 +10,7 @@ const SpaceStyle = cva([""], {
       md: ["mt-16"],
       mdd: ["mt-14 md:mt-20"],
       lg: ["mt-14 md:mt-20 lg:mt-24"],
-      xl: ["mt-28"],
+      xl: ["mt-48"],
     },
   },
 });

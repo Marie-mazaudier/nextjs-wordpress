@@ -6,8 +6,10 @@ import * as DOMPurify from 'dompurify';
 
 interface ProductShortDescriptionProps {
   productInfo?: any;
+  isLoading?: boolean;
+  data?: any;
 }
-const ProductShortDescription = ({ productInfo }: ProductShortDescriptionProps) => {
+const ProductShortDescription = ({ productInfo, isLoading, data }: ProductShortDescriptionProps) => {
   // const repliceContent = data?.short_description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
   // Nettoyage du HTML de la description courte du produit
   // console.log('short description', productInfo)
@@ -76,12 +78,12 @@ const ProductShortDescription = ({ productInfo }: ProductShortDescriptionProps) 
           ) : (
             <Skeleton height={20} width={75} />
           )*/}
-          {productInfo ? (
-            <Badge size="sm" type="pill" className="rounded-full w-fit">
-              {productInfo?.stockStatus === "IN_STOCK" ? productInfo?.stockQuantity + " en stock" : "Vendu"}
-            </Badge>
-          ) : (
+          {isLoading ? (
             <Skeleton height={24} width={80} borderRadius={50} />
+          ) : (
+            <Badge size="sm" type="pill" className="rounded-full w-fit">
+              {data?.stockStatus === "IN_STOCK" ? data?.stockQuantity + " en stock" : "Vendu"}
+            </Badge>
           )}
         </div>
 

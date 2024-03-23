@@ -3,14 +3,17 @@ import { gql } from "@apollo/client";
 // Mise à jour du fragment pour inclure salePrice, regularPrice, et image
 const PRODUCT_DETAILS_FRAGMENT = gql`
   fragment ProductDetails on SimpleProduct {
-    id
-    name
-    salePrice
-    regularPrice
-    image {
-      mediaItemUrl
-    }
-    slug
+       slug
+        productId
+        name
+        salePrice
+        regularPrice
+        featuredImage {
+          node {
+            mediaItemUrl
+            altText
+          }
+        }
   }
 `;
 

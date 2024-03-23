@@ -66,7 +66,6 @@ const MiniCart = ({ data, id }: MiniCartProps) => {
     return (
         <div>
             {/* Conditionally render COLOR section only if colorAttribute exists and has options */}
-            <div className="border border-themeSecondary200 w-full mt-5"></div>
             <div className="flex flex-col md:flex-row md:items-center justify-center gap-7 mt-5">
                 <div className=" flex items-center gap-3">
                     {data ? (
