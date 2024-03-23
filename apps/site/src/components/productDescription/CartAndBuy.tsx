@@ -1,14 +1,11 @@
-import { BodyText, Button, SocialShare } from "@jstemplate/ecommerce-ui";
-import Link from "next/link";
 import React, { useEffect } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import Skeleton from "react-loading-skeleton";
-import { addBuyNowHandler, addToCartHandler } from "../../utils/cart.utils";
+import { addToCartHandler } from "../../utils/cart.utils";
 import { useToasts } from "react-toast-notifications";
 import { useRouter } from "next/router";
 import { LoaderRound } from "../../loaders/Loader";
 import { useCart } from "../../CartContext";
-import { useGetCartData } from '../../../lib/coCart/getCart';
 
 interface CartAndBuyProps {
   data?: any;
@@ -16,11 +13,10 @@ interface CartAndBuyProps {
 
 const CartAndBuy = ({ data }: CartAndBuyProps) => {
   //==========filter product color attributes============
-  const colorAttribute = data?.attributes.find((attribute: any) => attribute.name.toLowerCase() === "color");
+  // const colorAttribute = data?.attributes.find((attribute: any) => attribute.name.toLowerCase() === "color");
   const { updateCart, updateStock, cart } = useCart(); // Récupération de updateStock depuis le contexte
   // ==================Get all cart items data=================
-  const { data: cartData } = useGetCartData();
-
+  // console.log('data', data)
   const [itemValue, setItemValue] = React.useState("");
   const [count, setCount] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
@@ -30,9 +26,9 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
   const router = useRouter();
   const { addToast } = useToasts();
   //==========select default color============
-  React.useEffect(() => {
-    setItemValue(colorAttribute?.options?.[0]);
-  }, [data, colorAttribute]);
+  /* React.useEffect(() => {
+     setItemValue(colorAttribute?.options?.[0]);
+   }, [data, colorAttribute]);*/
 
 
   const handleOnchange = (e: any) => {
@@ -49,19 +45,19 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
     });
   };
 
-  const stockOut = data?.stock === "outofstock";
+  const stockOut = data?.stockStatus === "OUT_OF_STOCK";
   useEffect(() => {
     // S'assurer que `data` est défini avant de continuer
     if (data && cart.items) {
       const productInCart = cart.items.find(item => item.id === data.id);
       if (productInCart) {
         // Si le produit est déjà dans le panier, ajustez la quantité disponible
-        const availableQuantity = data.stock_quantity - productInCart.quantity.value;
+        const availableQuantity = data.stockQuantity - productInCart.quantity.value;
         setMaxQuantity(availableQuantity);
 
       } else {
         // Si le produit n'est pas dans le panier, utilisez la quantité de stock initial
-        setMaxQuantity(data.stock_quantity);
+        setMaxQuantity(data.stockQuantity);
       }
     }
   }, [cart.items, data]);
@@ -73,7 +69,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
   return (
     <div>
       {/* Conditionally render COLOR section only if colorAttribute exists and has options */}
-      {colorAttribute && colorAttribute.options.length > 0 && (
+      {/*colorAttribute && colorAttribute.options.length > 0 && (
         <BodyText size="md" intent="semibold" className="text-themeSecondary800">
           COLORS
         </BodyText>
@@ -100,7 +96,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
             </label>
           ))}
         </div>
-      ) : null}
+                ) : null*/}
       <div className="flex flex-col md:flex-row md:items-center gap-7 mt-5">
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4">
           {data ? (
@@ -136,7 +132,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
           {data ? (
             <button
               onClick={() => {
-                addToCartHandler(data, itemValue, setLoading, count, () => updateCart(), () => updateStock(data.id, data.stock_quantity - count), productToast);
+                addToCartHandler(data, itemValue, setLoading, count, () => updateCart(), () => updateStock(data.productId, data.stockQuantity - count), productToast);
               }}
               disabled={loading || stockOut || maxQuantity === 0}
               type="submit"
@@ -167,7 +163,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
           )*/}
         </div>
       </div>
-      {maxQuantity === 0 && (
+      {/*maxQuantity === 0 && (
         <div className="out-of-stock-message">
           Le stock est désormais épuisé.
         </div>
@@ -176,7 +172,7 @@ const CartAndBuy = ({ data }: CartAndBuyProps) => {
         <div className="low-stock-message">
           Il ne reste plus que {maxQuantity} articles en stock.
         </div>
-      )}
+      )*/}
       <div className="border border-themeSecondary200 w-full mt-5"></div>
       <div className="flex items-center justify-end mt-5">
         {/* <SocialShare />*/}

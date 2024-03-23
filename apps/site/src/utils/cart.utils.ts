@@ -2,7 +2,7 @@ import { updateCartItem } from "./../../lib/coCart/itemInCart";
 import { addCartItem } from "../../lib/coCart/addToCart";
 import { removeCartItem } from "../../lib/coCart/itemInCart";
 const { toast } = require('react-toastify');
-import { useCart } from "src/CartContext";
+
 /**
  *add to cart function
  * @param data
@@ -26,7 +26,7 @@ export const addToCartHandler = async (
 ) => {
   setLoading(true);
   const cartBody = {
-    id: `${data?.id}`,
+    id: `${data?.productId}`,
     quantity: `${count}`,
     // color: `${colorValue}`,
     item_data: {
@@ -39,8 +39,8 @@ export const addToCartHandler = async (
     setLoading(false);
     updateCart(); // Appel pour mettre à jour l'état global du panier
     // Mise à jour du stock
-    const newStock = data.stock - count;
-    updateStock(data.id, newStock);
+    const newStock = data.stockQuantity - count;
+    updateStock(data.productId, newStock);
     return true; // Indiquer le succès de l'opération
   } catch (error) {
     productToast("Something went wrong", "error");
@@ -67,7 +67,7 @@ export const addBuyNowHandler = async (
 ) => {
   setbuyLoading(true);
   const cartBody = {
-    id: `${data?.id}`,
+    id: `${data?.productId}`,
     quantity: `${count}`,
   };
 

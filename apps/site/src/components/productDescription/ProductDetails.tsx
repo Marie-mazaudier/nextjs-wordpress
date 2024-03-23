@@ -61,7 +61,7 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
       type: 'image',
     });
   });
-  console.log('mediaUrls', mediaUrls)
+  // console.log('data', data)
   return (
     <section className="px-5 md:px-0">
       <div className="container mx-auto flex flex-col lg:flex-row gap-12">
@@ -80,7 +80,7 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
             {priceForAlma && < AlmaWidget amount={priceForAlma} />}
           </div>
           <div className="mt-5">
-            {/*<CartAndBuy data={data?.[0]} />*/}
+            <CartAndBuy data={data} />
           </div>
           <ProductSimpleDescription isLoading={isLoading} productInfo={productInfo} />
         </div>

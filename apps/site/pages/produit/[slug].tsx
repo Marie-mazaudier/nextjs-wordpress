@@ -1,34 +1,29 @@
 import React from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useProduct } from "../../lib/woocommerce/useProduct";
-import { getRecentlyViewed } from "../../src/utils/products.utils";
 import { ProductDetails } from "../../src/components/productDescription/ProductDetails";
 import { Spaces } from "@jstemplate/ecommerce-ui";
 import client from "lib/utils/apollo-client";
 import { GetStaticProps } from "next";
-//IMPORT TYPE
 import { ProductNode } from "src/types/productSingle";
-//IMPORT DATA GRAPHQL
 import { SINGLE_PRODUCTS } from "src/data/graphQl/woo/products/productQueries";
-/*Menu*/
 import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
+import { useProductStock } from "../../lib/woocommerce/useProductStock";
+
 interface ProductProps {
     productInfo: ProductNode;
 }
+
 const Product = ({ productInfo }: ProductProps) => {
     const router = useRouter();
-    const slug = router?.query?.slug;
-    // ==================Get all  products data using slug =================
-    // const { product, isLoading } = useProduct(slug);
+    const slug = router.query.slug;
 
-    // ==================Get all recently viewed products data=================
-    // const { recentViewData } = useRecentViewedProducts(4);
-    // console.log(product)
-    //if (product[0]?.id) {
-    //  getRecentlyViewed(product[0]?.id);
-    // }
-    //   console.log('valeur initial product Info', productInfo)
+    // Assurez-vous que slug est une chaîne de caractères avant de l'utiliser
+    const productSlug = Array.isArray(slug) ? slug[0] : slug;
+
+    // Utilisez le nouveau hook useProductStock pour obtenir les informations de stock
+    const { productStock, isLoading } = useProductStock(productSlug || ''); // Fournit une chaîne vide si slug est undefined
+
     return (
         <>
             <Head>
@@ -36,12 +31,12 @@ const Product = ({ productInfo }: ProductProps) => {
                 <meta name="description" content="single page description" />
             </Head>
             <Spaces size="mdd" />
+            <ProductDetails productInfo={productInfo} isLoading={isLoading} data={productStock} />
             {/*<ProductDetails data={product} isLoading={isLoading} productInfo={productInfo} />*/}
-            <ProductDetails productInfo={productInfo} />
-
             <Spaces size="mdd" />
             {/*<ProductDescription isLoading={isLoading} productInfo={productInfo} />*/}
             {/*recentViewData?.length > 0 && <RecentlyViewed title="Recently Viewed" data={recentViewData} />*/}
+            <Spaces size="mdd" />
         </>
     );
 };
@@ -49,11 +44,11 @@ const Product = ({ productInfo }: ProductProps) => {
 export default Product;
 
 export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => {
-    const slug = params?.slug; // Obtenir le slug à partir des params
+    const slug = params?.slug;
 
     const { data } = await client.query({
         query: SINGLE_PRODUCTS,
-        variables: { slug }, // Passer le slug directement sans le mettre dans un tableau
+        variables: { slug },
     });
 
     if (!data || !data.product) {
@@ -66,11 +61,10 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
         props: {
             productInfo: productInfo,
         },
-        revalidate: 1800,
+        revalidate: 1800, // Toutes les 30 minutes
     };
 });
 
 export async function getStaticPaths() {
-    // Pas de chemin prégénéré, gestion dynamique des slugs produits
     return { paths: [], fallback: 'blocking' };
 }
