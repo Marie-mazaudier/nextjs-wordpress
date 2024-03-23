@@ -19,7 +19,7 @@ const AlmaWidget: React.FC<AlmaWidgetProps> = ({ amount }) => {
         } else {
             initializeAlmaWidget();
         }
-        console.log('amount', amount)
+        //  console.log('amount', amount)
     }, [amount]);
     //console.log('prix', data?.regular_price)
     const convertedPrice = amount * 100; // Convertir le prix en centimes

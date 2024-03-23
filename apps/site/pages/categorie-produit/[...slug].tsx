@@ -204,15 +204,18 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
     };
 });
 
+
+
+
 export const getStaticPaths: GetStaticPaths = async () => {
     const { data } = await client.query({ query: PROD_CAT_QUERY });
+
+    // Générer des chemins pour chaque catégorie, en tenant compte des structures potentiellement hiérarchiques
     const paths = data.productCategories.nodes.map(({ slug }: any) => ({
-        params: { slug: slug.split('/') }, // Divisez le slug en segments s'il contient des '/'
+        params: { slug: slug.includes('/') ? slug.split('/') : [slug] }, // Divise les slugs en segments si nécessaire
     }));
 
     return { paths, fallback: 'blocking' };
 };
-
-
 
 export default CategoryPage;

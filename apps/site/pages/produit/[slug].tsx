@@ -4,11 +4,13 @@ import { useRouter } from "next/router";
 import { ProductDetails } from "../../src/components/productDescription/ProductDetails";
 import { Spaces } from "@jstemplate/ecommerce-ui";
 import client from "lib/utils/apollo-client";
-import { GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { ProductNode } from "src/types/productSingle";
-import { SINGLE_PRODUCTS } from "src/data/graphQl/woo/products/productQueries";
-import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 import { useProductStock } from "../../lib/woocommerce/useProductStock";
+//import GraphQL
+import { SINGLE_PRODUCTS } from "src/data/graphQl/woo/products/productQueries";
+import { GET_ALL_PRODUCTS_SLUGS } from "src/data/graphQl/woo/products/GetAllProductsSlugs ";
+import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
 
 interface ProductProps {
     productInfo: ProductNode;
@@ -65,6 +67,17 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
     };
 });
 
-export async function getStaticPaths() {
-    return { paths: [], fallback: 'blocking' };
-}
+export const getStaticPaths: GetStaticPaths = async () => {
+    const { data } = await client.query({
+        query: GET_ALL_PRODUCTS_SLUGS,
+    });
+
+    const paths = data.products.edges.map(({ node }: { node: { slug: string } }) => ({
+        params: { slug: node.slug },
+    }));
+
+    return {
+        paths,
+        fallback: 'blocking',
+    };
+};

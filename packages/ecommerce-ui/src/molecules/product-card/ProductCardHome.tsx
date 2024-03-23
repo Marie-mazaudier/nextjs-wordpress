@@ -29,7 +29,7 @@ export const ProductCardHome = ({ data }: ProductCardHomeProps) => {
     const discount = data?.salePrice && data?.regularPrice
         ? ((parseFloat(data.regularPrice) - parseFloat(data.salePrice)) / parseFloat(data.regularPrice)) * 100
         : undefined;
-    console.log('data', data)
+    // console.log('data', data)
     return (
         <div className="p-5  w-full ">
             <div className="p-4 b text-center relative flex items-center justify-center">
