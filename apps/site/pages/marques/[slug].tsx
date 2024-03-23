@@ -196,12 +196,13 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
 export const getStaticPaths: GetStaticPaths = async () => {
     const { data } = await client.query({ query: PROD_MARQUES_QUERY });
 
-    // Générer des chemins pour chaque catégorie, en tenant compte des structures potentiellement hiérarchiques
+    // Assurez-vous que le slug est toujours une chaîne de caractères, même pour les slugs simples sans '/'
     const paths = data.marquesProducts.nodes.map(({ slug }: any) => ({
-        params: { slug: slug.includes('/') ? slug.split('/') : [slug] }, // Divise les slugs en segments si nécessaire
+        params: { slug: [slug].flat().join('/') }, // Transforme le slug en chaîne si ce n'est pas déjà le cas
     }));
 
     return { paths, fallback: 'blocking' };
 };
+
 
 export default MarquesPage;
