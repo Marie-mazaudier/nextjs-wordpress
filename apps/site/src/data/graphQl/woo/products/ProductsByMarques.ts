@@ -8,7 +8,8 @@ export const GET_PRODUCTS_BY_MARQUE_SLUG = gql`
           filters: [
             {taxonomy: MARQUE, terms: [$slug]}
           ]
-        }
+        },
+        status: "PUBLISH"
       },
       first: $first,
       after: $after
@@ -32,6 +33,7 @@ export const GET_PRODUCTS_BY_MARQUE_SLUG = gql`
             regularPrice
             salePrice
             stockQuantity
+            stockStatus
             date
           }
         }

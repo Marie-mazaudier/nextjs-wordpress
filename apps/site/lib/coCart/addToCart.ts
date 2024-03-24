@@ -6,34 +6,37 @@ export const addCartItem = async (cartBody: any) => {
     // check if cart_key is available on token cookie
     const cartKey = getCookie("cart_key");
 
-    // if no cart key is avilable, call api to create a new cart
+    let response;
+    // if no cart key is available, call api to create a new cart
     if (!cartKey) {
-      //  call api to get cart data
-      const data = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/wp-json/cocart/v2/cart/add-item`, cartBody);
-
+      response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/wp-json/cocart/v2/cart/add-item`, cartBody);
       // set cart_key on cookie
-      setCookie("cart_key", data.data.cart_key);
-      return {
-        message: "Successfully added to cart",
-        data: data?.data,
-      };
+      setCookie("cart_key", response.data.cart_key);
+    } else {
+      // if cart key is available, call api to add item to cart
+      response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/wp-json/cocart/v2/cart/add-item?cart_key=${cartKey}`,
+        cartBody
+      );
     }
 
-    // if cart key is available, call api to add item to cart
-    const data = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/wp-json/cocart/v2/cart/add-item?cart_key=${cartKey}`,
-      cartBody
-    );
-
+    // Retourner une réponse réussie
     return {
       message: "Successfully added to cart",
-      data: data.data,
+      data: response.data,
     };
   } catch (error: any) {
-    return {
-      message: "Something went wrong",
-      error: error.message,
-    };
-    throw error;
+    // Ici, on rejette la promesse avec l'erreur renvoyée par Axios, incluant le status HTTP et le message d'erreur
+    if (axios.isAxiosError(error)) {
+      // Extraire le code de statut HTTP et le message d'erreur de la réponse Axios
+      const errorMessage = error.response?.data.message || "Something went wrong";
+      const statusCode = error.response?.status || 500;
+
+      // Rejeter explicitement la promesse avec un objet d'erreur contenant ces détails
+      throw { message: errorMessage, statusCode };
+    }
+
+    // Si l'erreur n'est pas une erreur Axios, rejeter avec un message générique
+    throw { message: "An unknown error occurred", statusCode: 500 };
   }
 };

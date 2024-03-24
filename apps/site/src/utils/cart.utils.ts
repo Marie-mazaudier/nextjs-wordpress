@@ -19,36 +19,46 @@ export const addToCartHandler = async (
   colorValue: any,
   setLoading: any,
   count: number,
-  updateCart: () => void,  // Mettez le paramètre obligatoire en premier
-  updateStock: (productId: string, newStock: number) => void, // Annotation du type pour `updateStock`
-  productToast?: any, // Puis le paramètre facultatif
-
+  updateCart: () => void,
+  updateStock: (productId: string, newStock: number) => void,
+  productToast: (message: string, type: "success" | "error") => void
 ) => {
   setLoading(true);
   const cartBody = {
     id: `${data?.productId}`,
     quantity: `${count}`,
-    // color: `${colorValue}`,
     item_data: {
       color: `${colorValue}`,
     },
   };
-  try {
-    await addCartItem(cartBody);
-    productToast("Product added to cart", "success");
-    setLoading(false);
-    updateCart(); // Appel pour mettre à jour l'état global du panier
-    // Mise à jour du stock
-    const newStock = data.stockQuantity - count;
-    updateStock(data.productId, newStock);
-    return true; // Indiquer le succès de l'opération
-  } catch (error) {
-    productToast("Something went wrong", "error");
-    setLoading(false);
-    return false; // Indiquer l'échec de l'opération
-  }
 
+  try {
+    const response = await addCartItem(cartBody);
+    if (response && response.data) {
+      productToast("Produit ajouté au panier", "success");
+      updateCart();
+      const newStock = data.stockQuantity - count;
+      updateStock(data.productId, newStock);
+    }
+    setLoading(false);
+    return { success: true, code: "" }; // Retourne success true sans code d'erreur
+
+  } catch (error: any) {
+    setLoading(false);
+    // Ici, on vérifie si l'erreur est spécifique à un produit épuisé
+    if (error?.statusCode === 404 && error?.message.includes("out of stock")) {
+      productToast("Désolé, ce produit n'est plus en stock", "error");
+      return { success: false, code: "OUT_OF_STOCK" };
+    } if (error?.statusCode === 403 && error?.message.includes("already have")) {
+      productToast("Stock insuffisant, ce produit est déjà dans votre panier", "error");
+      return { success: false, code: "STOCK_INSUFFISANT" };
+    } else {
+      productToast("Une erreur est survenue", "error");
+      return { success: false, code: "ERROR" }; // Un code général pour les autres erreurs
+    }
+  }
 };
+
 
 /**
  *cart & buy now function

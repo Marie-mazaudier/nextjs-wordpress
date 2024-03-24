@@ -4,7 +4,7 @@ import { PostsQueryData } from "src/types/productsCatTypes";
 
 export const PROD_MARQUES_QUERY = gql`
   query {
-  marquesProducts(first: 80) {
+  marquesProducts(first: 180) {
     nodes {
       id
       marqueId

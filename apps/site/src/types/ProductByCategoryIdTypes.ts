@@ -11,6 +11,7 @@ export interface Product {
     };
     slug: string;
     date: Date;
+    stockStatus: string;
 }
 export interface PriceRange {
     priceRange: [number, number]; // Définit comme un tuple de deux nombres

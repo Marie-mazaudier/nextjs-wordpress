@@ -23,7 +23,7 @@ export const GET_RECENT_JEWELRY_QUERY = gql`
   query GetRecentJewelry {
     products(
       first: 6
-      where: { taxonomyFilter: { filters: { terms: "bijoux-occasion-saint-tropez", taxonomy: PRODUCT_CAT } } }
+      where: { taxonomyFilter: { filters: { terms: "bijoux-occasion-saint-tropez", taxonomy: PRODUCT_CAT } },status: "PUBLISH"}
     ) {
       nodes {
         ...ProductDetails
@@ -38,7 +38,7 @@ export const GET_RECENT_WATCHES_QUERY = gql`
   query GetRecentWatches {
     products(
       first: 6
-      where: { taxonomyFilter: { filters: { terms: "montres-doccasion-saint-tropez", taxonomy: PRODUCT_CAT } } }
+      where: { taxonomyFilter: { filters: { terms: "montres-doccasion-saint-tropez", taxonomy: PRODUCT_CAT } },status: "PUBLISH" }
     ) {
       nodes {
         ...ProductDetails

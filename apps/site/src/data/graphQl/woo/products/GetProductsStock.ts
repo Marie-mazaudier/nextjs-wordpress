@@ -4,7 +4,7 @@ import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS_STOCK = gql`
 query GetProductsStock($perPage: Int!, $after: String) {
-  products(where: {stockStatus: IN_STOCK},first: $perPage, after: $after) {
+  products(where: {status: "PUBLISH"},first: $perPage, after: $after) {
    edges {
       cursor
       node {

@@ -1,13 +1,14 @@
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Badge } from "../../../../../packages/ecommerce-ui/src/atoms/badges/Badge";
 import { Placeholder } from "../../../../../packages/ecommerce-ui/src/atoms/placeholder/Placeholder";
 import { BodyText } from "../../../../../packages/ecommerce-ui/src/atoms/typography/bodyText/BodyText";
 import Skeleton from "react-loading-skeleton";
-import Rating from "react-rating";
-import { HiStar } from "react-icons/hi"; // Assurez-vous que le chemin d'importation est correct
 import MiniCart from "../cartLayout/minicart";
-import { useProduct } from '../../../lib/woocommerce/useProduct';
+import { RiHeart2Line } from "react-icons/ri";
+//import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import { addProductToWishlist } from "lib/woocommerce/useAddToWishlist";
+//import { useProduct } from '../../../lib/woocommerce/useProduct';
 
 interface Product {
     id: string;
@@ -20,6 +21,7 @@ interface Product {
         };
     };
     slug: string;
+    stockStatus: string;
 }
 interface media {
     mediaItemUrl: string;
@@ -29,22 +31,43 @@ interface stockData {
     stock: number;
 }
 interface ProductCardShopProps {
-    data?: Product;
+    data: Product;
     stockProductsData?: stockData;
     stockProductsLoading?: boolean;
+    shareKey?: string; // Ajout de shareKey comme prop optionnelle
+    wishlistProducts?: any[]; // Typage à ajuster selon vos besoins
 }
 
-export const ProductCardShop = ({ data, stockProductsData }: ProductCardShopProps) => {
-    // ==================Get all  products data using slug =================
-    // const { product, isLoading } = useProduct(data?.slug);
+export const ProductCardShop = ({ data, shareKey, wishlistProducts }: ProductCardShopProps) => {
 
-    // console.log('stockProductsData', stockProductsData)
-    // console.log('product', product)
+    const [isOutOfStock, setIsOutOfStock] = useState(data?.stockStatus === "OUT_OF_STOCK");
+    const [isInCart, setisInCart] = useState(false);
+    const isProductInWishlist = wishlistProducts?.some(wishlistProduct => wishlistProduct.product_id === data.id);
+
+    const productId = data.id // L'ID du produit à ajouter
+    // Lorsqu'un utilisateur clique sur le bouton d'ajout à la wishlist
+    const handleAddToWishlistClick = async () => {
+        if (shareKey) {
+            try {
+                const result = await addProductToWishlist(shareKey, productId);
+                //  console.log('Product added to wishlist successfully:', result);
+            } catch (error) {
+                // console.error('Error adding product to wishlist:', error);
+            }
+        }
+    };
+
+    //  console.log('wishlistProducts', wishlistProducts)
+    //Appel de la fonction si stock out => mise à jour des info du produit
+    const handleStockOut = () => setIsOutOfStock(true);
+    const handleIsInCart = () => setisInCart(true)
     // Calcul du pourcentage de remise si les prix de vente et réguliers sont disponibles
     const discount = data?.salePrice && data?.regularPrice
         ? ((parseFloat(data.regularPrice) - parseFloat(data.salePrice)) / parseFloat(data.regularPrice)) * 100
         : undefined;
     //  console.log('data', data)
+    //  const stockOut = data?.stockStatus === "OUT_OF_STOCK";
+
     return (
         <div className="p-5  w-full ">
             <div className="p-4 b text-center relative flex items-center justify-center">
@@ -85,7 +108,7 @@ export const ProductCardShop = ({ data, stockProductsData }: ProductCardShopProp
                         <BodyText size="md" className="main_clor text-center">
                             ${data.salePrice}
                         </BodyText>
-                        <BodyText size="sm" className="main_clor line-through text-center" >
+                        <BodyText size="sm" className="main_clor line-through text-center">
                             ${data.regularPrice}
                         </BodyText>
                     </>
@@ -96,11 +119,25 @@ export const ProductCardShop = ({ data, stockProductsData }: ProductCardShopProp
                 ) : (
                     <Skeleton height={20} width={140} />
                 )}
+                {isOutOfStock && (
+                    <BodyText size="md" className="text-center uppercase">
+                        Vendu
+                    </BodyText>
+                )}
             </div>
-            <div className="mt-5">
-                <MiniCart data={data} />
-
+            <div className="mt-5 flex items-center justify-center">
+                <MiniCart data={data} onStockOut={handleStockOut} isOutOfStock={isOutOfStock} isInCart={isInCart} handleIsInCart={handleIsInCart} />
+                <RiHeart2Line onClick={handleAddToWishlistClick} />
+                {/* Exemple d'utilisation */}
+                {isProductInWishlist && (
+                    <span className="wishlist-indicator">En favoris</span>
+                )}
             </div>
+            {/*isInCart && (
+                <BodyText size="md" className="text-center uppercase">
+                    Article ajouté au panier
+                </BodyText>
+            )*/}
         </div>
     );
 };

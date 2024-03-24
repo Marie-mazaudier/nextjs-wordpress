@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
  query GetProductsByCategoryId($categoryId: Int!, $first: Int, $after: String) {
-  products(where: {categoryId: $categoryId}, first: $first, after: $after) {
+  products(where: {categoryId: $categoryId, status: "PUBLISH"}, first: $first, after: $after) {
     pageInfo {
       endCursor
       hasNextPage
@@ -23,6 +23,7 @@ export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
         regularPrice
         salePrice
         stockQuantity
+        stockStatus
       }
     }
   }

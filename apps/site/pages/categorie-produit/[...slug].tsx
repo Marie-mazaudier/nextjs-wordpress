@@ -12,6 +12,8 @@ import { Pagination } from "../../../../packages/ecommerce-ui/src";
 import { ProductFilter } from 'src/components/products/ProductFilter';
 import { PageContent } from '../../../../packages/ecommerce-ui/src';
 import { ProductHeader } from "../../src/components/products/ProductHeader";
+import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import useWishlist from "lib/woocommerce/useWishlist";
 
 //IMPORT DATA GRAPHQL
 import { GET_PRODUCTS_BY_CATEGORY_ID } from "src/data/graphQl/woo/products/ProductsByCatIDQueries";
@@ -44,7 +46,16 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
     const fullPathSlug = Array.isArray(slug) ? slug.join('/') : slug; // Joignez pour obtenir le chemin complet si nécessaire
     const [sortOption, setSortOptionState] = useState('');
     const [filteredAndSortedProducts, setFilteredAndSortedProducts] = useState<Product[]>([]);
+    const { shareKey, isLoading, isError } = useWishlistShareKey();
 
+    const { wishlistProducts, loading: loadingWishlist, error: errorWishlist } = useWishlist();
+
+    /* useEffect(() => { // à remettre pour chargement favoris temps réel..
+         if (!isLoading && shareKey) {
+             // La clé de partage est chargée, vous pouvez maintenant permettre à l'utilisateur d'ajouter des produits à la wishlist
+           //  console.log("ShareKey is ready:", shareKey);
+         }
+     }, [isLoading, shareKey]);*/
     useEffect(() => {
         let processedProducts = [...products];
 
@@ -120,7 +131,7 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
                     <Spaces size="xs" />
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 justify-items-center">
                         {filteredAndSortedProducts.map((product, index) => (
-                            <ProductCardShop key={index} data={product} />
+                            <ProductCardShop key={index} data={product} shareKey={shareKey} wishlistProducts={wishlistProducts} />
                         ))}
 
                     </div>
@@ -169,7 +180,7 @@ export const getStaticProps: GetStaticProps = HocMenuData(async ({ params }) => 
     const categoryId = parseInt(category.productCategoryId);
     const { data: productsData } = await client.query({
         query: GET_PRODUCTS_BY_CATEGORY_ID,
-        variables: { categoryId, first: 100 },
+        variables: { categoryId, first: 115 },
     });
 
     // Récupération des marques

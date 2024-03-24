@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const RELATED_PRODUCTS = gql`
   query GetRelatedProducts($slug: ID!) {
     product(id: $slug, idType: SLUG) {
-      related(first: 3) {
+      related(where: {status: "PUBLISH"},first: 3) {
         nodes {
           name
           ... on SimpleProduct {
