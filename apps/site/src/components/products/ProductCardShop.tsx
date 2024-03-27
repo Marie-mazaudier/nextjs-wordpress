@@ -6,7 +6,7 @@ import { BodyText } from "../../../../../packages/ecommerce-ui/src/atoms/typogra
 import Skeleton from "react-loading-skeleton";
 import MiniCart from "../cartLayout/minicart";
 import FavoriteButton from "../productDescription/FavoriteButton";
-import { addProductToWishlist } from "lib/woocommerce/useAddToWishlist";
+import { addProductToWishlist } from "../../../lib/woocommerce/useAddToWishlist";
 
 interface Product {
     id: string;
