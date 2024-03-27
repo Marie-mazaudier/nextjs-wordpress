@@ -41,7 +41,7 @@ export const ProductCardOne = ({ data }: ProductCardOneProps) => {
         )}
       </div>
       {data?.name ? (
-        <Link href={`/shop/product/${data?.slug}`}>
+        <Link href={`/produit/${data?.slug}`}>
           <BodyText
             size="xl"
             className=" text-themeSecondary800 mt-5 hover:text-themePrimary600 transition hover:duration-300 line-clamp-2"

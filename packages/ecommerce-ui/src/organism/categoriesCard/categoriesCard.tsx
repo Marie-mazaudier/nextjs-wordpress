@@ -35,7 +35,7 @@ export const CategoriesCard = ({ category }: CategoriesCardProps) => {
 
             </div>
             {category?.name ? (
-                <Link href={`/shop/product/${category?.slug}`}>
+                <Link href={`/produit/${category?.slug}`}>
                     <BodyText
                         size="xl"
                         className=" text-themeSecondary800 mt-5 hover:text-themePrimary600 transition hover:duration-700 line-clamp-2"

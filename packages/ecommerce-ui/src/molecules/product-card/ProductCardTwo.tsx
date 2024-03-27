@@ -48,7 +48,7 @@ export const ProductCardTwo = ({ data }: ProductCardTwoProps) => {
       </div>
       <div>
         {data?.name ? (
-          <Link href={`/shop/product/${data?.slug}`}>
+          <Link href={`/produit/${data?.slug}`}>
             <Heading3
               className="text-themeSecondary800 line-clamp-1 hover:text-themePrimary600  transition hduration-300 ease-in-out"
               intent="bold"

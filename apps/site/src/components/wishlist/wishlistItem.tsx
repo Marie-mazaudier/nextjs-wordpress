@@ -30,7 +30,7 @@ const wishlistItem: React.FC<WishlistItemProps> = ({ productId, item_id, userInf
     return (
         <div className="my-2 flex items-center"> {/* Ajoute un espacement vertical externe pour chaque élément */}
             <li className="flex items-center space-x-4"> {/* Utilise flex pour disposer les éléments horizontalement */}
-                <Link href={`/shop/product/${product.slug}`} className="flex items-center space-x-4">
+                <Link href={`/produit/${product.slug}`} className="flex items-center space-x-4">
                     <img src={imageUrl} alt={product.name} className="w-24 h-auto shadow-lg rounded" /> {/* Image du produit */}
                     <div className="flex flex-col"> {/* Conteneur pour le nom du produit */}
                         <h3 className="text-lg font-semibold">{product.name}</h3>
