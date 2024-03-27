@@ -1,19 +1,19 @@
 import { useProductWishlist } from "lib/woocommerce/useProductWishlist";
 import useDeleteWishlistItem from "lib/woocommerce/useDeleteWishlistItem";
-import useWishlist from "lib/woocommerce/useWishlist";
+
+
 import Link from "next/link";
 interface WishlistItemProps {
     productId: number; // Typage explicite du productId comme un nombre
     item_id: number;
+    userInfo: any;
+    shareKey: string;
 }
 
-const wishlistItem: React.FC<WishlistItemProps> = ({ productId, item_id }) => {
+const wishlistItem: React.FC<WishlistItemProps> = ({ productId, item_id, userInfo, shareKey }) => {
     // Utilisez useProduct ici pour récupérer les détails du produit
-    console.log('productId', productId)
     const { product, productError, isLoading } = useProductWishlist(productId); // Convertissez productId en string si nécessaire
     const deleteWishlistItem = useDeleteWishlistItem();
-    const { shareKey } = useWishlist(); // Utilisez useWishlist pour obtenir shareKey
-
 
     //console.log(product)
     if (isLoading) return <p>Chargement des détails du produit...</p>;

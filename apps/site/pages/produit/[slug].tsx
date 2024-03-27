@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { ProductDetails } from "../../src/components/productDescription/ProductDetails";
@@ -8,6 +8,12 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { ProductNode } from "src/types/productSingle";
 import { useProductStock } from "../../lib/woocommerce/useProductStock";
 import { RelatedProducts } from "src/components/productDescription/relatedProducts";
+import useDeleteWishlistItem from "lib/woocommerce/useDeleteWishlistItem";
+import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import useWishlist from "lib/woocommerce/useWishlist";
+import { useCart } from "src/CartContext";
+import SignupSignin from "src/components/signupSignin/SignupSignin";
+
 //import GraphQL
 import { SINGLE_PRODUCTS } from "src/data/graphQl/woo/products/productQueries";
 import { GET_ALL_PRODUCTS_SLUGS } from "src/data/graphQl/woo/products/GetAllProductsSlugs ";
@@ -29,6 +35,14 @@ const Product = ({ productInfo, relatedProducts }: ProductProps) => {
 
     // Utilisez le nouveau hook useProductStock pour obtenir les informations de stock
     const { productStock, isLoading } = useProductStock(productSlug || ''); // Fournit une chaîne vide si slug est undefined
+    //=====Hook produits en favoris=====//
+    const deleteWishlistItem = useDeleteWishlistItem();
+    const { userInfo } = useCart(); // Accédez à userInfo à partir du contexte
+    const isUserLoggedIn = !!userInfo; // Convertit userInfo en un booléen pour vérifier si l'utilisateur est connecté
+    const [loginModalOn, setLoginModalOn] = useState(false);
+    // Exécutez vos hooks conditionnellement basés sur isUserLoggedIn
+    const { shareKey, isLoading: isLoadingShareKey, isError: isErrorShareKey } = useWishlistShareKey(userInfo);
+    const { wishlistProducts, loading: loadingWishlist, error: errorWishlist, revalidate } = useWishlist(shareKey);
 
     return (
         <>
@@ -36,8 +50,9 @@ const Product = ({ productInfo, relatedProducts }: ProductProps) => {
                 <title>Single-Page | MetaShop</title>
                 <meta name="description" content="single page description" />
             </Head>
+            {loginModalOn && <SignupSignin setLoginModalOn={setLoginModalOn} LoginmodalOn={loginModalOn} />}
             <Spaces size="mdd" />
-            <ProductDetails productInfo={productInfo} isLoading={isLoading} data={productStock} />
+            <ProductDetails revalidate={revalidate} productInfo={productInfo} productId={productInfo.productId} isLoading={isLoading} data={productStock} shareKey={shareKey} wishlistProducts={wishlistProducts} setLoginModalOn={setLoginModalOn} isUserLoggedIn={isUserLoggedIn} deleteWishlistItem={deleteWishlistItem} />
             {/*<ProductDetails data={product} isLoading={isLoading} productInfo={productInfo} />*/}
             <Spaces size="xl" />
             {/*<ProductDescription isLoading={isLoading} productInfo={productInfo} />*/}

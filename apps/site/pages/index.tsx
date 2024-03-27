@@ -2,12 +2,10 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import SimpleSlider from "../src/components/bannerSlider/Sliderhome";
 //import { BrandData } from "../src/data/BrandData";
-import { IconBoxData } from "../src/data/IconBoxData";
 import { useAllFeaturedProducts } from "../lib/woocommerce/useFeaturedProducts";
 import { useGetAllProducts } from "../lib/woocommerce/useProducts";
 import { useRecentViewedProducts } from "../lib/woocommerce/useRecentProducts";
 import { useProductCategories } from "../lib/woocommerce/useCategories";
-import { useGetAllClients } from "lib/swr-wordpress/getAllClients";
 import { addEmailToBrevoList } from "../lib/brevo/brevo"; // Adjust the path accordingly
 import Popup from "src/components/popup/popup";
 import {
@@ -22,6 +20,12 @@ import { PresentationBijoux } from "src/components/home/presentationBijoux";
 import { InfoBijouterie } from "src/components/home/InfoBijouterie";
 import { MarquesHome } from "src/components/home/MarquesHome";
 import { LastPosts } from "src/components/home/LastPosts";
+import useDeleteWishlistItem from "lib/woocommerce/useDeleteWishlistItem";
+import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import useWishlist from "lib/woocommerce/useWishlist";
+import { useCart } from "src/CartContext";
+import SignupSignin from "src/components/signupSignin/SignupSignin";
+
 //IMPORT DATA GRAPHQL
 /*Menu*/
 import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
@@ -33,7 +37,7 @@ import { POSTS_QUERY } from "src/data/graphQl/postQueries";
 //IMPORT TYPES
 import { SliderType } from "src/types/sliderType";
 import { HomePageData } from "src/types/homeType";
-import { Product } from "src/types/recentProductsType";
+import { Product } from "src/types/ProductByCategoryIdTypes";
 import { PostNode } from "src/types/blogCardTypes";
 
 interface HomeProps {
@@ -80,7 +84,6 @@ export default function Home({ slidersData, homeData, recentJewelry, recentWatch
   const handleClick = () => {
     setPageData(pageData + 6);
   };
-  const { clients } = useGetAllClients({ per_page: pageData });
 
   const showingProducts =
     (active === 0 && newArrival) ||
@@ -110,7 +113,14 @@ export default function Home({ slidersData, homeData, recentJewelry, recentWatch
 
     return () => clearTimeout(timer); // Nettoyer le timer si le composant est démonté
   }, []);
-
+  //=====Hook produits en favoris=====//
+  const deleteWishlistItem = useDeleteWishlistItem();
+  const { userInfo } = useCart(); // Accédez à userInfo à partir du contexte
+  const isUserLoggedIn = !!userInfo; // Convertit userInfo en un booléen pour vérifier si l'utilisateur est connecté
+  const [loginModalOn, setLoginModalOn] = useState(false);
+  // Exécutez vos hooks conditionnellement basés sur isUserLoggedIn
+  const { shareKey, isLoading: isLoadingShareKey, isError: isErrorShareKey } = useWishlistShareKey(userInfo);
+  const { wishlistProducts, loading: loadingWishlist, error: errorWishlist, revalidate } = useWishlist(shareKey);
   return (
     <>
       <Head>
@@ -122,6 +132,8 @@ export default function Home({ slidersData, homeData, recentJewelry, recentWatch
       {
         showPopup && <Popup />
       }
+      {loginModalOn && <SignupSignin setLoginModalOn={setLoginModalOn} LoginmodalOn={loginModalOn} />}
+
       {/*<Presentation />*/}
       <Spaces size="xl" />
       <PresentationSite infoData={homeData.page.homeChamps.bloc1} />
@@ -136,11 +148,11 @@ export default function Home({ slidersData, homeData, recentJewelry, recentWatch
       <Spaces />
       <TrendingProducts data={showingProducts} active={active} setActive={setActive} />
       <Spaces />*/}
-      <RecentProducts products={recentWatches} type="watches" />
+      <RecentProducts products={recentWatches} type="watches" revalidate={revalidate} shareKey={shareKey} wishlistProducts={wishlistProducts} setLoginModalOn={setLoginModalOn} isUserLoggedIn={isUserLoggedIn} deleteWishlistItem={deleteWishlistItem} />
       <Spaces size="xl" />
       <PresentationBijoux infoData={homeData.page.homeChamps.bloc3Bijoux} />
       <Spaces size="xl" />
-      <RecentProducts products={recentJewelry} type="jewelry" />
+      <RecentProducts products={recentJewelry} type="jewelry" revalidate={revalidate} shareKey={shareKey} wishlistProducts={wishlistProducts} setLoginModalOn={setLoginModalOn} isUserLoggedIn={isUserLoggedIn} deleteWishlistItem={deleteWishlistItem} />
       { /*<ProductCategories data={dynamicTab} category={productCategories} active={active} setActive={setActive} />
       <Spaces />
       <Brands data={clients} />*/}

@@ -15,8 +15,8 @@ export interface ProductNode {
     id: string;
     name: string;
     slug: string;
-    description?: string;
-    shortDescription?: string;
+    description: string;
+    shortDescription: string;
     sku?: string;
     featuredImage?: {
         node: {
@@ -35,7 +35,7 @@ export interface ProductNode {
         }
     }
 
-    productId?: string;
+    productId: string;
     regularPrice?: string;
     salePrice?: string;
     onSale?: boolean;

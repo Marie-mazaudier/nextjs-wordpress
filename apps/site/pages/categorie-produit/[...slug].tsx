@@ -14,6 +14,9 @@ import { PageContent } from '../../../../packages/ecommerce-ui/src';
 import { ProductHeader } from "../../src/components/products/ProductHeader";
 import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
 import useWishlist from "lib/woocommerce/useWishlist";
+import { useCart } from "src/CartContext";
+import SignupSignin from "src/components/signupSignin/SignupSignin";
+import useDeleteWishlistItem from "lib/woocommerce/useDeleteWishlistItem";
 
 //IMPORT DATA GRAPHQL
 import { GET_PRODUCTS_BY_CATEGORY_ID } from "src/data/graphQl/woo/products/ProductsByCatIDQueries";
@@ -43,19 +46,17 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
     const router = useRouter();
     const id = router.asPath.split("/")[2];
     const { slug } = router.query; // Utilisez le slug directement depuis router.query
-    const fullPathSlug = Array.isArray(slug) ? slug.join('/') : slug; // Joignez pour obtenir le chemin complet si nécessaire
     const [sortOption, setSortOptionState] = useState('');
     const [filteredAndSortedProducts, setFilteredAndSortedProducts] = useState<Product[]>([]);
-    const { shareKey, isLoading, isError } = useWishlistShareKey();
+    const [loginModalOn, setLoginModalOn] = useState(false);
+    const { userInfo } = useCart(); // Accédez à userInfo à partir du contexte
+    const isUserLoggedIn = !!userInfo; // Convertit userInfo en un booléen pour vérifier si l'utilisateur est connecté
+    const deleteWishlistItem = useDeleteWishlistItem();
 
-    const { wishlistProducts, loading: loadingWishlist, error: errorWishlist } = useWishlist();
+    // Exécutez vos hooks conditionnellement basés sur isUserLoggedIn
+    const { shareKey, isLoading: isLoadingShareKey, isError: isErrorShareKey } = useWishlistShareKey(userInfo);
+    const { wishlistProducts, loading: loadingWishlist, error: errorWishlist, revalidate } = useWishlist(shareKey);
 
-    /* useEffect(() => { // à remettre pour chargement favoris temps réel..
-         if (!isLoading && shareKey) {
-             // La clé de partage est chargée, vous pouvez maintenant permettre à l'utilisateur d'ajouter des produits à la wishlist
-           //  console.log("ShareKey is ready:", shareKey);
-         }
-     }, [isLoading, shareKey]);*/
     useEffect(() => {
         let processedProducts = [...products];
 
@@ -121,6 +122,7 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
             <Spaces size="md" />
             <BlockLayout >
                 <PageContent>
+                    {loginModalOn && <SignupSignin setLoginModalOn={setLoginModalOn} LoginmodalOn={loginModalOn} />}
                     <ProductHeader
                         filterOpen={filterOpen}
                         setFilterOpen={setFilterOpen}
@@ -131,7 +133,7 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
                     <Spaces size="xs" />
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 justify-items-center">
                         {filteredAndSortedProducts.map((product, index) => (
-                            <ProductCardShop key={index} data={product} shareKey={shareKey} wishlistProducts={wishlistProducts} />
+                            <ProductCardShop key={index} data={product} revalidate={revalidate} productId={product.id} shareKey={shareKey} wishlistProducts={wishlistProducts} setLoginModalOn={setLoginModalOn} isUserLoggedIn={isUserLoggedIn} deleteWishlistItem={deleteWishlistItem} />
                         ))}
 
                     </div>

@@ -3,17 +3,25 @@ import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import * as DOMPurify from 'dompurify';
-
+import FavoriteButton from "../productDescription/FavoriteButton";
+import { addProductToWishlist } from "lib/woocommerce/useAddToWishlist";
 interface ProductShortDescriptionProps {
   productInfo?: any;
   isLoading?: boolean;
   data?: any;
+  shareKey?: string; // Ajout de shareKey comme prop optionnelle
+  wishlistProducts?: ProductInWishlist[]; // Typage à ajuster selon vos besoins
+  setLoginModalOn: (isOpen: boolean) => void; // Type ajusté pour la fonction
+  isUserLoggedIn: boolean;
+  deleteWishlistItem: (itemId: number, shareKey: string) => Promise<void>;
+  productId: string;
+  revalidate: () => void; // Ajouter la définition de type pour revalidat
 }
-const ProductShortDescription = ({ productInfo, isLoading, data }: ProductShortDescriptionProps) => {
-  // const repliceContent = data?.short_description?.replace(/<p>/g, "").replace(/<\/p>/g, "");
-  // Nettoyage du HTML de la description courte du produit
-  // console.log('short description', productInfo)
-  //const cleanDescription = typeof window === 'undefined' ? data?.short_description : DOMPurify.sanitize(data?.short_description);
+interface ProductInWishlist {
+  product_id: string; // Ajout de la propriété product_id
+  item_id: number;
+}
+const ProductShortDescription = ({ revalidate, productInfo, isLoading, data, shareKey, wishlistProducts, setLoginModalOn, isUserLoggedIn, deleteWishlistItem, productId }: ProductShortDescriptionProps) => {
   const [htmlContent, setHtmlContent] = useState('');
   useEffect(() => {
     // Mettre à jour le contenu HTML ici si nécessaire
@@ -38,25 +46,25 @@ const ProductShortDescription = ({ productInfo, isLoading, data }: ProductShortD
             <>
               {/* Afficher le prix soldé s'il existe */}
               <BodyText size="xl" intent="bold" className=" text-themePrimary600">
-                {productInfo.salePrice} €
+                {productInfo.salePrice}€
               </BodyText>
               {/* Barrer le prix régulier uniquement si le prix soldé existe */}
               <BodyText size="md" className="text-themeSecondary400 line-through">
-                {productInfo.regularPrice} €
+                {productInfo.regularPrice}€
               </BodyText>
             </>
           )}
           {!productInfo?.salePrice && productInfo?.regularPrice && (
             // Afficher le prix régulier sans le barrer s'il n'y a pas de prix soldé
             <BodyText size="xl" intent="bold" className="text-themePrimary600">
-              {productInfo.regularPrice} €
+              {productInfo.regularPrice}
             </BodyText>
           )}
         </div>
         <div className="bg-themeSecondary200 h-8  w-0.5 hidden md:block">
 
         </div>
-        <div className=" flex items-center gap-3">
+        <div className=" flex items-center gap-1">
           {productInfo ? (
             <div>
               {productInfo?.rating && (
@@ -85,8 +93,20 @@ const ProductShortDescription = ({ productInfo, isLoading, data }: ProductShortD
               {data?.stockStatus === "IN_STOCK" ? data?.stockQuantity + " en stock" : "Vendu"}
             </Badge>
           )}
-        </div>
 
+        </div>
+        <div className="relative">
+          <FavoriteButton
+            productId={productId}
+            wishlistProducts={wishlistProducts}
+            isUserLoggedIn={isUserLoggedIn}
+            setLoginModalOn={setLoginModalOn}
+            deleteWishlistItem={deleteWishlistItem}
+            addProductToWishlist={addProductToWishlist}
+            shareKey={shareKey}
+            revalidate={revalidate}
+          />
+        </div>
       </div>
 
       {productInfo ? (

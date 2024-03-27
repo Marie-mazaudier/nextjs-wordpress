@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useBacsMethods } from "lib/woocommerce/useBacsMethods";
 import { BodyText } from "../../../../packages/ecommerce-ui/src";
+import { GetStaticPaths, GetStaticProps } from "next";
+
 //IMPORT DATA GRAPHQL
 /*Menu*/
 import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
@@ -229,3 +231,19 @@ const OrderSummary = () => {
 
 export default OrderSummary;
 
+
+export const getStaticProps = HocMenuData(async (context) => {
+    return {
+        props: {
+
+        },
+    }
+})
+
+export const getStaticPaths: GetStaticPaths = async () => {
+    // Vous n'avez pas besoin de fournir des chemins spécifiques ici car vous souhaitez générer les pages à la demande
+    return {
+        paths: [], // Aucun chemin préalablement généré
+        fallback: 'blocking' // Génère la page à la demande lors du premier accès
+    };
+};

@@ -12,6 +12,11 @@ import { Pagination } from "../../../../packages/ecommerce-ui/src";
 import { ProductFilter } from 'src/components/products/ProductFilter';
 import { PageContent } from '../../../../packages/ecommerce-ui/src';
 import { ProductHeader } from "../../src/components/products/ProductHeader";
+import useDeleteWishlistItem from "lib/woocommerce/useDeleteWishlistItem";
+import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import useWishlist from "lib/woocommerce/useWishlist";
+import { useCart } from "src/CartContext";
+import SignupSignin from "src/components/signupSignin/SignupSignin";
 
 //IMPORT DATA GRAPHQL
 import { PROD_MARQUES_QUERY } from "src/data/graphQl/woo/products/productMarquesQueries";
@@ -43,6 +48,13 @@ const MarquesPage = ({ productMarques, products, categories, minPrice, maxPrice 
     const { slug } = router.query; // Utilisez le slug directement depuis router.query
     const [sortOption, setSortOptionState] = useState('');
     const [filteredAndSortedProducts, setFilteredAndSortedProducts] = useState<Product[]>([]);
+    const deleteWishlistItem = useDeleteWishlistItem();
+    const { userInfo } = useCart(); // Accédez à userInfo à partir du contexte
+    const isUserLoggedIn = !!userInfo; // Convertit userInfo en un booléen pour vérifier si l'utilisateur est connecté
+    const [loginModalOn, setLoginModalOn] = useState(false);
+    // Exécutez vos hooks conditionnellement basés sur isUserLoggedIn
+    const { shareKey, isLoading: isLoadingShareKey, isError: isErrorShareKey } = useWishlistShareKey(userInfo);
+    const { wishlistProducts, loading: loadingWishlist, error: errorWishlist, revalidate } = useWishlist(shareKey);
 
     useEffect(() => {
         let processedProducts = [...products];
@@ -110,6 +122,7 @@ const MarquesPage = ({ productMarques, products, categories, minPrice, maxPrice 
             <Spaces size="md" />
             <BlockLayout >
                 <PageContent>
+                    {loginModalOn && <SignupSignin setLoginModalOn={setLoginModalOn} LoginmodalOn={loginModalOn} />}
                     <ProductHeader
                         filterOpen={filterOpen}
                         setFilterOpen={setFilterOpen}
@@ -120,7 +133,7 @@ const MarquesPage = ({ productMarques, products, categories, minPrice, maxPrice 
                     <Spaces size="xs" />
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 justify-items-center">
                         {filteredAndSortedProducts.map((product, index) => (
-                            <ProductCardShop key={index} data={product} />
+                            <ProductCardShop key={index} data={product} revalidate={revalidate} productId={product.id} shareKey={shareKey} wishlistProducts={wishlistProducts} setLoginModalOn={setLoginModalOn} isUserLoggedIn={isUserLoggedIn} deleteWishlistItem={deleteWishlistItem} />
                         ))}
 
                     </div>

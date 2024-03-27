@@ -5,8 +5,7 @@ import { RiArrowDownSLine, RiShoppingCartLine, RiShoppingCart2Line, RiUser3Line,
 import { FaFacebook, FaInstagram, FaPhone } from "react-icons/fa";
 import { BiUser } from "react-icons/bi";
 import { BodyText } from "@jstemplate/ecommerce-ui";
-import { getCookie, deleteCookie } from "cookies-next";
-import { useCocartLogout } from "../../../lib/coCart/auth";
+//import { getCookie, deleteCookie } from "cookies-next";
 import { useToasts } from "react-toast-notifications";
 import { useRouter } from "next/router";
 import { useCart } from "src/CartContext";
@@ -31,11 +30,12 @@ const TopNavbar = ({ LoginmodalOn, setLoginModalOn, cartData }: TopNavbarProps) 
   const { cart } = useCart();
   const [open, SetOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
-
-  let get_form_info: any = getCookie("__user__login__info");
-  if (get_form_info) {
-    get_form_info = JSON.parse(get_form_info);
-  }
+  //Récupérer info si user logged in ou non
+  /* let get_form_info: any = getCookie("__user__login__info");
+   if (get_form_info) {
+     get_form_info = JSON.parse(get_form_info);
+   }*/
+  const { userInfo } = useCart(); // Accédez à userInfo à partir du contexte
 
   // Fonction pour ouvrir/fermer la fenêtre contextuelle
   const handleCartPopupToggle = () => {
@@ -67,7 +67,7 @@ const TopNavbar = ({ LoginmodalOn, setLoginModalOn, cartData }: TopNavbarProps) 
         <div className="hidden lg:block">
           <div className="flex gap-2 items-center">
             { /* <NavSearch />*/}
-            {get_form_info ? (
+            {userInfo ? (
               <Link href="/dashboard" className="py-2">
                 <RiUser3Line className={`h-4 w-4  hover:text-themePrimary600 transition hover:duration-700 cursor-pointer `} />
               </Link>

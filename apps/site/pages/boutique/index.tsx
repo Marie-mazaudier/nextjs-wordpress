@@ -4,6 +4,12 @@ import { ProductFilter } from "../../src/components/products/ProductFilter";
 import { ProductHeader } from "../../src/components/products/ProductHeader";
 import { ProductCardShop } from "../../src/components/products/ProductCardShop";
 import client from "lib/utils/apollo-client";
+import useDeleteWishlistItem from "lib/woocommerce/useDeleteWishlistItem";
+import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import useWishlist from "lib/woocommerce/useWishlist";
+import { useCart } from "src/CartContext";
+import SignupSignin from "src/components/signupSignin/SignupSignin";
+
 //IMPORT DATA GRAPHQL
 import { GET_ALL_PRODUCTS } from "src/data/graphQl/woo/products/allProducts";
 import { PROD_MARQUES_QUERY } from "src/data/graphQl/woo/products/productMarquesQueries";
@@ -37,10 +43,14 @@ const ShopRightSidebar = ({ productCategories, productsData, productMarques, min
     const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
     const [filteredAndSortedProducts, setFilteredAndSortedProducts] = useState<Product[]>([]);
     const [afterCursor, setAfterCursor] = useState(null);
+    const deleteWishlistItem = useDeleteWishlistItem();
+    const { userInfo } = useCart(); // Accédez à userInfo à partir du contexte
+    const isUserLoggedIn = !!userInfo; // Convertit userInfo en un booléen pour vérifier si l'utilisateur est connecté
+    const [loginModalOn, setLoginModalOn] = useState(false);
+    // Exécutez vos hooks conditionnellement basés sur isUserLoggedIn
+    const { shareKey, isLoading: isLoadingShareKey, isError: isErrorShareKey } = useWishlistShareKey(userInfo);
+    const { wishlistProducts, loading: loadingWishlist, error: errorWishlist, revalidate } = useWishlist(shareKey);
 
-    // Appel à useGetProductsStock avec la gestion du curseur pour pagination
-    //   const { loading: stockProductsLoading, products: stockProductsData, pageInfo } = useGetProductsStock(3, afterCursor);
-    //  console.log('stockProductsData', stockProductsData)
     useEffect(() => {
         let processedProducts = [...productsData];
         // Filtrage par prix
@@ -95,6 +105,7 @@ const ShopRightSidebar = ({ productCategories, productsData, productMarques, min
             <Spaces size="md" />
             <BlockLayout>
                 <PageContent>
+                    {loginModalOn && <SignupSignin setLoginModalOn={setLoginModalOn} LoginmodalOn={loginModalOn} />}
                     <ProductHeader
                         filterOpen={filterOpen}
                         setFilterOpen={setFilterOpen}
@@ -114,11 +125,8 @@ const ShopRightSidebar = ({ productCategories, productsData, productMarques, min
                             // Passer les données de stock au composant ProductCardShop
                             // Assurez-vous que votre composant ProductCardShop est prêt à recevoir et à utiliser ces props!
                             return (
-                                <ProductCardShop
-                                    key={index}
-                                    data={product}
+                                <ProductCardShop key={index} productId={product.id} revalidate={revalidate} data={product} shareKey={shareKey} wishlistProducts={wishlistProducts} setLoginModalOn={setLoginModalOn} isUserLoggedIn={isUserLoggedIn} deleteWishlistItem={deleteWishlistItem} />
 
-                                />
                             );
                         })}
                     </div>

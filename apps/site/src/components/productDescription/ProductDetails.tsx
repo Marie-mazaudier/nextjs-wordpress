@@ -6,10 +6,22 @@ import AlmaWidget from "../payment/AlmaWidget";
 import { ProductNode } from "src/types/productSingle";
 import { ProductSimpleDescription } from "./ProductSimpleDescription";
 
+
 interface ProductDetailsProps {
   data?: any;
   isLoading?: boolean;
   productInfo?: ProductNode;
+  shareKey?: string; // Ajout de shareKey comme prop optionnelle
+  wishlistProducts?: ProductInWishlist[]; // Typage à ajuster selon vos besoins
+  setLoginModalOn: (isOpen: boolean) => void; // Type ajusté pour la fonction
+  isUserLoggedIn: boolean;
+  deleteWishlistItem: (itemId: number, shareKey: string) => Promise<void>;
+  productId: string;
+  revalidate: () => void; // Ajouter la définition de type pour revalidat
+}
+interface ProductInWishlist {
+  product_id: string; // Ajout de la propriété product_id
+  item_id: number;
 }
 interface MediaObject {
   src: string;
@@ -17,8 +29,8 @@ interface MediaObject {
   type: 'image' | 'video'; // Ajoutez un champ pour distinguer les images des vidéos
   poster?: string;
 }
-export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsProps) => {
-  //console.log('data?.[0]', data?.[0])
+export const ProductDetails = ({ data, productInfo, isLoading, shareKey, wishlistProducts, setLoginModalOn, isUserLoggedIn, deleteWishlistItem, productId, revalidate }: ProductDetailsProps) => {
+
   // Utilisez le prix soldé si disponible et différent de zéro, sinon utilisez le prix régulier
   //console.log("produit information", productInfo)
   const salePriceNumeric = parseFloat(productInfo?.salePrice?.replace(',', '.') || "0");
@@ -74,7 +86,7 @@ export const ProductDetails = ({ data, productInfo, isLoading }: ProductDetailsP
           </div>
         </div>
         <div className="w-full lg:w-1/2">
-          <ProductShortDescription productInfo={productInfo} isLoading={isLoading} data={data} />
+          <ProductShortDescription productInfo={productInfo} isLoading={isLoading} data={data} revalidate={revalidate} productId={productId} shareKey={shareKey} wishlistProducts={wishlistProducts} setLoginModalOn={setLoginModalOn} isUserLoggedIn={isUserLoggedIn} deleteWishlistItem={deleteWishlistItem} />
           <div className="mt-5">
             {/* Passer priceForAlma à AlmaWidget */}
             {priceForAlma && < AlmaWidget amount={priceForAlma} />}

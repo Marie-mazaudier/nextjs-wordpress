@@ -19,8 +19,6 @@ import createPayPlugPayment from "lib/payplug/createPayPlugPayment";
 import { checkEligibilityAlma } from "lib/alma/checkEligibilityAlma";
 import validatePassword from "lib/woocommerce/passwordCheck";
 import { useCreateUser } from "lib/woocommerce/user/useUser";
-import SmallLoginForm from "src/components/loginRegistrationForm/SmallLoginForm";
-import dynamic from "next/dynamic";
 import SignupSignin from "src/components/signupSignin/SignupSignin";
 import { useCoupons } from "lib/woocommerce/useCoupons";
 //IMPORT DATA GRAPHQL

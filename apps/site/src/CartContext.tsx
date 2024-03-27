@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useGetCartData } from '../lib/coCart/getCart'; // Importez la fonction pour récupérer les données du panier
+import { getCookie } from "cookies-next"; // Assurez-vous d'importer getCookie
 
 interface CartItem {
     id: string;
@@ -30,6 +31,10 @@ interface DiscountInfo {
     type: string; // 'percent' ou 'fixed_cart', etc.
     amount: string; // Montant de la réduction
 }
+interface UserInfo {
+    username?: string;
+    email?: string;
+}
 interface CartContextType {
     cart: CartState;
     setCart: React.Dispatch<React.SetStateAction<CartState>>;
@@ -38,7 +43,7 @@ interface CartContextType {
     selectedShippingMethod: string;
     updateStock: (productId: string, newStock: number) => void; // Nouvelle fonction pour mettre à jour le stock
     updateDiscount: (discount: DiscountInfo) => void;
-
+    userInfo: UserInfo | null; // Ajoutez cette ligne, UserInfo | null signifie que userInfo peut être soit un objet de type UserInfo soit null
 }
 const defaultDiscount: DiscountInfo = {
     code: '',
@@ -128,7 +133,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             selectedShippingMethod: methodId,
         }));
     };
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null); // Ajoutez l'état pour userInfo
 
+    useEffect(() => {
+        // Récupération des informations de l'utilisateur à partir du cookie
+        const userCookie = getCookie("__user__login__info");
+        if (userCookie) {
+            const parsedUserInfo = JSON.parse(userCookie as string);
+            setUserInfo(parsedUserInfo); // Mettez à jour l'état userInfo avec les données parseées
+        }
+    }, []);
     return (
         <CartContext.Provider value={{
             cart,
@@ -137,7 +151,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setSelectedShippingMethod,
             selectedShippingMethod: cart.selectedShippingMethod,
             updateStock,
-            updateDiscount // Méthode pour mettre à jour les informations de réduction
+            updateDiscount, // Méthode pour mettre à jour les informations de réduction
+            userInfo, // Fournir les infos de l'utilisateur via le contexte
+
         }}>
             {children}
         </CartContext.Provider>

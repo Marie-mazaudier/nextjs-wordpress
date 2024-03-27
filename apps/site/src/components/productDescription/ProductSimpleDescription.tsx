@@ -1,5 +1,5 @@
 import { BodyText, Heading3 } from "@jstemplate/ecommerce-ui";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AdditionalInfo } from "./AdditionalInfo";
 import { CustomerReview } from "./CustomerReview";
 import Skeleton from "react-loading-skeleton";
@@ -12,17 +12,16 @@ export interface ProductSimpleDescriptionProps {
 
 export const ProductSimpleDescription = ({ productInfo }: ProductSimpleDescriptionProps) => {
     // Nettoyage du HTML de la description courte du produit
-    let cleanDescription = "";
+    const [cleanDescription, setCleanDescription] = useState("Chargement...");
 
-    if (typeof window !== 'undefined' && productInfo) {
-        // Côté client, sanitize la description. Utilisez shortDescription si disponible.
-        const descriptionToClean = productInfo?.description || productInfo?.shortDescription || "";
-        cleanDescription = DOMPurify.sanitize(descriptionToClean);
-    } else {
-        // Côté serveur, utilisez directement shortDescription si disponible, sinon description, sinon chaîne vide.
-        cleanDescription = productInfo?.shortDescription || productInfo?.description || "";
-    }
-
+    useEffect(() => {
+        if (typeof window !== 'undefined' && productInfo?.description) {
+            const sanitizedDescription = DOMPurify.sanitize(productInfo.description);
+            setCleanDescription(sanitizedDescription || "Description non disponible.");
+        } else {
+            setCleanDescription("Description non disponible.");
+        }
+    }, [productInfo]);
     return (
         <section className="container mx-auto py-2">
             <div className="mt-2">

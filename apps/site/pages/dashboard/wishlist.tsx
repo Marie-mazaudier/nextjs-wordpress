@@ -5,6 +5,9 @@ import { sidebarMenu } from "../../src/data/SidebarMenu";
 import dynamic from "next/dynamic";
 import { useUserDetails } from "lib/woocommerce/user/useUserDetails";
 import React, { useEffect } from "react";
+import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import { useCart } from "src/CartContext";
+
 //IMPORT DATA GRAPHQL
 /*Menu*/
 import { HocMenuData } from "lib/graphQL/menu/HocMenuData";
@@ -26,8 +29,12 @@ export interface WishlistItem {
     in_stock: boolean;
 }
 const WishlistComponent = (/*{ userId }*/) => {
+    const { userInfo } = useCart(); // Accédez à userInfo à partir du contexte
+
     const { user, error: userError, isLoading: userLoading } = useUserDetails();
-    const { wishlistProducts, loading, error } = useWishlist(); // Utilisez les données renvoyées par useWishlist
+    const { shareKey, isLoading: isLoadingShareKey, isError: isErrorShareKey } = useWishlistShareKey(userInfo);
+
+    const { wishlistProducts, loading, error } = useWishlist(shareKey);
     //console.log('user', user)
 
     return (
@@ -45,7 +52,7 @@ const WishlistComponent = (/*{ userId }*/) => {
                         ) : wishlistProducts && wishlistProducts.length > 0 ? (
                             <ul>
                                 {wishlistProducts.map((item: WishlistItem) => (
-                                    <WishlistItem key={item.item_id} productId={item.product_id} item_id={item.item_id} />
+                                    <WishlistItem key={item.item_id} productId={item.product_id} item_id={item.item_id} userInfo={userInfo} shareKey={shareKey} />
                                 ))}
                             </ul>
                         ) : (

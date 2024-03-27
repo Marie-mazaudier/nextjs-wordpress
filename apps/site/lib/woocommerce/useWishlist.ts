@@ -3,9 +3,8 @@ import useSWR from 'swr';
 import { fetcher } from '../utils/fetcher.utils';
 import { useUserDetails } from './user/useUserDetails';
 import { mutate } from 'swr';
-const useWishlist = () => {
+const useWishlist = (shareKey: string) => {
     const { user } = useUserDetails();
-
     // Utilisez SWR pour obtenir la clé de partage de la liste de souhaits
     const {
         data: wishlistKeyData,
@@ -13,7 +12,7 @@ const useWishlist = () => {
         isValidating: loadingWishlistKey
     } = useSWR(user?.id ? `/api/whishlist/view_whishlist?userID=${user.id}` : null, fetcher, { revalidateOnFocus: false });
 
-    const shareKey = wishlistKeyData?.[0]?.share_key;
+
 
     // Utilisez SWR pour obtenir les produits de la liste de souhaits en utilisant le share_key
     const {

@@ -1,17 +1,16 @@
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Badge } from "../../../../../packages/ecommerce-ui/src/atoms/badges/Badge";
 import { Placeholder } from "../../../../../packages/ecommerce-ui/src/atoms/placeholder/Placeholder";
 import { BodyText } from "../../../../../packages/ecommerce-ui/src/atoms/typography/bodyText/BodyText";
 import Skeleton from "react-loading-skeleton";
 import MiniCart from "../cartLayout/minicart";
-import { RiHeart2Line } from "react-icons/ri";
-//import { useWishlistShareKey } from "lib/woocommerce/useWishlistShareKey";
+import FavoriteButton from "../productDescription/FavoriteButton";
 import { addProductToWishlist } from "lib/woocommerce/useAddToWishlist";
-//import { useProduct } from '../../../lib/woocommerce/useProduct';
 
 interface Product {
     id: string;
+    productId?: string;
     name: string;
     salePrice?: string;
     regularPrice?: string;
@@ -21,11 +20,10 @@ interface Product {
         };
     };
     slug: string;
+    date: Date;
     stockStatus: string;
 }
-interface media {
-    mediaItemUrl: string;
-}
+
 interface stockData {
     id: string;
     stock: number;
@@ -35,29 +33,25 @@ interface ProductCardShopProps {
     stockProductsData?: stockData;
     stockProductsLoading?: boolean;
     shareKey?: string; // Ajout de shareKey comme prop optionnelle
-    wishlistProducts?: any[]; // Typage à ajuster selon vos besoins
+    wishlistProducts?: ProductInWishlist[]; // Typage à ajuster selon vos besoins
+    setLoginModalOn: (isOpen: boolean) => void; // Type ajusté pour la fonction
+    isUserLoggedIn: boolean;
+    key: number;
+    deleteWishlistItem: (itemId: number, shareKey: string) => Promise<void>;
+    productId: string;
+    revalidate: () => void; // Ajouter la définition de type pour revalidat
+}
+interface ProductInWishlist {
+    product_id: string; // Ajout de la propriété product_id
+    item_id: number;
 }
 
-export const ProductCardShop = ({ data, shareKey, wishlistProducts }: ProductCardShopProps) => {
+
+export const ProductCardShop = ({ data, shareKey, wishlistProducts, setLoginModalOn, isUserLoggedIn, deleteWishlistItem, productId, revalidate }: ProductCardShopProps) => {
 
     const [isOutOfStock, setIsOutOfStock] = useState(data?.stockStatus === "OUT_OF_STOCK");
     const [isInCart, setisInCart] = useState(false);
-    const isProductInWishlist = wishlistProducts?.some(wishlistProduct => wishlistProduct.product_id === data.id);
 
-    const productId = data.id // L'ID du produit à ajouter
-    // Lorsqu'un utilisateur clique sur le bouton d'ajout à la wishlist
-    const handleAddToWishlistClick = async () => {
-        if (shareKey) {
-            try {
-                const result = await addProductToWishlist(shareKey, productId);
-                //  console.log('Product added to wishlist successfully:', result);
-            } catch (error) {
-                // console.error('Error adding product to wishlist:', error);
-            }
-        }
-    };
-
-    //  console.log('wishlistProducts', wishlistProducts)
     //Appel de la fonction si stock out => mise à jour des info du produit
     const handleStockOut = () => setIsOutOfStock(true);
     const handleIsInCart = () => setisInCart(true)
@@ -66,7 +60,6 @@ export const ProductCardShop = ({ data, shareKey, wishlistProducts }: ProductCar
         ? ((parseFloat(data.regularPrice) - parseFloat(data.salePrice)) / parseFloat(data.regularPrice)) * 100
         : undefined;
     //  console.log('data', data)
-    //  const stockOut = data?.stockStatus === "OUT_OF_STOCK";
 
     return (
         <div className="p-5  w-full ">
@@ -88,6 +81,17 @@ export const ProductCardShop = ({ data, shareKey, wishlistProducts }: ProductCar
                         {discount.toFixed(0)}%
                     </Badge>
                 ) : null}
+
+                <FavoriteButton
+                    productId={productId}
+                    wishlistProducts={wishlistProducts}
+                    isUserLoggedIn={isUserLoggedIn}
+                    setLoginModalOn={setLoginModalOn}
+                    deleteWishlistItem={deleteWishlistItem}
+                    addProductToWishlist={addProductToWishlist}
+                    shareKey={shareKey}
+                    revalidate={revalidate}
+                />
             </div>
             {data?.name ? (
                 <Link href={`/produit/${data?.slug || ""}`}>
@@ -127,11 +131,7 @@ export const ProductCardShop = ({ data, shareKey, wishlistProducts }: ProductCar
             </div>
             <div className="mt-5 flex items-center justify-center">
                 <MiniCart data={data} onStockOut={handleStockOut} isOutOfStock={isOutOfStock} isInCart={isInCart} handleIsInCart={handleIsInCart} />
-                <RiHeart2Line onClick={handleAddToWishlistClick} />
-                {/* Exemple d'utilisation */}
-                {isProductInWishlist && (
-                    <span className="wishlist-indicator">En favoris</span>
-                )}
+
             </div>
             {/*isInCart && (
                 <BodyText size="md" className="text-center uppercase">
