@@ -234,45 +234,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     return { paths, fallback: 'blocking' };
 };
 
-// getServerSideProps pour récupérer les données des produits via SSR
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    // Extraction du slug depuis l'URL
-    const slugPath = context.params?.slug;
-    const slug = Array.isArray(slugPath) ? slugPath.join('/') : slugPath;
 
-    // Récupération du categoryId basé sur le slug, similaire à votre logique SSG
-    const { data: categoriesData } = await client.query({ query: PROD_CAT_QUERY });
-    const categorySlug = slug?.split('/').pop();
-    const category = categoriesData.productCategories.nodes.find((cat: any) => cat.slug === categorySlug);
-
-    // S'il n'y a pas de catégorie correspondante, retourner un notFound
-    if (!category) {
-        return { notFound: true };
-    }
-
-    const categoryId = parseInt(category.productCategoryId);
-
-    // Récupération des produits basée sur le categoryId
-    const { data } = await client.query({
-        query: GET_PRODUCTS_BY_CATEGORY_ID,
-        variables: { categoryId, first: 115 },
-    });
-
-    // Transformation des produits pour que `id` soit égal à `productId`
-    const serverSideProducts = data.products.nodes.map((product: any) => ({
-        ...product,
-        id: product.productId,
-    }));
-
-    // Passer les données récupérées au composant via props
-    return {
-        props: {
-            // Pour éviter les conflits, renommez les produits récupérés en 'serverSideProducts'
-            serverSideProducts,
-            // Passer les autres props nécessaires, si elles sont récupérées différemment pour SSR
-        },
-    };
-};
 
 
 export default CategoryPage;
