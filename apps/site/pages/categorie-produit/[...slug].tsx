@@ -67,7 +67,7 @@ const CategoryPage = ({ productCategories, products, productMarques, minPrice, m
             return productPrice >= priceRange[0] && productPrice <= priceRange[1];
         });
 
-        // Tri
+        // Tri test
         switch (sortOption) {
             case 'recent':
                 processedProducts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
