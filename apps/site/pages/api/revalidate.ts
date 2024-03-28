@@ -1,33 +1,35 @@
+// pages/api/revalidate.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse<any>
-) {
-    // Vérifier le secret pour sécuriser l'accès
-    if (req.query.secret !== process.env.REVALIDATE_SECRET) {
-        return res.status(401).json({ message: "Accès non autorisé" });
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    // Autoriser uniquement les requêtes POST
+    if (req.method !== 'POST') {
+        return res.status(405).end('Méthode non autorisée');
     }
 
-    // Extraire les pages de la requête, supposant que 'pages' est une chaîne de caractères
-    // avec des chemins séparés par des virgules, par exemple "page1,page2,page3"
-    const pages = req.query.pages as string;
+    const { authorization } = req.headers;
+    const secret = process.env.REVALIDATE_SECRET;
 
-    if (!pages) {
-        return res.status(400).json({ message: "Pages non spécifiées" });
+    // Vérifier la clé secrète
+    if (!authorization || authorization.split(' ')[1] !== secret) {
+        return res.status(401).json({ message: "Non autorisé" });
     }
 
-    // Séparer les pages en un tableau
-    const paths = pages.split(',');
+    // Extrait les slugs des catégories à partir du corps de la requête
+    const { categories } = req.body;
+
+    if (!categories || categories.length === 0) {
+        return res.status(400).json({ message: "Aucune catégorie fournie." });
+    }
 
     try {
-        // Boucler sur chaque chemin et revalider chaque page
-        for (const path of paths) {
-            await res.revalidate(`/${path}`);
+        // Revalide chaque page de catégorie fournie
+        for (const slug of categories) {
+            await res.revalidate(`/categorie-produit/${slug}`);
         }
-        return res.json({ revalidated: true, revalidatedPages: paths });
+        return res.json({ revalidated: true });
     } catch (err) {
-        // En cas d'erreur lors de la revalidation
-        return res.status(500).send("Erreur de revalidation");
+        console.error(err);
+        return res.status(500).send('Erreur de revalidation');
     }
 }
