@@ -2,16 +2,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    // Autoriser uniquement les requêtes POST
+    console.log('Requête reçue avec les en-têtes suivants:', req.headers);
+
     if (req.method !== 'POST') {
         return res.status(405).end('Méthode non autorisée');
     }
 
     const { authorization } = req.headers;
+    console.log('En-tête d’autorisation:', authorization);
+
     const secret = process.env.REVALIDATE_SECRET;
+    console.log('Secret attendu:', secret);
 
     // Vérifier la clé secrète
     if (!authorization || authorization.split(' ')[1] !== secret) {
+        console.log('Échec de la vérification de la clé secrète');
         return res.status(401).json({ message: "Non autorisé" });
     }
 

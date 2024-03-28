@@ -17,7 +17,6 @@ import useWishlist from "lib/woocommerce/useWishlist";
 import { useCart } from "src/CartContext";
 import SignupSignin from "src/components/signupSignin/SignupSignin";
 import useDeleteWishlistItem from "lib/woocommerce/useDeleteWishlistItem";
-import { GetServerSideProps } from 'next';
 
 //IMPORT DATA GRAPHQL
 import { GET_PRODUCTS_BY_CATEGORY_ID } from "src/data/graphQl/woo/products/ProductsByCatIDQueries";
@@ -36,10 +35,9 @@ interface CategoryPageProps {
     productMarques: MarqueNode[];
     minPrice: number;
     maxPrice: number;
-    serverSideProducts: Product[]
+
 }
-const CategoryPage = ({ productCategories, products, productMarques, minPrice, maxPrice, serverSideProducts }: CategoryPageProps) => {
-    console.log('serverSideProducts', serverSideProducts)
+const CategoryPage = ({ productCategories, products, productMarques, minPrice, maxPrice }: CategoryPageProps) => {
     const productsPerPage = 20; // Nombre de produits par page
     const [currentPage, setCurrentPage] = useState(0); // Page actuelle, ReactPaginate utilise un index basé sur 0
     const [filterOpen, setFilterOpen] = React.useState(false);
